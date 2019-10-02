@@ -32,7 +32,7 @@ export default class Topic implements NamedTopic {
    */
   public validateMessage(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    message: BasePayload,
+    message: Payload,
   ): void {
     message;
   }

@@ -1,4 +1,4 @@
 import Topic, { Payload } from "./topic";
-import Subscription from "./subscription.ts";
+import Subscription from "./subscription";
 
 export { Topic, Payload, Subscription };
