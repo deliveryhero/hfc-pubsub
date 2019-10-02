@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */
+    "target": "es2017",
+    "removeComments": true,
+    "outDir": "lib",
+    /* Redirect output structure to the directory. */
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "baseUrl": "./src",
+  },
+  "include": ["src/**/*"]
+}

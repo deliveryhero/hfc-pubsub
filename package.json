@@ -1,0 +1,62 @@
+{
+  "name": "@hfc/pubsub",
+  "version": "1.2.12",
+  "description": "pubsub framework for managing topics and subscriptions",
+  "main": "lib/indexer.js",
+  "scripts": {
+    "watch": "nodemon --watch 'src/**/*' -e ts --exec yarn run build",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "prepare": "npm run build",
+    "lint": "tslint -p tsconfig.json",
+    "subscriptions": "ts-node src/cli/subscriptions.ts",
+    "postinstall": "node postinstall.js"
+  },
+  "keywords": [
+    "google pubsub",
+    "pubsub",
+    "publish/subscribe",
+    "subscriptions",
+    "pubsub framework"
+  ],
+  "types": "lib/indexer.d.ts",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "cli-ux": "^5.3.2",
+    "dotenv": "^8.1.0",
+    "fs": "0.0.1-security",
+    "humanize-duration": "^3.20.1",
+    "lodash": "^4.17.15",
+    "moment": "^2.24.0",
+    "mongoose": "^5.7.3",
+    "wrap-ansi": "^6.0.0",
+    "yargs": "^14.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^12.7.9",
+    "@types/yargs": "^13.0.2",
+    "eslint": "^6.4.0",
+    "eslint-config-prettier": "^6.3.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "husky": "^3.0.5",
+    "prettier": "^1.18.2",
+    "ts-node": "8.1.0",
+    "tslint": "5.16.0",
+    "typescript": "3.4.5",
+    "yarn": "^1.17.3"
+  },
+  "author": "Anthony Martin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anthonymartin/myelastic"
+  },
+  "license": "MIT",
+  "bin": {
+    "subscriptions": "./src/cli/subscriptions.js"
+  },
+  "husky": {
+    "hooks": {
+      "post-commit": "(git-branch-is develop && HUSKY_SKIP_HOOKS=1 yarn version --patch)"
+    }
+  }
+}

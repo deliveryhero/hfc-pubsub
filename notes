@@ -1,0 +1,39 @@
+scaffolding questions:
+
+project creation:
+    What is the name of your project?
+    Choose one:
+        1. typescript
+        2. javascript
+
+topic creation:
+    What type is the purpose of the topic?
+        e.g. 
+            queue
+            logging
+            tracking
+            etl
+            streaming
+            push
+            user
+    What is the data/model you are creating a topic for?
+        escalation
+
+    Will this topic be associated with a specific operation?
+        e.g. 
+            create
+            delete
+            update
+            reassignment
+
+
+users
+
+user.create
+
+
+users.operations.subscription
+ =>
+    user.create
+    user.update
+    user.delete
