@@ -2,7 +2,7 @@
   "name": "@hfc/pubsub",
   "version": "1.2.12",
   "description": "pubsub framework for managing topics and subscriptions",
-  "main": "lib/indexer.js",
+  "main": "build/index.js",
   "scripts": {
     "watch": "nodemon --watch 'src/**/*' -e ts --exec yarn run build",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -19,8 +19,9 @@
     "subscriptions",
     "pubsub framework"
   ],
-  "types": "lib/indexer.d.ts",
+  "types": "build/index.d.ts",
   "dependencies": {
+    "@google-cloud/pubsub": "^1.1.0",
     "chalk": "^2.4.2",
     "cli-ux": "^5.3.2",
     "dotenv": "^8.1.0",
@@ -48,7 +49,7 @@
   "author": "Anthony Martin",
   "repository": {
     "type": "git",
-    "url": "https://github.com/anthonymartin/myelastic"
+    "url": "https://anthonydmartin@bitbucket.org/anthonydmartin/hfc-pubsub.git"
   },
   "license": "MIT",
   "bin": {
