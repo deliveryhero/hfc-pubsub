@@ -1,6 +1,6 @@
 {
   "name": "@hfc/pubsub",
-  "version": "1.2.12",
+  "version": "1.0.0",
   "description": "pubsub framework for managing topics and subscriptions",
   "main": "build/index.js",
   "scripts": {
@@ -53,7 +53,7 @@
   },
   "license": "MIT",
   "bin": {
-    "subscriptions": "./src/cli/subscriptions.js"
+    "subscriptions": "./src/cli/subscriptions.ts"
   },
   "husky": {
     "hooks": {

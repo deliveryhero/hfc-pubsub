@@ -1,7 +1,6 @@
+#! /usr/local/bin/ts-node
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { config } from "dotenv"
-import { resolve } from "path"
-config({ path: resolve(__dirname + "../../../.env") });
+require('dotenv').config();
 import SubscriptionService from "../subscription.service"; 
 import { connect } from "mongoose";
 import { cli } from "cli-ux";
@@ -49,11 +48,11 @@ require("yargs")
         ),
         "\n",
       );
-      if (!SubscriptionService.subscriptions || SubscriptionService.subscriptions && SubscriptionService.subscriptions.length == 0) {
+      if (SubscriptionService.getSubscriptions().length == 0) {
         console.log(chalk.white.bold("\n No subscriptions found"));
       } else {
         cli.table(
-          SubscriptionService.subscriptions,
+          SubscriptionService.getSubscriptions(),
           {
             "Topic Name": {
               get: (row): string => row.getTopicName(),

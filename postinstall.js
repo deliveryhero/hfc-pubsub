@@ -2,47 +2,52 @@
 const fs = require('fs');
 
 const cwd = process.env.INIT_CWD
+console.log("cwd", cwd);
 
 const getTemplateEnv = () => {
-  const envFile = cwd + "/node_modules/@myelastic/indexer/.env.example";
+  const envFile = cwd + "/node_modules/@hfc/pubsub/.env.example";
   return envFile;
 }
 
 const getMainFile = () => {
-  const main = cwd + "/node_modules/@myelastic/indexer/lib/indexer.js";
+  const main = cwd + "/node_modules/@hfc/pubsub/src/cli/subscriptions.ts";
   return main;
 }
 const getCliFile = () => {
-  const cli = cwd + "/node_modules/@myelastic/indexer/lib/cli/myelastic.js";
+  const cli = cwd + "/node_modules/@hfc/pubsub/src/cli/subscriptions.ts";
   return cli;
 }
 
 const copyFile = function (source, target, overwrite=false, executable=false) {
-  if (fs.existsSync(target) && overwrite) {
+  console.log("trying to copy", source, "to", target);
+  if (!fs.existsSync(target)) {
+    fs.copyFileSync(source, target);
+  } else if (fs.existsSync(target) && overwrite) {
+    console.log('target exists');
     fs.copyFileSync(source, target);
     if (executable) {
       fs.chmodSync(target, "755");
-    }
-  } else {
-    // do nothing since we don't want to overwrite a file
+    } 
   }
 }
 
 const requireDotEnv = function (file, envReference) {
   const source = cwd + '/.env';
-  const requireDotEnv = `require('dotenv').config({ path: ${envReference} });`;
-  if (fs.existsSync(source) && fs.existsSync(file) && !fs.readFileSync(file).toString().match(/require\('dotenv'\)/gm)) {
+  const requireDotEnv = `require('dotenv').config({ path: ${envReference} });`;;
+  if (fs.existsSync(source) &&
+      fs.existsSync(file) && 
+      !fs.readFileSync(file).toString().match(/require\('dotenv'\)/gm)
+  ) {
     var fileLineByLine = fs.readFileSync(file).toString().match(/^.+$/gm);
     fileLineByLine[1] = fileLineByLine[1].concat(`\n${requireDotEnv}\n`);
     fs.writeFileSync(file, fileLineByLine.join("\n"));
   }
 };
 
-const copyEnvAndSetLocationInMain = () => {
+const copyEnv = () => {
   const source = getTemplateEnv();
-  const target = cwd + "/.env";
+  let target = cwd + "/.env";
   copyFile(source, target, false);
-  requireDotEnv(getMainFile(), "__dirname + '/../../../../.env'");
 }
 
 const setCliEnvLocation = () => {
@@ -56,7 +61,7 @@ const createBinDir = () => {
 }
 
 try {
-  copyEnvAndSetLocationInMain();
+  copyEnv();
   setCliEnvLocation();
 } catch (e) {
   console.log(e);
