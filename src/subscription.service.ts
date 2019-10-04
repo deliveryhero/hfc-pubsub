@@ -2,8 +2,19 @@ import Subscription from "./subscription";
 import { resolve } from "path";
 import fs = require("fs");
 
-export default abstract class SubscriptionService {
-  public static subscriptions = [];
+export default class SubscriptionService {
+  public static subscriptions: (Subscription|null)[]  = [];
+  public static instance = new SubscriptionService;
+  public constructor() {
+    this.checkExistence(process.env, 'PUBSUB_ROOT_DIR');
+    this.checkExistence(process.env, 'GOOGLE_CLOUD_PUB_SUB_PROJECT_ID');
+    this.checkExistence(process.env, 'GOOGLE_APPLICATION_CREDENTIALS');
+  }
+  protected checkExistence(object, property) {
+    if (!object.hasOwnProperty(property) || object.hasOwnProperty(property) && object[property] == '') {
+      throw Error(`This module requires ${property} to be defined in your .env`);
+    }
+  }
   public static start(mongooseConnection: any = null): void {
     const subscriptions = SubscriptionService.getSubscriptions();
     for (let subscription of subscriptions) {
@@ -13,9 +24,9 @@ export default abstract class SubscriptionService {
     }
   }
   public static getSubscriptions(): Subscription[] {
-    if (this.subscriptions.length > 0) {
-      return this.subscriptions;
-    }
+    if (SubscriptionService.subscriptions.length > 0) {
+      return SubscriptionService.subscriptions;
+    } 
     const dir = resolve(process.env.PUBSUB_ROOT_DIR, "subscriptions");
     const subscriptionService = resolve(process.env.PUBSUB_ROOT_DIR, 'subscription.service.js');
     const subscriptionsJson = resolve(process.env.PUBSUB_ROOT_DIR, 'subscriptions.json');
@@ -24,7 +35,6 @@ export default abstract class SubscriptionService {
     } else if (fs.existsSync(subscriptionsJson)) {
       this.loadSubscriptionsFromJson(subscriptionsJson);
     } else {
-      console.log('did not find subscriptions service or subscriptions.json');
       this.loadSubscriptionsFromDirectory(dir);
     }
     this.validateSubscriptions();
