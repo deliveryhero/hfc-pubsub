@@ -2,7 +2,7 @@
   "name": "@hfc/pubsub",
   "version": "1.0.0",
   "description": "pubsub framework for managing topics and subscriptions",
-  "main": "build/src/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "watch": "nodemon --watch 'src/**/*' -e ts --exec yarn run build",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -19,7 +19,7 @@
     "subscriptions",
     "pubsub framework"
   ],
-  "types": "build/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "dependencies": {
     "@google-cloud/pubsub": "^1.1.0",
     "chalk": "^2.4.2",
@@ -55,7 +55,7 @@
   },
   "license": "MIT",
   "bin": {
-    "subscriptions": "./build/src/cli/subscriptions.js"
+    "subscriptions": "./dist/src/cli/subscriptions.js"
   },
   "husky": {
     "hooks": {
