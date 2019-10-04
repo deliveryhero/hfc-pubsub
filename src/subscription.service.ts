@@ -16,7 +16,7 @@ export default abstract class SubscriptionService {
   }
   public static getSubscriptions(): Subscription[] {
     const dir = resolve(process.env.PUBSUB_ROOT_DIR, "subscriptions");
-    const subscriptionFiles = fs.readdirSync(dir).filter((file) => { return file.match(/\.js$/gm); });
+    const subscriptionFiles = fs.readdirSync(dir).filter((file) => { return file.match(/\.js$/) });
     const subscriptions = [];
     for (let file of subscriptionFiles) {
       let subscription = require(resolve(dir,file)).default;
