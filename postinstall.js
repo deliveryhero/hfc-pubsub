@@ -62,7 +62,7 @@ const createBinDir = () => {
 
 try {
   copyEnv();
-  setCliEnvLocation();
+  //setCliEnvLocation();
 } catch (e) {
   console.log(e);
 }
