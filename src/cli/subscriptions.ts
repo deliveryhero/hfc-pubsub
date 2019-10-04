@@ -1,6 +1,6 @@
 #! /usr/local/bin/ts-node
 /* eslint-disable @typescript-eslint/no-unused-vars */
-require('dotenv').config();
+require('dotenv').config({ path: require('find-config')('.env') });
 import SubscriptionService from "../subscription.service"; 
 import { connect } from "mongoose";
 import { cli } from "cli-ux";
