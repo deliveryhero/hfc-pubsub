@@ -1,4 +1,4 @@
-#! /usr/local/bin/ts-node
+#! /usr/local/bin/node
 /* eslint-disable @typescript-eslint/no-unused-vars */
 require('dotenv').config({ path: require('find-config')('.env') });
 import SubscriptionService from "../subscription.service"; 
@@ -48,6 +48,7 @@ require("yargs")
         ),
         "\n",
       );
+      SubscriptionService.getSubscriptions();
       if (SubscriptionService.getSubscriptions().length == 0) {
         console.log(chalk.white.bold("\n No subscriptions found"));
       } else {
@@ -68,7 +69,7 @@ require("yargs")
             printLine: console.log,
           },
         );
-        console.log("\n \n");
+        console.log("\n");
       }
     },
   ).argv;
