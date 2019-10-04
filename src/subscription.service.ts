@@ -15,9 +15,14 @@ export default abstract class SubscriptionService {
     }
   }
   public static getSubscriptions(): Subscription[] {
-    const dir = resolve(process.env.PUBSUB_ROOT_DIR, "subscriptions");
-    const subscriptionFiles = fs.readdirSync(dir).filter((file) => { return file.match(/\.js$/) });
     const subscriptions = [];
+    const dir = resolve(process.env.PUBSUB_ROOT_DIR, "subscriptions");
+    const subscriptionService = resolve(process.env.PUBSUB_ROOT_DIR, 'subscription.service.js');
+    if (fs.existsSync(subscriptionService)) {
+      require(resolve(subscriptionService)).default.subscriptions.forEach((subscription) => subscriptions.push(subscription));
+      return subscriptions;
+    }
+    const subscriptionFiles = fs.readdirSync(dir).filter((file) => { return file.match(/\.js$/) });
     for (let file of subscriptionFiles) {
       let subscription = require(resolve(dir,file)).default;
       subscriptions.push(new subscription());
