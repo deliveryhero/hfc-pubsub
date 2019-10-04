@@ -16,7 +16,7 @@ require("yargs")
     },
     async (argv: any): Promise<void> => {
       argv;
-      console.log(chalk.bold.blue("Starting Subscriptions Client"));
+      console.log(chalk.bold.blue("Starting HFC Subscriptions Server"));
       const mongoURI = process.env.MONGODB_URI ? process.env.MONGODB_URI : "";
       if (!mongoURI) {
         SubscriptionService.start();
