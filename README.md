@@ -1,38 +1,51 @@
 # HFC Google Pub/Sub Module
+A slightly opinionated, micro-framework for publishing and subscribing to messages on Google PubSub. 
 
 ## Features
 
-1. Framework for publishing and subscribing to messages on Google PubSub
-2. CLI client for starting and listing subscriptions
-3. Create new topics and publish a message to those topics with 2 lines
-4. Automatic timestamping of all messages (ISO8601)
+1. CLI tool for starting subscription server and for listing subscriptions
+2. Create new topics and publish a message to those topics with 2 lines
+3. Automatic timestamping of all messages (ISO8601)
+4. If `MONGODB_URI` env variable is set, the subscription server will connect to mongodb
 
-## Requirements
+## Prerequisites Requirements
 
-add the following to your `.env`
+1. This module expects that you've created a pubsub directory in your project with the following structure:
+
+```pre
+| - pubsub
+|   | - subscriptions
+|   | - topics
+```
+
+2. add the following to your `.env`
 
 ```ini
 GOOGLE_APPLICATION_CREDENTIALS=/path/to/hfc-experiments-83d5537a8388-key.json
 GOOGLE_CLOUD_PUB_SUB_PROJECT_ID="hfc-experiments"
+PUBSUB_ROOT_DIR=/path/to/module/pubsub
 ```
+
+`PUBSUB_ROOT_DIR` must be the path to your project's pubsub directory. This module only works with compiled JS, so if you are writing your code in typescript, you must set this variable to the pubsub root in your project's build directory.
 
 ## Adding a new subscription
 
-1. Add your subscription in `@lib/pubsub/subscriptions/name.of.pubsub.subscription` (Follow the template examples)
-2. Add your subscription class to the subscriptions array found in `@lib/pubsub/services/subscriptionService`
+1. Add your subscription in `pubsub/subscriptions/name.of.pubsub.subscription` (Follow the template examples)
 
-As a convention the name of the file should match the name of the subscription so the code and file structure becomes self-documenting.
+As a convention the name of the file should match the name of the subscription so the file structure is self-documenting.
+
+2. (Optional): By default, the subscriptions server will load all subscriptions found in  `PUBSUB_ROOT_DIR/subscriptions`, however you can explicitly define which subscriptions the server should run by including a `subscriptions.json` file in `PUBSUB_ROOT_DIR/subscriptions.json` or by including a `PUBSUB_ROOT_DIR/subscriptions.service.js` file. Examples are found below.
 
 ## Running subscription handlers
 
-1. Run subscriptions `npm run subscriptions-start`
-2. List registered subscriptions `npm run subscriptions-list`
+1. Run subscriptions `./node_modules/.bin/subscriptions start`
+2. List subscriptions `./node_modules/.bin/subscriptions list`
 
-Note: If the subscription doesn't exist in google pub/sub it will be created when you run `npm run subscriptions-start`
+Note: If the subscription doesn't exist in google pub/sub it will be created when you run `./node_modules/.bin/subscriptions start`
 
 ## Publishing a Message
 
-1. Create a topic in `@lib/pubsub/topics` which extends `Topic` and a payload which extends `BasePayload`
+1. Create a topic in `pubsub/topics` which extends `Topic` and a payload which extends `BasePayload`
 
 ```typescript
 // @lib/pubsub/topics/simple.topic.name.ts
@@ -54,7 +67,7 @@ export interface Payload extends BasePayload {
 
 ```typescript
 // client.example.ts
-import SimpleTopic, { Payload } from "@lib/pubsub/topics/simple.topic.name";
+import SimpleTopic, { Payload } from "pubsub/topics/simple.topic.name";
 
 let topic = new SimpleTopic();
 topic.publish<Payload>({ id: 1, data: "My first message" });
@@ -67,15 +80,16 @@ If a topic does not exist yet with the name you defined, it will be created befo
 
 ## Subscribing to a Topic
 
-1. Create a subscription class in `@lib/pubsub/subscriptions`
+1. Create a subscription class in `path/to/your/pubsub/subscriptions`
+
+Typescript example:
 
 ```typescript
-// @lib/pubsub/subscriptions/simple.topic.name.subscription.ts
+// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.ts
 
-import Subscription, { Message } from "./base/subscription";
-import { Message } from "@google-cloud/pubsub";
+import { Subscription, Message } from "@hfc/pubsub";
 
-export default class SimpleSubscription extends BaseSubscription {
+export default class SimpleSubscription extends Subscription {
   public topicName: string = "simple.topic.name";
   public subscriptionName: string = "simple.topic.name.subscription";
   public description: string = "Example subscription client";
@@ -91,13 +105,37 @@ export default class SimpleSubscription extends BaseSubscription {
 }
 ```
 
-2. Register your subscription with the `SubscriptionService`
+Javascript example:
+
+```javascript
+// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.js
+const PubSub = require("@hfc/pubsub");
+class TestSubscription extends PubSub.Subscription {
+    constructor() {
+        super(...arguments);
+        this.topicName = "test-topic";
+        this.subscriptionName = "test-topic.subscription";
+        this.description = "Just a test subscription";
+    }
+    async handleMessage(message) {
+        const payload = JSON.parse(message.data.toString());
+        message.ack();
+    }
+}
+exports.default = TestSubscription
+```
+
+2. Start your subscriptions `./node_modules/.bin/subscriptions start`
+
+## Registering your subscription with the `SubscriptionService` (optional)
+
+If you would like to incorporate dependency injection or extend the default behavior of the `SubscriptionService` you may create your own `SubscriptionService` which extends the base service like in the example below:
 
 ```typescript
-// @lib/pubsub/services/subscriptionService.ts
+// path/to/your/pubsub/subscriptions.service.ts
 
-import BaseSubscriptionService from "./base/baseSubscriptionService";
-import SimpleSubscription from "@lib/pubsub/subscriptions/simple.topic.name.subscription";
+import { SubscriptionService as BaseSubscriptionService } from "@hfc/pubsub";
+import SimpleSubscription from "path/to/your/pubsub/subscriptions/simple.topic.name.subscription";
 
 export default class SubscriptionService extends BaseSubscriptionService {
   /**
@@ -107,4 +145,17 @@ export default class SubscriptionService extends BaseSubscriptionService {
 }
 ```
 
-3. Start your subscriptions `npm run start-subscriptions`
+## Registering your subscription with `subscriptions.json` (optional)
+
+If you prefer to explicitly define the subscriptions that the subscription server runs, you can define those subscriptions in `subscriptions.json`. Otherwise if no `subscriptions.json` file is set, and no `subscription.service.js` file defined, the subscription server's default behavior is to load all the `.js` files in `PUBSUB_ROOT_DIR/subscriptions`.
+
+```json
+// PUBSUB_ROOT_DIR/subscriptions.json
+{
+    "subscriptions": {
+        "TestSubscription": "test.subscription"
+    }
+}
+```
+
+This configuration will enable the subscription found in `PUBSUB_ROOT_DIR/subscriptions/test.subscription.js`. The key can be any string value. The value in the key-value pair is the name of the subscription file found in `PUBSUB_ROOT_DIR/subscriptions` without the `.js` extension.
