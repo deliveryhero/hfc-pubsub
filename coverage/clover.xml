@@ -1,6 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1570452473152" clover="3.2.0">
-  <project timestamp="1570452473152" name="All files">
-    <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0" elements="0" coveredelements="0" complexity="0" loc="0" ncloc="0" packages="0" files="0" classes="0"/>
+<coverage generated="1570718433704" clover="3.2.0">
+  <project timestamp="1570718433704" name="All files">
+    <metrics statements="46" coveredstatements="39" conditionals="18" coveredconditionals="13" methods="13" coveredmethods="10" elements="77" coveredelements="62" complexity="0" loc="46" ncloc="46" packages="1" files="1" classes="1"/>
+    <file name="subscription.service.ts" path="/Users/anthonymartin/Documents/projects/pubsub/src/subscription.service.ts">
+      <metrics statements="46" coveredstatements="39" conditionals="18" coveredconditionals="13" methods="13" coveredmethods="10"/>
+      <line num="2" count="2" type="stmt"/>
+      <line num="3" count="2" type="stmt"/>
+      <line num="5" count="2" type="stmt"/>
+      <line num="6" count="2" type="stmt"/>
+      <line num="7" count="2" type="stmt"/>
+      <line num="9" count="2" type="stmt"/>
+      <line num="10" count="2" type="stmt"/>
+      <line num="11" count="2" type="stmt"/>
+      <line num="14" count="6" type="cond" truecount="4" falsecount="1"/>
+      <line num="15" count="0" type="stmt"/>
+      <line num="19" count="2" type="stmt"/>
+      <line num="20" count="2" type="stmt"/>
+      <line num="21" count="2" type="stmt"/>
+      <line num="22" count="2" type="stmt"/>
+      <line num="23" count="2" type="stmt"/>
+      <line num="27" count="3" type="cond" truecount="2" falsecount="0"/>
+      <line num="28" count="1" type="stmt"/>
+      <line num="30" count="2" type="stmt"/>
+      <line num="31" count="2" type="stmt"/>
+      <line num="32" count="2" type="stmt"/>
+      <line num="33" count="2" type="cond" truecount="1" falsecount="1"/>
+      <line num="34" count="0" type="stmt"/>
+      <line num="35" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="36" count="1" type="stmt"/>
+      <line num="38" count="1" type="stmt"/>
+      <line num="40" count="2" type="stmt"/>
+      <line num="41" count="2" type="stmt"/>
+      <line num="44" count="2" type="stmt"/>
+      <line num="45" count="2" type="cond" truecount="1" falsecount="1"/>
+      <line num="46" count="0" type="stmt"/>
+      <line num="51" count="1" type="stmt"/>
+      <line num="52" count="1" type="stmt"/>
+      <line num="53" count="1" type="stmt"/>
+      <line num="54" count="1" type="stmt"/>
+      <line num="58" count="0" type="stmt"/>
+      <line num="61" count="1" type="stmt"/>
+      <line num="62" count="1" type="cond" truecount="1" falsecount="1"/>
+      <line num="63" count="0" type="stmt"/>
+      <line num="65" count="1" type="stmt"/>
+      <line num="66" count="1" type="stmt"/>
+      <line num="67" count="1" type="stmt"/>
+      <line num="68" count="1" type="cond" truecount="1" falsecount="1"/>
+      <line num="69" count="1" type="stmt"/>
+      <line num="70" count="1" type="stmt"/>
+      <line num="72" count="0" type="stmt"/>
+      <line num="77" count="0" type="stmt"/>
+    </file>
   </project>
 </coverage>
