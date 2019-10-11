@@ -37,7 +37,7 @@ export default class Topic implements NamedTopic {
     message;
   }
 
-  public publish<T extends Payload>(message: T): void {
+  public async publish<T extends Payload>(message: T): Promise<void> {
     this.validateTopic(this.getName());
     this.validateMessage(message);
     message._timestamp = new Date().toISOString();

@@ -37,3 +37,21 @@ users.operations.subscription
     user.create
     user.update
     user.delete
+    
+
+
+Commands:
+pubsub init
+    Are you writing your project in typescript or in javascript?
+    Where would you like to install the pubsub module?
+     if typescript: What is the location of your build directory?
+    Would you like to generate a boilerplate topic and subscription to get you started? 
+
+pubsub subscription
+    What is the name of the topic you are creating a subscription for? (suggest format)
+    What is the name of the subscription? (suggest format)
+    What will this subscription do?
+
+pubsub topic
+
+

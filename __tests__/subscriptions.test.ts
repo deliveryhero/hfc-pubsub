@@ -1,7 +1,5 @@
 const path = require('path');
 const exec = require('child_process').exec;
-import fs = require('fs');
-import { PubSub } from "@google-cloud/pubsub";
 require('dotenv').config({ path: require('find-config')('.env') });
 import SubscriptionService from "../src/subscription.service";
 import exampleSubscription from './pubsub/subscriptions/example.subscription';

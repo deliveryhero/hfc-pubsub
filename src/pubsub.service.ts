@@ -48,7 +48,7 @@ export default class PubSubService {
     const pubSubTopic = await this.getClient().topic(topic.getName());
 
     // Create topic if it does not exist yet
-    await pubSubTopic.get({ autoCreate: true });
+    pubSubTopic.get({ autoCreate: true });
     let messageId = await pubSubTopic.publish(
       Buffer.from(JSON.stringify(message)),
     );
