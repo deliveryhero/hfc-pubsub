@@ -12,7 +12,7 @@ export default class SubscriptionService {
   }
   protected checkExistence(object, property) {
     if (!object.hasOwnProperty(property) || object.hasOwnProperty(property) && object[property] == '') {
-      throw Error(`This module requires ${property} to be defined in your .env`);
+      console.warn(`This module requires ${property} to be defined in your .env`);
     }
   }
   public static start(mongooseConnection: any = null): void {

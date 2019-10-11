@@ -1,3 +1,4 @@
+require('dotenv').config({ path: require('find-config')('.env') });
 import Topic, { Payload } from "./topic";
 import Subscription from "./subscription";
 import SubscriptionService from "./subscription.service";
