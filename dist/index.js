@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+require('dotenv').config({ path: require('find-config')('.env') });
 const topic_1 = require("./topic");
 exports.Topic = topic_1.default;
 const subscription_1 = require("./subscription");
