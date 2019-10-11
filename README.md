@@ -87,7 +87,7 @@ Typescript example:
 ```typescript
 // path/to/your/pubsub/subscriptions/simple.topic.name.subscription.ts
 
-import { Subscription, Message } from "@hfc/pubsub";
+import { Subscription, Message } from "@honestfoodcompany/pubsub";
 
 export default class SimpleSubscription extends Subscription {
   public topicName: string = "simple.topic.name";
@@ -109,7 +109,7 @@ Javascript example:
 
 ```javascript
 // path/to/your/pubsub/subscriptions/simple.topic.name.subscription.js
-const PubSub = require("@hfc/pubsub");
+const PubSub = require("@honestfoodcompany/pubsub");
 class TestSubscription extends PubSub.Subscription {
     constructor() {
         super(...arguments);
