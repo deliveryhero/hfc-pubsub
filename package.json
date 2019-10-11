@@ -2,7 +2,7 @@
   "name": "@honestfoodcompany/pubsub",
   "version": "1.0.0",
   "description": "pubsub framework for managing topics and subscriptions",
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "watch": "nodemon --watch 'src/**/*' -e ts --exec yarn run build",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -19,7 +19,7 @@
     "subscriptions",
     "pubsub framework"
   ],
-  "types": "dist/src/index.d.ts",
+  "types": "dist/index.d.ts",
   "dependencies": {
     "@google-cloud/pubsub": "^1.1.0",
     "chalk": "^2.4.2",
@@ -59,7 +59,7 @@
   },
   "license": "MIT",
   "bin": {
-    "subscriptions": "./dist/src/cli/subscriptions.js"
+    "subscriptions": "./dist/cli/subscriptions.js"
   },
   "husky": {
     "hooks": {
