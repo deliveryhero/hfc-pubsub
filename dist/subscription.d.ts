@@ -19,7 +19,7 @@ export default abstract class Subscription implements SubscriptionConfig {
     setMongooseConnection(connection: any): this;
     start(): Promise<void>;
     init(): void;
-    handleMessage(message: Message): void;
+    handleMessage(message: Message): Promise<void>;
     getMaxMessages(): number;
     getAckDeadlineSeconds(): number;
     getDescription(): string;

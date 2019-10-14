@@ -41,7 +41,7 @@ export default abstract class Subscription implements SubscriptionConfig {
   }
   public init(): void {}
 
-  public handleMessage(message: Message): void {
+  public async handleMessage(message: Message): Promise<void> {
     message;
   }
   public getMaxMessages(): number {

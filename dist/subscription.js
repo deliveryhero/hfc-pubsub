@@ -20,7 +20,7 @@ class Subscription {
         this.pubSubService.subscribe(this);
     }
     init() { }
-    handleMessage(message) {
+    async handleMessage(message) {
         message;
     }
     getMaxMessages() {
