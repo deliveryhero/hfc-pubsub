@@ -20,7 +20,7 @@ require("yargs")
     else {
         console.log(chalk_1.default.bold.blue("Connecting to MongoDB"));
         console.info(`Connecting to MongoDB at ${mongoURI}]`);
-        const mongooseConnection = await mongoose_1.connect(mongoURI, { useNewUrlParser: true, useFindAndModify: false });
+        const mongooseConnection = await mongoose_1.connect(mongoURI, { useNewUrlParser: true, useFindAndModify: false, useUnifiedTopology: true });
         console.info(`Connection to MongoDB at ${mongoURI}] successful, Starting subscriptions \n`);
         subscription_service_1.default.start(mongooseConnection);
     }
