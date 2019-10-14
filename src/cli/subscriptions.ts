@@ -25,7 +25,7 @@ require("yargs")
         console.info(`Connecting to MongoDB at ${mongoURI}]`);
         const mongooseConnection = await connect(
           mongoURI,
-          { useNewUrlParser: true, useFindAndModify: false, useUnifiedTopology: true  },
+          { useNewUrlParser: true, useFindAndModify: false },
         );
         console.info(
           `Connection to MongoDB at ${mongoURI}] successful, Starting subscriptions \n`,
