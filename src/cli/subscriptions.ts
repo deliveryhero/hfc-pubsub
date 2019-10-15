@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 require('dotenv').config({ path: require('find-config')('.env') });
 import SubscriptionService from "../subscription.service"; 
-import { connect } from "mongoose";
 import { cli } from "cli-ux";
 import chalk from "chalk";
 import wrapAnsi = require("wrap-ansi");
@@ -17,21 +16,7 @@ require("yargs")
     async (argv: any): Promise<void> => {
       argv;
       console.log(chalk.bold.blue("Starting HFC Subscriptions Server"));
-      const mongoURI = process.env.MONGODB_URI ? process.env.MONGODB_URI : "";
-      if (!mongoURI) {
-        SubscriptionService.start();
-      } else {
-        console.log(chalk.bold.blue("Connecting to MongoDB"));
-        console.info(`Connecting to MongoDB at ${mongoURI}]`);
-        const mongooseConnection = await connect(
-          mongoURI,
-          { useNewUrlParser: true, useFindAndModify: false },
-        );
-        console.info(
-          `Connection to MongoDB at ${mongoURI}] successful, Starting subscriptions \n`,
-        );
-        SubscriptionService.start(mongooseConnection);
-      }
+      SubscriptionService.start();
     },
   )
   .command(

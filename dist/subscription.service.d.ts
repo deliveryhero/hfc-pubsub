@@ -4,10 +4,11 @@ export default class SubscriptionService {
     static instance: SubscriptionService;
     constructor();
     protected checkExistence(object: any, property: any): void;
+    static init(): Promise<void>;
     static start(mongooseConnection?: any): void;
-    static getSubscriptions(): Subscription[];
+    static getSubscriptions(init?: boolean): Subscription[];
     protected static validateSubscriptions(): void;
     protected static loadSubscriptionsFromDirectory(dir: any): void;
-    protected static loadSubscriptionsFromService(subscriptionService: any): void;
+    protected static loadSubscriptionsFromService(subscriptionService: any, init?: boolean): void;
     protected static loadSubscriptionsFromJson(jsonFile: any): void;
 }

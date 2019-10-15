@@ -13,15 +13,17 @@ class SubscriptionService {
             console.warn(`This module requires ${property} to be defined in your .env`);
         }
     }
+    static async init() {
+    }
     static start(mongooseConnection = null) {
-        const subscriptions = SubscriptionService.getSubscriptions();
+        const subscriptions = SubscriptionService.getSubscriptions(true);
         for (let subscription of subscriptions) {
             subscription.setMongooseConnection(mongooseConnection);
             subscription.init();
             subscription.start();
         }
     }
-    static getSubscriptions() {
+    static getSubscriptions(init = false) {
         if (SubscriptionService.subscriptions.length > 0) {
             return SubscriptionService.subscriptions;
         }
@@ -29,7 +31,7 @@ class SubscriptionService {
         const subscriptionService = path_1.resolve(process.env.PUBSUB_ROOT_DIR, 'subscription.service.js');
         const subscriptionsJson = path_1.resolve(process.env.PUBSUB_ROOT_DIR, 'subscriptions.json');
         if (fs.existsSync(subscriptionService)) {
-            this.loadSubscriptionsFromService(subscriptionService);
+            this.loadSubscriptionsFromService(subscriptionService, init);
         }
         else if (fs.existsSync(subscriptionsJson)) {
             this.loadSubscriptionsFromJson(subscriptionsJson);
@@ -54,8 +56,12 @@ class SubscriptionService {
             this.subscriptions.push(new subscription());
         }
     }
-    static loadSubscriptionsFromService(subscriptionService) {
-        require(path_1.resolve(subscriptionService)).default.subscriptions.forEach((subscription) => this.subscriptions.push(subscription));
+    static loadSubscriptionsFromService(subscriptionService, init = false) {
+        const service = require(path_1.resolve(subscriptionService)).default;
+        if (init) {
+            service.init();
+        }
+        service.subscriptions.forEach((subscription) => this.subscriptions.push(subscription));
     }
     static loadSubscriptionsFromJson(jsonFile) {
         let subscriptionsFile = require(jsonFile);

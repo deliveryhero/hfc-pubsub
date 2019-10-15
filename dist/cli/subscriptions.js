@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 require('dotenv').config({ path: require('find-config')('.env') });
 const subscription_service_1 = require("../subscription.service");
-const mongoose_1 = require("mongoose");
 const cli_ux_1 = require("cli-ux");
 const chalk_1 = require("chalk");
 const wrapAnsi = require("wrap-ansi");
@@ -13,17 +12,7 @@ require("yargs")
 }, async (argv) => {
     argv;
     console.log(chalk_1.default.bold.blue("Starting HFC Subscriptions Server"));
-    const mongoURI = process.env.MONGODB_URI ? process.env.MONGODB_URI : "";
-    if (!mongoURI) {
-        subscription_service_1.default.start();
-    }
-    else {
-        console.log(chalk_1.default.bold.blue("Connecting to MongoDB"));
-        console.info(`Connecting to MongoDB at ${mongoURI}]`);
-        const mongooseConnection = await mongoose_1.connect(mongoURI, { useNewUrlParser: true, useFindAndModify: false });
-        console.info(`Connection to MongoDB at ${mongoURI}] successful, Starting subscriptions \n`);
-        subscription_service_1.default.start(mongooseConnection);
-    }
+    subscription_service_1.default.start();
 })
     .command("list", "Lists all subscriptions", (yargs) => {
     yargs;
