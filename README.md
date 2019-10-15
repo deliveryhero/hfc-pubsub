@@ -4,9 +4,8 @@ A slightly opinionated, micro-framework for publishing and subscribing to messag
 ## Features
 
 1. CLI tool for starting subscription server and for listing subscriptions
-2. Create new topics and publish a message to those topics with 2 lines
+2. Create new topics and publish a message to those topics in 2 lines
 3. Automatic timestamping of all messages (ISO8601)
-4. If `MONGODB_URI` env variable is set, the subscription server will connect to mongodb
 
 ## Prerequisites Requirements
 
@@ -49,9 +48,9 @@ Note: If the subscription doesn't exist in google pub/sub it will be created whe
 
 ```typescript
 // @lib/pubsub/topics/simple.topic.name.ts
-import BaseTopic, { BasePayload } from "./base/topic";
+import { Topic, Payload as BasePayload } from "@honestfoodcompany/pubsub";
 
-export default class SimpleTopic extends BaseTopic {
+export default class SimpleTopic extends Topic {
   public readonly name = "simple.topic.name";
 }
 
@@ -134,7 +133,7 @@ If you would like to incorporate dependency injection or extend the default beha
 ```typescript
 // path/to/your/pubsub/subscriptions.service.ts
 
-import { SubscriptionService as BaseSubscriptionService } from "@hfc/pubsub";
+import { SubscriptionService as BaseSubscriptionService } from "@honestfoodcompany/pubsub";
 import SimpleSubscription from "path/to/your/pubsub/subscriptions/simple.topic.name.subscription";
 
 export default class SubscriptionService extends BaseSubscriptionService {
@@ -142,6 +141,40 @@ export default class SubscriptionService extends BaseSubscriptionService {
    * Add subscriptions to this array to register them
    */
   public static subscriptions = [new SimpleSubscription()];
+}
+```
+
+## Connecting to Mongoose
+
+If you would like to connect to mongoose, you must include a `subscription.service` file in your `PUBSUB_ROOT_DIR` like this:
+
+```typescript
+import { connect } from "mongoose";
+import { SubscriptionService as BaseSubscriptionService } from "@honestfoodcompany/pubsub";
+import ExampleSubscription from "./subscriptions/example.subscription";
+import chalk from "chalk";
+
+export default class SubscriptionService extends BaseSubscriptionService {
+  /**
+   * Add subscriptions to this array to register them
+   */
+  public static subscriptions = [new ExampleSubscription()];
+
+  /**
+   * connect to mongoose
+   */
+  public static async init(): Promise<void> {
+    console.log(chalk.bold.blue("Connecting to MongoDB"));
+    const mongoURI = process.env.MONGODB_URI ? process.env.MONGODB_URI : "";
+    await connect(
+      mongoURI,
+      {
+        useNewUrlParser: true,
+        useFindAndModify: false,
+      },
+    );
+    console.log(chalk.bold.green(`Connected to MongoDB at ${mongoURI}`));
+  }
 }
 ```
 
