@@ -5,3 +5,4 @@ node_modules
 /indexers/
 .vscode
 yarn-error.log
+coverage
