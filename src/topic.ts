@@ -1,4 +1,4 @@
-import PubSubService from "./pubsub.service";
+import PubSubService from './pubsub.service';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 /**
@@ -21,7 +21,7 @@ interface NamedTopic {
 }
 
 export default class Topic implements NamedTopic {
-  public readonly name: string = "";
+  public readonly name: string = '';
   protected mq: PubSubService;
   public constructor() {
     this.mq = PubSubService.getInstance();
@@ -50,7 +50,7 @@ export default class Topic implements NamedTopic {
 
   public validateTopic(name: string): void {
     if (!name || name.length <= 6) {
-      throw new Error("Invalid Topic Name!");
+      throw new Error('Invalid Topic Name!');
     }
   }
 }

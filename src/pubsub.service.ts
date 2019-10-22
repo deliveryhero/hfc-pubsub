@@ -1,9 +1,9 @@
-import { PubSub as GooglePubSub } from "@google-cloud/pubsub";
-import chalk from "chalk";
+import { PubSub as GooglePubSub } from '@google-cloud/pubsub';
+import chalk from 'chalk';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Topic, { Payload } from "./topic";
+import Topic, { Payload } from './topic';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Subscription from "./subscription";
+import Subscription from './subscription';
 
 /**
  * Connects to GCP PubSub to publish and subscribe to messages.
@@ -19,7 +19,7 @@ export default class PubSubService {
       !process.env.GOOGLE_APPLICATION_CREDENTIALS
     ) {
       throw new Error(
-        "Missing value for env variable GOOGLE_CLOUD_PUB_SUB_PROJECT_ID / GOOGLE_APPLICATION_CREDENTIALS",
+        'Missing value for env variable GOOGLE_CLOUD_PUB_SUB_PROJECT_ID / GOOGLE_APPLICATION_CREDENTIALS',
       );
     }
     this.client = new GooglePubSub({ projectId: process.env.GCLOUD_PROJECT });

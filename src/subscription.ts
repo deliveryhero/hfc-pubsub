@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
-import PubSubService from "./pubsub.service";
+import PubSubService from './pubsub.service';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Message } from "@google-cloud/pubsub";
+import { Message } from '@google-cloud/pubsub';
 
 interface SubscriptionConfig {
   topicName: string;
@@ -12,9 +12,9 @@ interface SubscriptionConfig {
 }
 
 export default abstract class Subscription implements SubscriptionConfig {
-  public topicName: string = "";
-  public subscriptionName: string = "";
-  public description: string = "";
+  public topicName: string = '';
+  public subscriptionName: string = '';
+  public description: string = '';
   public mongooseConnection: any;
   protected pubSubService: PubSubService;
   protected maxMessages = 1;
