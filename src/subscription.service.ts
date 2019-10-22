@@ -10,13 +10,16 @@ export default class SubscriptionService {
     this.checkExistence(process.env, 'GOOGLE_CLOUD_PUB_SUB_PROJECT_ID');
     this.checkExistence(process.env, 'GOOGLE_APPLICATION_CREDENTIALS');
   }
-  protected checkExistence(object, property) {
+
+  protected checkExistence(object: {}, property: string): void {
     if (!object.hasOwnProperty(property) || object.hasOwnProperty(property) && object[property] == '') {
       console.warn(`This module requires ${property} to be defined in your .env`);
     }
   }
+
   public static async init(): Promise<void> {
   }
+
   public static start(mongooseConnection: any = null): void {
     const subscriptions = SubscriptionService.getSubscriptions(true);
     for (let subscription of subscriptions) {
@@ -25,7 +28,8 @@ export default class SubscriptionService {
       subscription.start();
     }
   }
-  public static getSubscriptions(init=false): Subscription[] {
+
+  public static getSubscriptions(init: boolean = false): Subscription[] {
     if (SubscriptionService.subscriptions.length > 0) {
       return SubscriptionService.subscriptions;
     } 
@@ -42,41 +46,43 @@ export default class SubscriptionService {
     this.validateSubscriptions();
     return this.subscriptions;
   }
-  protected static validateSubscriptions() {
+
+  protected static validateSubscriptions(): void {
     this.subscriptions.forEach((subscription) => {
       if (typeof subscription.getTopicName !== 'function') {
         throw Error('Each subscription must extend the base Subscription class');
       }
     });
   }
-  protected static loadSubscriptionsFromDirectory(dir) {
+
+  protected static loadSubscriptionsFromDirectory(dir: string): void {
     const subscriptionFiles = fs.readdirSync(dir).filter((file) => { return file.match(/\.js$/) });
     for (let file of subscriptionFiles) {
       let subscription = require(resolve(dir,file)).default;
       this.subscriptions.push(new subscription());
     } 
   }
-  protected static loadSubscriptionsFromService(subscriptionService, init=false) {
+
+  protected static loadSubscriptionsFromService(subscriptionService: string, init: boolean = false): void {
     const service = require(resolve(subscriptionService)).default;
-    if(init) {
-      service.init();
-    }
-    service.subscriptions.forEach((subscription) => this.subscriptions.push(subscription));
+    if(init) service.init();
+    service.subscriptions.forEach((subscription): void => { this.subscriptions.push(subscription) });
   }
-  protected static loadSubscriptionsFromJson(jsonFile) {
+
+  protected static loadSubscriptionsFromJson(jsonFile: string): void {
     let subscriptionsFile = require(jsonFile);
     if (typeof subscriptionsFile.subscriptions == "undefined") {
       throw Error("subscriptions.json is invalid. Make sure that subscriptions key is defined");
     }
     const subscriptions = subscriptionsFile.subscriptions;
-    Object.keys(subscriptions).forEach((key) => {
+    Object.keys(subscriptions).forEach((key): void => {
       let pathToSubscription = resolve(process.env.PUBSUB_ROOT_DIR, "subscriptions", `${subscriptions[key]}.js`);
-      if (fs.existsSync(pathToSubscription)) {
-        let subscription = require(pathToSubscription).default;
-        this.subscriptions.push(new subscription());
-      } else {
+      if (!fs.existsSync(pathToSubscription)) {
         console.log(`Could not find subscription: ${subscriptions[key]}.js`);
+        return;
       }
+      let subscription = require(pathToSubscription).default;
+      this.subscriptions.push(new subscription());
     });
   }
 }

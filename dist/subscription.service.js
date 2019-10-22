@@ -58,10 +58,9 @@ class SubscriptionService {
     }
     static loadSubscriptionsFromService(subscriptionService, init = false) {
         const service = require(path_1.resolve(subscriptionService)).default;
-        if (init) {
+        if (init)
             service.init();
-        }
-        service.subscriptions.forEach((subscription) => this.subscriptions.push(subscription));
+        service.subscriptions.forEach((subscription) => { this.subscriptions.push(subscription); });
     }
     static loadSubscriptionsFromJson(jsonFile) {
         let subscriptionsFile = require(jsonFile);
@@ -71,13 +70,12 @@ class SubscriptionService {
         const subscriptions = subscriptionsFile.subscriptions;
         Object.keys(subscriptions).forEach((key) => {
             let pathToSubscription = path_1.resolve(process.env.PUBSUB_ROOT_DIR, "subscriptions", `${subscriptions[key]}.js`);
-            if (fs.existsSync(pathToSubscription)) {
-                let subscription = require(pathToSubscription).default;
-                this.subscriptions.push(new subscription());
-            }
-            else {
+            if (!fs.existsSync(pathToSubscription)) {
                 console.log(`Could not find subscription: ${subscriptions[key]}.js`);
+                return;
             }
+            let subscription = require(pathToSubscription).default;
+            this.subscriptions.push(new subscription());
         });
     }
 }
