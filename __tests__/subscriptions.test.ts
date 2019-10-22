@@ -30,7 +30,7 @@ jest.mock('./pubsub/subscriptions/example.subscription', () => ({
 
 function cli(args, cwd=null) {
     return new Promise(resolve => { 
-      exec(`node ${path.resolve('./dist/src/cli/subscriptions')} ${args.join(' ')}`,
+      exec(`node ${path.resolve('./dist/cli/subscriptions')} ${args.join(' ')}`,
       { cwd }, 
       (error, stdout, stderr) => { resolve({
       code: error && error.code ? error.code : 0,

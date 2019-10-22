@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const pubsub_1 = require("../../../dist/src");
+const pubsub_1 = require("../../../dist");
 class TestSubscription extends pubsub_1.Subscription {
     constructor() {
         super(...arguments);
