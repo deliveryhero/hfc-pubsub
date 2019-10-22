@@ -5,6 +5,7 @@ import SubscriptionService from "../subscription.service";
 import { cli } from "cli-ux";
 import chalk from "chalk";
 import wrapAnsi = require("wrap-ansi");
+import { Subscription } from "index";
 
 require("yargs")
   .command(
@@ -38,7 +39,7 @@ require("yargs")
         console.log(chalk.white.bold("\n No subscriptions found"));
       } else {
         cli.table(
-          SubscriptionService.getSubscriptions(),
+          SubscriptionService.getSubscriptions() as Subscription[],
           {
             "Topic Name": {
               get: (row): string => row.getTopicName(),

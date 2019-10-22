@@ -1,6 +1,9 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const pubsub_service_1 = require("./pubsub.service");
+const pubsub_service_1 = __importDefault(require("./pubsub.service"));
 class Subscription {
     constructor() {
         this.topicName = "";
@@ -40,4 +43,3 @@ class Subscription {
     }
 }
 exports.default = Subscription;
-//# sourceMappingURL=subscription.js.map

@@ -1,7 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const pubsub_1 = require("@google-cloud/pubsub");
-const chalk_1 = require("chalk");
+const chalk_1 = __importDefault(require("chalk"));
 class PubSubService {
     constructor() {
         if (!process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID ||
@@ -58,4 +61,3 @@ class PubSubService {
     }
 }
 exports.default = PubSubService;
-//# sourceMappingURL=pubsub.service.js.map

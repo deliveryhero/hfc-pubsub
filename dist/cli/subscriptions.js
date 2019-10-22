@@ -1,10 +1,13 @@
 #! /usr/local/bin/node
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 require('dotenv').config({ path: require('find-config')('.env') });
-const subscription_service_1 = require("../subscription.service");
+const subscription_service_1 = __importDefault(require("../subscription.service"));
 const cli_ux_1 = require("cli-ux");
-const chalk_1 = require("chalk");
+const chalk_1 = __importDefault(require("chalk"));
 const wrapAnsi = require("wrap-ansi");
 require("yargs")
     .command("start", "Will listen to Google Pub/Sub topics and initialize their event handlers", (yargs) => {
@@ -40,4 +43,3 @@ require("yargs")
         console.log("\n");
     }
 }).argv;
-//# sourceMappingURL=subscriptions.js.map

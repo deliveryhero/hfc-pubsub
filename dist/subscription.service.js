@@ -18,6 +18,8 @@ class SubscriptionService {
     static start(mongooseConnection = null) {
         const subscriptions = SubscriptionService.getSubscriptions(true);
         for (let subscription of subscriptions) {
+            if (!subscription)
+                return;
             subscription.setMongooseConnection(mongooseConnection);
             subscription.init();
             subscription.start();
@@ -27,9 +29,9 @@ class SubscriptionService {
         if (SubscriptionService.subscriptions.length > 0) {
             return SubscriptionService.subscriptions;
         }
-        const dir = path_1.resolve(process.env.PUBSUB_ROOT_DIR, "subscriptions");
-        const subscriptionService = path_1.resolve(process.env.PUBSUB_ROOT_DIR, 'subscription.service.js');
-        const subscriptionsJson = path_1.resolve(process.env.PUBSUB_ROOT_DIR, 'subscriptions.json');
+        const dir = path_1.resolve(process.env.PUBSUB_ROOT_DIR || "", "subscriptions");
+        const subscriptionService = path_1.resolve(process.env.PUBSUB_ROOT_DIR || "", 'subscription.service.js');
+        const subscriptionsJson = path_1.resolve(process.env.PUBSUB_ROOT_DIR || "", 'subscriptions.json');
         if (fs.existsSync(subscriptionService)) {
             this.loadSubscriptionsFromService(subscriptionService, init);
         }
@@ -44,7 +46,7 @@ class SubscriptionService {
     }
     static validateSubscriptions() {
         this.subscriptions.forEach((subscription) => {
-            if (typeof subscription.getTopicName !== 'function') {
+            if (subscription && typeof subscription.getTopicName !== 'function') {
                 throw Error('Each subscription must extend the base Subscription class');
             }
         });
@@ -69,7 +71,7 @@ class SubscriptionService {
         }
         const subscriptions = subscriptionsFile.subscriptions;
         Object.keys(subscriptions).forEach((key) => {
-            let pathToSubscription = path_1.resolve(process.env.PUBSUB_ROOT_DIR, "subscriptions", `${subscriptions[key]}.js`);
+            let pathToSubscription = path_1.resolve(process.env.PUBSUB_ROOT_DIR || "", "subscriptions", `${subscriptions[key]}.js`);
             if (!fs.existsSync(pathToSubscription)) {
                 console.log(`Could not find subscription: ${subscriptions[key]}.js`);
                 return;
@@ -82,4 +84,3 @@ class SubscriptionService {
 SubscriptionService.subscriptions = [];
 SubscriptionService.instance = new SubscriptionService;
 exports.default = SubscriptionService;
-//# sourceMappingURL=subscription.service.js.map
