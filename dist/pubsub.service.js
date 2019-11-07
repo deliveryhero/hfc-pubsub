@@ -9,7 +9,7 @@ class PubSubService {
     constructor() {
         if (!process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID ||
             !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-            throw new Error("Missing value for env variable GOOGLE_CLOUD_PUB_SUB_PROJECT_ID / GOOGLE_APPLICATION_CREDENTIALS");
+            throw new Error('Missing value for env variable GOOGLE_CLOUD_PUB_SUB_PROJECT_ID / GOOGLE_APPLICATION_CREDENTIALS');
         }
         this.client = new pubsub_1.PubSub({ projectId: process.env.GCLOUD_PROJECT });
         this.createSubscription = this.createSubscription.bind(this);
@@ -45,7 +45,7 @@ class PubSubService {
         };
         const gcloudSubscription = this.client.subscription(subscription.getSubscriptionName(), subscriberOptions);
         console.log(chalk_1.default.green.bold(`   📭     ${subscription.getSubscriptionName()} is ready to receive messages at a controlled volume of ${subscription.getMaxMessages()} messages.`));
-        gcloudSubscription.on(`message`, subscription.handleMessage);
+        gcloudSubscription.on(`message`, await subscription.handleMessage);
     }
     async createSubscription(topicName, subscriptionName) {
         const pubSubTopic = this.getClient().topic(topicName);

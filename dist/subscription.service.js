@@ -9,12 +9,12 @@ class SubscriptionService {
         this.checkExistence(process.env, 'GOOGLE_APPLICATION_CREDENTIALS');
     }
     checkExistence(object, property) {
-        if (!object.hasOwnProperty(property) || object.hasOwnProperty(property) && object[property] == '') {
+        if (!object.hasOwnProperty(property) ||
+            (object.hasOwnProperty(property) && object[property] == '')) {
             console.warn(`This module requires ${property} to be defined in your .env`);
         }
     }
-    static async init() {
-    }
+    static async init() { }
     static start(mongooseConnection = null) {
         const subscriptions = SubscriptionService.getSubscriptions(true);
         for (let subscription of subscriptions) {
@@ -29,9 +29,9 @@ class SubscriptionService {
         if (SubscriptionService.subscriptions.length > 0) {
             return SubscriptionService.subscriptions;
         }
-        const dir = path_1.resolve(process.env.PUBSUB_ROOT_DIR || "", "subscriptions");
-        const subscriptionService = path_1.resolve(process.env.PUBSUB_ROOT_DIR || "", 'subscription.service.js');
-        const subscriptionsJson = path_1.resolve(process.env.PUBSUB_ROOT_DIR || "", 'subscriptions.json');
+        const dir = path_1.resolve(process.env.PUBSUB_ROOT_DIR || '', 'subscriptions');
+        const subscriptionService = path_1.resolve(process.env.PUBSUB_ROOT_DIR || '', 'subscription.service.js');
+        const subscriptionsJson = path_1.resolve(process.env.PUBSUB_ROOT_DIR || '', 'subscriptions.json');
         if (fs.existsSync(subscriptionService)) {
             this.loadSubscriptionsFromService(subscriptionService, init);
         }
@@ -45,14 +45,16 @@ class SubscriptionService {
         return this.subscriptions;
     }
     static validateSubscriptions() {
-        this.subscriptions.forEach((subscription) => {
+        this.subscriptions.forEach(subscription => {
             if (subscription && typeof subscription.getTopicName !== 'function') {
                 throw Error('Each subscription must extend the base Subscription class');
             }
         });
     }
     static loadSubscriptionsFromDirectory(dir) {
-        const subscriptionFiles = fs.readdirSync(dir).filter((file) => { return file.match(/\.js$/); });
+        const subscriptionFiles = fs.readdirSync(dir).filter(file => {
+            return file.match(/\.js$/);
+        });
         for (let file of subscriptionFiles) {
             let subscription = require(path_1.resolve(dir, file)).default;
             this.subscriptions.push(new subscription());
@@ -62,16 +64,18 @@ class SubscriptionService {
         const service = require(path_1.resolve(subscriptionService)).default;
         if (init)
             service.init();
-        service.subscriptions.forEach((subscription) => { this.subscriptions.push(subscription); });
+        service.subscriptions.forEach((subscription) => {
+            this.subscriptions.push(subscription);
+        });
     }
     static loadSubscriptionsFromJson(jsonFile) {
         let subscriptionsFile = require(jsonFile);
-        if (typeof subscriptionsFile.subscriptions == "undefined") {
-            throw Error("subscriptions.json is invalid. Make sure that subscriptions key is defined");
+        if (typeof subscriptionsFile.subscriptions == 'undefined') {
+            throw Error('subscriptions.json is invalid. Make sure that subscriptions key is defined');
         }
         const subscriptions = subscriptionsFile.subscriptions;
         Object.keys(subscriptions).forEach((key) => {
-            let pathToSubscription = path_1.resolve(process.env.PUBSUB_ROOT_DIR || "", "subscriptions", `${subscriptions[key]}.js`);
+            let pathToSubscription = path_1.resolve(process.env.PUBSUB_ROOT_DIR || '', 'subscriptions', `${subscriptions[key]}.js`);
             if (!fs.existsSync(pathToSubscription)) {
                 console.log(`Could not find subscription: ${subscriptions[key]}.js`);
                 return;
@@ -82,5 +86,5 @@ class SubscriptionService {
     }
 }
 SubscriptionService.subscriptions = [];
-SubscriptionService.instance = new SubscriptionService;
+SubscriptionService.instance = new SubscriptionService();
 exports.default = SubscriptionService;

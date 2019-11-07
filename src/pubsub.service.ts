@@ -100,8 +100,7 @@ export default class PubSubService {
         `   📭     ${subscription.getSubscriptionName()} is ready to receive messages at a controlled volume of ${subscription.getMaxMessages()} messages.`,
       ),
     );
-
-    gcloudSubscription.on(`message`, subscription.handleMessage);
+    gcloudSubscription.on(`message`, await subscription.handleMessage);
   }
 
   /**

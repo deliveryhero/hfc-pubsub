@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const pubsub_service_1 = __importDefault(require("./pubsub.service"));
 class Topic {
     constructor() {
-        this.name = "";
+        this.name = '';
         this.mq = pubsub_service_1.default.getInstance();
     }
     validateMessage(message) {
@@ -23,7 +23,7 @@ class Topic {
     }
     validateTopic(name) {
         if (!name || name.length <= 6) {
-            throw new Error("Invalid Topic Name!");
+            throw new Error('Invalid Topic Name!');
         }
     }
 }

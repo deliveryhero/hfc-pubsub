@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const pubsub_service_1 = __importDefault(require("./pubsub.service"));
 class Subscription {
     constructor() {
-        this.topicName = "";
-        this.subscriptionName = "";
-        this.description = "";
+        this.topicName = '';
+        this.subscriptionName = '';
+        this.description = '';
         this.maxMessages = 1;
         this.ackDeadlineSeconds = 10;
         this.pubSubService = pubsub_service_1.default.getInstance();
