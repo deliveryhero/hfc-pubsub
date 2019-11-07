@@ -36,16 +36,21 @@ class PubSubService {
         topic.validateMessage(message);
     }
     async subscribe(subscription) {
-        await this.createSubscription(subscription.getTopicName(), subscription.getSubscriptionName());
+        const sub = new subscription();
+        await this.createSubscription(sub.getTopicName(), sub.getSubscriptionName());
         const subscriberOptions = {
-            ackDeadline: subscription.getAckDeadlineSeconds(),
+            ackDeadline: sub.getAckDeadlineSeconds(),
             flowControl: {
-                maxMessages: subscription.getMaxMessages(),
+                maxMessages: sub.getMaxMessages(),
             },
         };
-        const gcloudSubscription = this.client.subscription(subscription.getSubscriptionName(), subscriberOptions);
-        console.log(chalk_1.default.green.bold(`   📭     ${subscription.getSubscriptionName()} is ready to receive messages at a controlled volume of ${subscription.getMaxMessages()} messages.`));
-        gcloudSubscription.on(`message`, await subscription.handleMessage);
+        const gcloudSubscription = this.client.subscription(sub.getSubscriptionName(), subscriberOptions);
+        console.log(chalk_1.default.green.bold(`   📭     ${sub.getSubscriptionName()} is ready to receive messages at a controlled volume of ${sub.getMaxMessages()} messages.`));
+        gcloudSubscription.on(`message`, async (message) => {
+            const subscriptionInstance = new subscription();
+            subscriptionInstance.init();
+            await subscriptionInstance.handleMessage(message);
+        });
     }
     async createSubscription(topicName, subscriptionName) {
         const pubSubTopic = this.getClient().topic(topicName);

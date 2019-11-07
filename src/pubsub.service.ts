@@ -1,4 +1,4 @@
-import { PubSub as GooglePubSub } from '@google-cloud/pubsub';
+import { PubSub as GooglePubSub, Message } from '@google-cloud/pubsub';
 import chalk from 'chalk';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Topic, { Payload } from './topic';
@@ -75,32 +75,43 @@ export default class PubSubService {
   /**
    * Subscribes to any given topic with FlowControlSettings.
    */
-  public async subscribe(subscription: Subscription): Promise<void> {
+  public async subscribe(subscription: typeof Subscription): Promise<void> {
+    //@ts-ignore - we're instantiating a class which extends an abstract class.
+    const sub = new subscription();
     await this.createSubscription(
-      subscription.getTopicName(),
-      subscription.getSubscriptionName(),
+      sub.getTopicName(),
+      sub.getSubscriptionName(),
     );
 
     const subscriberOptions = {
-      ackDeadline: subscription.getAckDeadlineSeconds(),
+      ackDeadline: sub.getAckDeadlineSeconds(),
       flowControl: {
-        maxMessages: subscription.getMaxMessages(),
+        maxMessages: sub.getMaxMessages(),
       },
     };
 
     // References an existing subscription.
     // Note that flow control settings are not persistent across subscribers.
     const gcloudSubscription = this.client.subscription(
-      subscription.getSubscriptionName(),
+      sub.getSubscriptionName(),
       subscriberOptions,
     );
 
     console.log(
       chalk.green.bold(
-        `   📭     ${subscription.getSubscriptionName()} is ready to receive messages at a controlled volume of ${subscription.getMaxMessages()} messages.`,
+        `   📭     ${sub.getSubscriptionName()} is ready to receive messages at a controlled volume of ${sub.getMaxMessages()} messages.`,
       ),
     );
-    gcloudSubscription.on(`message`, await subscription.handleMessage);
+
+    gcloudSubscription.on(
+      `message`,
+      async (message: Message): Promise<void> => {
+        //@ts-ignore - we're instantiating a class which extends an abstract class.
+        const subscriptionInstance = new subscription();
+        subscriptionInstance.init();
+        await subscriptionInstance.handleMessage(message);
+      },
+    );
   }
 
   /**

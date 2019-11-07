@@ -1,6 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const subscription_1 = __importDefault(require("./subscription"));
 const path_1 = require("path");
+const pubsub_service_1 = __importDefault(require("./pubsub.service"));
 const fs = require("fs");
 class SubscriptionService {
     constructor() {
@@ -11,23 +16,25 @@ class SubscriptionService {
     checkExistence(object, property) {
         if (!object.hasOwnProperty(property) ||
             (object.hasOwnProperty(property) && object[property] == '')) {
-            console.warn(`This module requires ${property} to be defined in your .env`);
+            console.warn(`@honestfoodcompany/pubsub module requires ${property} to be defined in your .env`);
         }
     }
     static async init() { }
-    static start(mongooseConnection = null) {
+    static start() {
         const subscriptions = SubscriptionService.getSubscriptions(true);
         for (let subscription of subscriptions) {
-            if (!subscription)
-                return;
-            subscription.setMongooseConnection(mongooseConnection);
-            subscription.init();
-            subscription.start();
+            if (typeof subscription == typeof subscription_1.default)
+                this.pubSubService.subscribe(subscription);
         }
     }
-    static getSubscriptions(init = false) {
-        if (SubscriptionService.subscriptions.length > 0) {
+    static getSubscriptions(init = false, returnInstances = false) {
+        if (SubscriptionService.subscriptions.length > 0 && !returnInstances) {
             return SubscriptionService.subscriptions;
+        }
+        if (returnInstances) {
+            return this.subscriptions.map((subscription) => {
+                return new subscription();
+            });
         }
         const dir = path_1.resolve(process.env.PUBSUB_ROOT_DIR || '', 'subscriptions');
         const subscriptionService = path_1.resolve(process.env.PUBSUB_ROOT_DIR || '', 'subscription.service.js');
@@ -45,19 +52,20 @@ class SubscriptionService {
         return this.subscriptions;
     }
     static validateSubscriptions() {
-        this.subscriptions.forEach(subscription => {
-            if (subscription && typeof subscription.getTopicName !== 'function') {
+        this.subscriptions.forEach((subscription) => {
+            if (typeof subscription !== typeof subscription_1.default)
                 throw Error('Each subscription must extend the base Subscription class');
-            }
         });
     }
     static loadSubscriptionsFromDirectory(dir) {
-        const subscriptionFiles = fs.readdirSync(dir).filter(file => {
+        const subscriptionFiles = fs
+            .readdirSync(dir)
+            .filter((file) => {
             return file.match(/\.js$/);
         });
         for (let file of subscriptionFiles) {
             let subscription = require(path_1.resolve(dir, file)).default;
-            this.subscriptions.push(new subscription());
+            this.subscriptions.push(subscription);
         }
     }
     static loadSubscriptionsFromService(subscriptionService, init = false) {
@@ -81,10 +89,11 @@ class SubscriptionService {
                 return;
             }
             let subscription = require(pathToSubscription).default;
-            this.subscriptions.push(new subscription());
+            this.subscriptions.push(subscription);
         });
     }
 }
 SubscriptionService.subscriptions = [];
 SubscriptionService.instance = new SubscriptionService();
+SubscriptionService.pubSubService = pubsub_service_1.default.getInstance();
 exports.default = SubscriptionService;

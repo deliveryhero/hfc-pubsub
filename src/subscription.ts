@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-import PubSubService from './pubsub.service';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Message } from '@google-cloud/pubsub';
 
@@ -7,16 +5,12 @@ interface SubscriptionConfig {
   topicName: string;
   subscriptionName: string;
   description?: string;
-  mongooseConnection: any;
-  setMongooseConnection(connection: any): this;
 }
 
 export default abstract class Subscription implements SubscriptionConfig {
   public topicName: string = '';
   public subscriptionName: string = '';
   public description: string = '';
-  public mongooseConnection: any;
-  protected pubSubService: PubSubService;
   protected maxMessages = 1;
 
   /**
@@ -27,18 +21,9 @@ export default abstract class Subscription implements SubscriptionConfig {
   protected ackDeadlineSeconds: number = 10;
 
   public constructor() {
-    this.pubSubService = PubSubService.getInstance();
     this.handleMessage = this.handleMessage.bind(this);
-    this.start = this.start.bind(this);
   }
 
-  public setMongooseConnection(connection: any): this {
-    this.mongooseConnection = connection;
-    return this;
-  }
-  public async start(): Promise<void> {
-    this.pubSubService.subscribe(this);
-  }
   public init(): void {}
 
   public async handleMessage(message: Message): Promise<void> {

@@ -140,7 +140,7 @@ export default class SubscriptionService extends BaseSubscriptionService {
   /**
    * Add subscriptions to this array to register them
    */
-  public static subscriptions = [new SimpleSubscription()];
+  public static subscriptions = [SimpleSubscription];
 }
 ```
 
@@ -158,7 +158,7 @@ export default class SubscriptionService extends BaseSubscriptionService {
   /**
    * Add subscriptions to this array to register them
    */
-  public static subscriptions = [new ExampleSubscription()];
+  public static subscriptions = [ExampleSubscription];
 
   /**
    * connect to mongoose
