@@ -9,9 +9,13 @@ class PubSubService {
     constructor() {
         if (!process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID ||
             !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-            throw new Error('Missing value for env variable GOOGLE_CLOUD_PUB_SUB_PROJECT_ID / GOOGLE_APPLICATION_CREDENTIALS');
+            console.warn('@honestfoodcompany/pubsub: Missing value for env variable GOOGLE_CLOUD_PUB_SUB_PROJECT_ID / GOOGLE_APPLICATION_CREDENTIALS');
+            this.client = {};
+            return;
         }
-        this.client = new pubsub_1.PubSub({ projectId: process.env.GCLOUD_PROJECT });
+        this.client = new pubsub_1.PubSub({
+            projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID,
+        });
         this.createSubscription = this.createSubscription.bind(this);
         this.subscribe = this.subscribe.bind(this);
     }
