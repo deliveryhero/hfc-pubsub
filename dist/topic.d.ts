@@ -1,4 +1,4 @@
-import PubSubService from "./pubsub.service";
+import PubSubService from './pubsub.service';
 export interface Payload {
     _timestamp?: string;
 }
