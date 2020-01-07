@@ -1,4 +1,4 @@
-import { Topic, Payload as BasePayload } from "../../../src";
+import Topic, { Payload as BasePayload } from '../../../src/topic';
 
 /**
  * define your payload below
@@ -17,5 +17,5 @@ export interface Payload extends BasePayload {
 }
 
 export default class ExampleTopic extends Topic {
-  public readonly name = "example-topic";
+  public readonly name = 'example-topic';
 }

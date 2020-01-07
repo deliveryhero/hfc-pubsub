@@ -1,11 +1,11 @@
-import { Subscription } from "../../../src/index";
+import { Subscriber } from '../../../src/index';
 
-export default class TestSubscription extends Subscription {
-    public topicName = "test-topic";
-    public subscriptionName = "test-topic.subscription";
-    public description = "Just a test subscription";
-    async handleMessage(message) {
-        const payload = JSON.parse(message.data.toString());
-        message.ack();
-    }
+export default class TestSubscription extends Subscriber {
+  public static topicName = 'test-topic';
+  public static subscriptionName = 'test-topic.subscription';
+  public static description = 'Just a test subscription';
+  public async handleMessage(message: any): Promise<void> {
+    const payload = JSON.parse(message.data.toString());
+    message.ack();
+  }
 }

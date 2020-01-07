@@ -13,8 +13,9 @@
     "removeComments": true,
     "strict": true,
     "target": "es2017",
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "jsx": "react"
   },
   "exclude": ["src/__tests__/**/*"],
-  "include": ["src/**/*", "project"]
+  "include": ["src/**/*"]
 }
