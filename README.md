@@ -6,6 +6,7 @@ A slightly opinionated, micro-framework for publishing and subscribing to messag
 1. CLI tool for starting subscription server and for listing subscriptions
 2. Create new topics and publish a message to those topics in 2 lines
 3. Automatic timestamping of all messages (ISO8601)
+4. Synchronous Driver and Google PubSub support
 
 ## Prerequisites Requirements
 
@@ -27,18 +28,18 @@ PUBSUB_ROOT_DIR=/path/to/module/pubsub
 
 `PUBSUB_ROOT_DIR` must be the path to your project's pubsub directory. This module only works with compiled JS, so if you are writing your code in typescript, you must set this variable to the pubsub root in your project's build directory.
 
-## Adding a new subscription
+## Adding a new subscriber
 
-1. Add your subscription in `pubsub/subscriptions/name.of.pubsub.subscription` (Follow the template examples)
+1. Add your subscriber in `pubsub/subscriptions/name.of.pubsub.subscription` (Follow the template examples)
 
 As a convention the name of the file should match the name of the subscription so the file structure is self-documenting.
 
-2. (Optional): By default, the subscriptions server will load all subscriptions found in  `PUBSUB_ROOT_DIR/subscriptions`, however you can explicitly define which subscriptions the server should run by including a `subscriptions.json` file in `PUBSUB_ROOT_DIR/subscriptions.json` or by including a `PUBSUB_ROOT_DIR/subscriptions.service.js` file. Examples are found below.
+2. (Optional): By default, the subscriptions server will load all subscribers found in  `PUBSUB_ROOT_DIR/subscriptions`, however you can explicitly define which subscriptions the server should run by including a `subscriptions.json` file in `PUBSUB_ROOT_DIR/subscriptions.json` or by including a `PUBSUB_ROOT_DIR/subscriptions.service.js` file. Examples are found below.
 
 ## Running subscription handlers
 
-1. Run subscriptions `./node_modules/.bin/subscriptions start`
-2. List subscriptions `./node_modules/.bin/subscriptions list`
+1. Run subscriptions `npx subscriptions start`
+2. List subscriptions `npx subscriptions list`
 
 Note: If the subscription doesn't exist in google pub/sub it will be created when you run `./node_modules/.bin/subscriptions start`
 
@@ -86,9 +87,9 @@ Typescript example:
 ```typescript
 // path/to/your/pubsub/subscriptions/simple.topic.name.subscription.ts
 
-import { Subscription, Message } from "@honestfoodcompany/pubsub";
+import { Subscriber, Message } from "@honestfoodcompany/pubsub";
 
-export default class SimpleSubscription extends Subscription {
+export default class SimpleSubscriber extends Subscriber {
   public topicName: string = "simple.topic.name";
   public subscriptionName: string = "simple.topic.name.subscription";
   public description: string = "Example subscription client";
@@ -134,13 +135,13 @@ If you would like to incorporate dependency injection or extend the default beha
 // path/to/your/pubsub/subscriptions.service.ts
 
 import { SubscriptionService as BaseSubscriptionService } from "@honestfoodcompany/pubsub";
-import SimpleSubscription from "path/to/your/pubsub/subscriptions/simple.topic.name.subscription";
+import SimpleSubscriber from "path/to/your/pubsub/subscriptions/simple.topic.name.subscriber";
 
 export default class SubscriptionService extends BaseSubscriptionService {
   /**
    * Add subscriptions to this array to register them
    */
-  public static subscriptions = [SimpleSubscription];
+  public static subscribers = [SimpleSubscription];
 }
 ```
 
@@ -151,14 +152,14 @@ If you would like to connect to mongoose, you must include a `subscription.servi
 ```typescript
 import { connect } from "mongoose";
 import { SubscriptionService as BaseSubscriptionService } from "@honestfoodcompany/pubsub";
-import ExampleSubscription from "./subscriptions/example.subscription";
+import ExampleSubscriber from "./subscriptions/example.subscriber";
 import chalk from "chalk";
 
 export default class SubscriptionService extends BaseSubscriptionService {
   /**
    * Add subscriptions to this array to register them
    */
-  public static subscriptions = [ExampleSubscription];
+  public static subscribers = [ExampleSubscriber];
 
   /**
    * connect to mongoose
@@ -192,3 +193,9 @@ If you prefer to explicitly define the subscriptions that the subscription serve
 ```
 
 This configuration will enable the subscription found in `PUBSUB_ROOT_DIR/subscriptions/test.subscription.js`. The key can be any string value. The value in the key-value pair is the name of the subscription file found in `PUBSUB_ROOT_DIR/subscriptions` without the `.js` extension.
+
+## Enabling Synchronous Driver
+
+If you would like to bypass Google PubSub and run your subscriptions synchronously (for development purposes) set the following environment variable:
+
+`PUBSUB_DRIVER=synchronous`

@@ -4,7 +4,7 @@ const pubsub_1 = require('../../../dist');
 
 class TestSubscription extends pubsub_1.Subscriber {}
 
-TestSubscription.topicName = 'test-topic';
+TestSubscription.topicName = 'test-json-topic';
 TestSubscription.subscriptionName = 'test-topic.subscription';
 TestSubscription.description = 'Just a test subscription';
 TestSubscription.handleMessage = message => {

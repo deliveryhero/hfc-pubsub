@@ -8,6 +8,7 @@ const mockPubSub = jest.fn();
 
 process.env.PUBSUB_ROOT_DIR = path.resolve(__dirname, 'pubsub');
 
+console.log(process.env.PUBSUB_ROOT_DIR);
 jest.mock('@google-cloud/pubsub', () => ({
   __esModule: true,
   PubSub: mockPubSub,
@@ -59,23 +60,29 @@ function cli(args: any, cwd: string | null = null): any {
     );
   });
 }
+beforeAll((): any => {
+  if (
+    fs.existsSync(path.resolve(__dirname, 'pubsub/_subscription.service.js'))
+  ) {
+    fs.renameSync(
+      path.resolve(__dirname, 'pubsub/_subscription.service.js'),
+      path.resolve(__dirname, 'pubsub/subscription.service.js'),
+    ); // let's test subscription service
+  }
+});
+afterAll((): any => {
+  if (
+    fs.existsSync(path.resolve(__dirname, 'pubsub/subscription.service.js'))
+  ) {
+    fs.renameSync(
+      path.resolve(__dirname, 'pubsub/subscription.service.js'),
+      path.resolve(__dirname, 'pubsub/_subscription.service.js'),
+    ); // let's test subscription service
+  }
+});
 describe('subscriptions cli', (): any => {
-  it('should find config', async (): Promise<any> => {
-    if (
-      process.env.PUBSUB_ROOT_DIR &&
-      !process.env.PUBSUB_ROOT_DIR.match(/__tests__/)
-    ) {
-      console.log(
-        'to run tests, you must set your PUBSUB_ROOT_DIR .env variable to point to __tests__/pubsub',
-      );
-      process.exit(1);
-    }
-  });
-
-  it('should list subscriptions', async (): Promise<any> => {
-    let result = await cli(['list']);
-    expect(JSON.stringify(result)).toContain('test-topic');
-    const subscriptions = SubscriptionService.getSubscribers();
-    expect(subscriptions.length).toEqual(2);
+  it('should load subscription service', async (): Promise<any> => {
+    const service = SubscriptionService.loadSubscriptionService();
+    expect(typeof service).toBe('function');
   });
 });

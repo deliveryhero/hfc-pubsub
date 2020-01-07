@@ -1,5 +1,4 @@
-import PubSubService from './pubsub.service';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import PubSubService from '../service/pubsub';
 
 /**
  * extend this interface to define your own payload
@@ -40,8 +39,7 @@ export default class Topic implements NamedTopic {
   public async publish<T extends Payload>(message: T): Promise<void> {
     this.validateTopic(this.getName());
     this.validateMessage(message);
-    message._timestamp = new Date().toISOString();
-    this.mq.publish(this, message);
+    this.mq.publish(this, { ...message, _timestamp: new Date().toISOString() });
   }
 
   public getName(): string {
