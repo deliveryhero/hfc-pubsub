@@ -9,9 +9,9 @@ class Subscriber {
         message;
     }
 }
+exports.default = Subscriber;
 Subscriber.topicName = '';
 Subscriber.subscriptionName = '';
 Subscriber.description = '';
 Subscriber.maxMessages = 1;
 Subscriber.ackDeadlineSeconds = 10;
-exports.default = Subscriber;

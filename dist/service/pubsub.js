@@ -76,5 +76,5 @@ class PubSubService {
         return this.getClient().subscribe(subscription);
     }
 }
-PubSubService.status = 'pending';
 exports.default = PubSubService;
+PubSubService.status = 'pending';

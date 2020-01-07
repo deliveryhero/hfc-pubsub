@@ -24,5 +24,5 @@ class EventBus extends events_1.default {
         });
     }
 }
-EventBus.status = 'pending';
 exports.default = EventBus;
+EventBus.status = 'pending';

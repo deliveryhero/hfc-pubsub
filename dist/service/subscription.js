@@ -90,6 +90,6 @@ class SubscriptionService {
         });
     }
 }
+exports.default = SubscriptionService;
 SubscriptionService.subscribers = [];
 SubscriptionService.instance = new SubscriptionService();
-exports.default = SubscriptionService;
