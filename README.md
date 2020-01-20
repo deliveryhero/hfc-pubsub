@@ -90,9 +90,9 @@ Typescript example:
 import { Subscriber, Message } from "@honestfoodcompany/pubsub";
 
 export default class SimpleSubscriber extends Subscriber {
-  public topicName: string = "simple.topic.name";
-  public subscriptionName: string = "simple.topic.name.subscription";
-  public description: string = "Example subscription client";
+  public static topicName: string = "simple.topic.name";
+  public static subscriptionName: string = "simple.topic.name.subscription";
+  public static description: string = "Example subscription client";
 
   public init(): void {
     // set your instance properties here
