@@ -113,15 +113,15 @@ const PubSub = require("@honestfoodcompany/pubsub");
 class TestSubscription extends PubSub.Subscription {
     constructor() {
         super(...arguments);
-        this.topicName = "test-topic";
-        this.subscriptionName = "test-topic.subscription";
-        this.description = "Just a test subscription";
     }
     async handleMessage(message) {
         const payload = JSON.parse(message.data.toString());
         message.ack();
     }
 }
+TestSubscription.topicName = "test-topic";
+TestSubscription.subscriptionName = "test-topic.subscription";
+TestSubscription.description = "Just a test subscription";
 exports.default = TestSubscription
 ```
 
