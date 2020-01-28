@@ -36,10 +36,13 @@ export default class Topic implements NamedTopic {
     message;
   }
 
-  public async publish<T extends Payload>(message: T): Promise<void> {
+  public async publish<T extends Payload>(message: T): Promise<string> {
     this.validateTopic(this.getName());
     this.validateMessage(message);
-    this.mq.publish(this, { ...message, _timestamp: new Date().toISOString() });
+    return this.mq.publish(this, {
+      ...message,
+      _timestamp: new Date().toISOString(),
+    });
   }
 
   public getName(): string {
