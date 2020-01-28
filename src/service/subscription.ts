@@ -1,4 +1,6 @@
 import Subscriber from '../subscriber';
+import PubSubService from './pubsub';
+import { AllSubscriptions } from '../interface/pubSubClient';
 import { resolve } from 'path';
 import fs = require('fs');
 
@@ -70,10 +72,11 @@ export default class SubscriptionService {
 
   protected static validateSubscribers(): void {
     this.subscribers.forEach((subscriber: any): void => {
-      if (typeof subscriber !== typeof Subscriber)
+      if (typeof subscriber !== typeof Subscriber) {
         throw Error(
           'Each subscription must extend the base Subscription class',
         );
+      }
     });
   }
 
@@ -123,4 +126,10 @@ export default class SubscriptionService {
       this.subscribers.push(subscription);
     });
   }
+
+  public static async getAllSubscriptions(): Promise<AllSubscriptions[]> {
+    const pubSubService = new PubSubService();
+    return pubSubService.getAllSubscriptions();
+  }
 }
+

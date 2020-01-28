@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import PubSubClient from '../interface/pubSubClient';
+import PubSubClient, { AllSubscriptions } from '../interface/pubSubClient';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Topic, Payload, Subscriber } from '../index';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -25,6 +25,7 @@ export default class GooglePubSubAdapter implements PubSubClient {
     this.createOrGetSubscription = this.createOrGetSubscription.bind(this);
   }
   public static getInstance(): GooglePubSubAdapter {
+    console.log('test')
     if (!GooglePubSubAdapter.instance) {
       GooglePubSubAdapter.instance = new GooglePubSubAdapter(
         new GooglePubSub({
@@ -129,4 +130,17 @@ export default class GooglePubSubAdapter implements PubSubClient {
     const [topic] = await pubSubTopic.get({ autoCreate: true });
     return topic;
   }
+
+  public async getAllSubscriptions(): Promise<AllSubscriptions[]> {
+    const [subscriptionData] = await this.client.getSubscriptions();
+    const subscriptionList = subscriptionData.map(datum => {
+      const { metadata } = datum;
+      return {
+        topicName: metadata?.topic || null,
+        subscriptionName: metadata?.name || datum.name,
+      };
+    });
+    return subscriptionList;
+  }
 }
+

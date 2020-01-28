@@ -109,4 +109,11 @@ export default class PubSubService {
   public async subscribe(subscription: typeof Subscriber): Promise<void> {
     return this.getClient().subscribe(subscription);
   }
+
+  /**
+   * Retrieves a list of subscribers
+   */
+  public async getAllSubscriptions() {
+    return this.getClient().getAllSubscriptions();
+  }
 }

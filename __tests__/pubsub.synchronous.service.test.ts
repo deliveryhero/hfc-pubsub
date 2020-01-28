@@ -31,6 +31,11 @@ jest.mock('../src/driver/eventBus', () => ({
     public subscribe(): any {
       return mockSubscribe();
     }
+    public async getAllSubscriptions(): Promise<any> {
+      throw new Error(
+        'This feature is not available with the synchronous driver',
+      );
+    }
   },
 }));
 
@@ -53,5 +58,13 @@ describe('pubsub.service - synchronous driver', () => {
   it('should handle publishing', async () => {
     await service.publish(topic, subscriber);
     expect(mockPublish.mock.calls.length).toBe(1);
+  });
+  it('should throw if the synchronous driver is enabled for getAllSubscriptions', async done => {
+    try {
+      await service.getAllSubscriptions();
+    } catch(err) {
+      expect(err.message).toBe('This feature is not available with the synchronous driver')
+    }
+    done();
   });
 });
