@@ -10,7 +10,7 @@ export default class Topic implements NamedTopic {
     protected mq: PubSubService;
     constructor();
     validateMessage(message: Payload): void;
-    publish<T extends Payload>(message: T): Promise<void>;
+    publish<T extends Payload>(message: T): Promise<string>;
     getName(): string;
     validateTopic(name: string): void;
 }
