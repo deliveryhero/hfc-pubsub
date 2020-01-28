@@ -75,6 +75,9 @@ class PubSubService {
     async subscribe(subscription) {
         return this.getClient().subscribe(subscription);
     }
+    async getAllSubscriptions() {
+        return this.getClient().getAllSubscriptions();
+    }
 }
 exports.default = PubSubService;
 PubSubService.status = 'pending';

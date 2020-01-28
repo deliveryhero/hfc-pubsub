@@ -13,7 +13,7 @@ export default class PubSubService {
   protected static driver: 'synchronous' | 'google';
   private static status: 'ready' | 'pending' = 'pending';
 
-  public constructor() {
+  private constructor() {
     this.initDriver();
     this.initClient();
     this.bind(this);
@@ -108,5 +108,12 @@ export default class PubSubService {
    */
   public async subscribe(subscription: typeof Subscriber): Promise<void> {
     return this.getClient().subscribe(subscription);
+  }
+
+  /**
+   * Retrieves a list of subscribers
+   */
+  public async getAllSubscriptions() {
+    return this.getClient().getAllSubscriptions();
   }
 }

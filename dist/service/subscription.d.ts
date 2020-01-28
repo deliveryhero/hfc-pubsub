@@ -1,4 +1,5 @@
 import Subscriber from '../subscriber';
+import { AllSubscriptions } from '../interface/pubSubClient';
 export default class SubscriptionService {
     static subscribers: typeof Subscriber[];
     static instance: SubscriptionService;
@@ -13,4 +14,5 @@ export default class SubscriptionService {
     protected static loadSubscribersFromDirectory(dir: string): void;
     protected static loadSubscribersFromService(subscriptionService: string, init?: boolean): void;
     protected static loadSubscribersFromJson(jsonFile: string): void;
+    static getAllSubscriptions(): Promise<AllSubscriptions[]>;
 }

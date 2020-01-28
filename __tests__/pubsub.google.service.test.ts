@@ -12,6 +12,10 @@ console.log = () => null;
 const mockPublish = jest.fn();
 const mockSubscribe = jest.fn();
 
+const mockAllUsersList = [
+  { topicName: 'test.topic', subscriptionName: 'test.subscription' },
+];
+
 jest.mock('../src/driver/googlePubSub', () => ({
   __esModule: true,
   default: class {
@@ -23,6 +27,9 @@ jest.mock('../src/driver/googlePubSub', () => ({
     }
     public subscribe(): any {
       return mockSubscribe();
+    }
+    public async getAllSubscriptions(): Promise<any[]> {
+      return mockAllUsersList
     }
   },
 }));
@@ -47,4 +54,10 @@ describe('pubsub.service', () => {
     await service.publish(topic, subscriber);
     expect(mockPublish.mock.calls.length).toBe(1);
   });
+  it('should return an array from getAllSubscriptions', async done => {
+    const data = await service.getAllSubscriptions();
+    expect(data).toBe(mockAllUsersList)
+    done();
+  });
 });
+  

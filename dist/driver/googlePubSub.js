@@ -12,6 +12,7 @@ class GooglePubSubAdapter {
         this.createOrGetSubscription = this.createOrGetSubscription.bind(this);
     }
     static getInstance() {
+        console.log('test');
         if (!GooglePubSubAdapter.instance) {
             GooglePubSubAdapter.instance = new GooglePubSubAdapter(new pubsub_1.PubSub({
                 projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID,
@@ -73,6 +74,18 @@ class GooglePubSubAdapter {
         const pubSubTopic = this.getClient().topic(topicName);
         const [topic] = await pubSubTopic.get({ autoCreate: true });
         return topic;
+    }
+    async getAllSubscriptions() {
+        const [subscriptionData] = await this.client.getSubscriptions();
+        const subscriptionList = subscriptionData.map(datum => {
+            var _a, _b;
+            const { metadata } = datum;
+            return {
+                topicName: ((_a = metadata) === null || _a === void 0 ? void 0 : _a.topic) || null,
+                subscriptionName: ((_b = metadata) === null || _b === void 0 ? void 0 : _b.name) || datum.name,
+            };
+        });
+        return subscriptionList;
     }
 }
 exports.default = GooglePubSubAdapter;

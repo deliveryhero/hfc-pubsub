@@ -1,6 +1,7 @@
+
 import EventEmitter from 'events';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import PubSubClient from '../interface/pubSubClient';
+import PubSubClient, { AllSubscriptions } from '../interface/pubSubClient';
 import Message from '../message';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Topic, Payload, Subscriber } from '../index';
@@ -30,6 +31,12 @@ export default class EventBus extends EventEmitter implements PubSubClient {
         instance.init();
         await instance.handleMessage(Message.from(message));
       },
+    );
+  }
+
+  public async getAllSubscriptions(): Promise<AllSubscriptions[]> {
+    throw new Error(
+      'This feature is not available with the synchronous driver',
     );
   }
 }

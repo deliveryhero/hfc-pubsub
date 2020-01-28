@@ -23,6 +23,9 @@ class EventBus extends events_1.default {
             await instance.handleMessage(message_1.default.from(message));
         });
     }
+    async getAllSubscriptions() {
+        throw new Error('This feature is not available with the synchronous driver');
+    }
 }
 exports.default = EventBus;
 EventBus.status = 'pending';

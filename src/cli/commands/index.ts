@@ -1,3 +1,4 @@
 import list from './list';
 import start from './start';
-export default { start, list };
+import subscriptions from './subscriptions';
+export default { start, list, subscriptions };

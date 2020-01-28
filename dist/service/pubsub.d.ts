@@ -19,4 +19,5 @@ export default class PubSubService {
     startSubscriptions(): Promise<void>;
     protected validate<T extends Topic, P extends Payload>(topic: T, message: P): void;
     subscribe(subscription: typeof Subscriber): Promise<void>;
+    getAllSubscriptions(): Promise<import("../interface/pubSubClient").AllSubscriptions[]>;
 }
