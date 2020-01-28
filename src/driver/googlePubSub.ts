@@ -61,7 +61,11 @@ export default class GooglePubSubAdapter implements PubSubClient {
       async (message: GCloudMessage): Promise<void> => {
         const subscriber = new subscriberClass();
         subscriber.init();
-        await subscriber.handleMessage(Message.fromGCloud(message));
+        try {
+          await subscriber.handleMessage(Message.fromGCloud(message));
+        } catch(err) {
+          message.nack();
+        }
       },
     );
   }
