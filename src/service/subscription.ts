@@ -128,8 +128,6 @@ export default class SubscriptionService {
   }
 
   public static async getAllSubscriptions(): Promise<AllSubscriptions[]> {
-    const pubSubService = new PubSubService();
-    return pubSubService.getAllSubscriptions();
+    return PubSubService.getInstance().getAllSubscriptions();
   }
 }
-

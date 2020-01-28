@@ -13,7 +13,7 @@ export default class PubSubService {
   protected static driver: 'synchronous' | 'google';
   private static status: 'ready' | 'pending' = 'pending';
 
-  public constructor() {
+  private constructor() {
     this.initDriver();
     this.initClient();
     this.bind(this);
