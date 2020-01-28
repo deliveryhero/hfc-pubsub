@@ -9,5 +9,10 @@ declare const _default: {
         desc: string;
         handler: () => Promise<void>;
     };
+    subscriptions: {
+        command: string;
+        desc: string;
+        handler: () => Promise<void>;
+    };
 };
 export default _default;

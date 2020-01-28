@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const subscriber_1 = __importDefault(require("../subscriber"));
+const pubsub_1 = __importDefault(require("./pubsub"));
 const path_1 = require("path");
 const fs = require("fs");
 class SubscriptionService {
@@ -50,8 +51,9 @@ class SubscriptionService {
     }
     static validateSubscribers() {
         this.subscribers.forEach((subscriber) => {
-            if (typeof subscriber !== typeof subscriber_1.default)
+            if (typeof subscriber !== typeof subscriber_1.default) {
                 throw Error('Each subscription must extend the base Subscription class');
+            }
         });
     }
     static loadSubscribersFromDirectory(dir) {
@@ -88,6 +90,10 @@ class SubscriptionService {
             const subscription = require(pathToSubscribers).default;
             this.subscribers.push(subscription);
         });
+    }
+    static async getAllSubscriptions() {
+        const pubSubService = new pubsub_1.default();
+        return pubSubService.getAllSubscriptions();
     }
 }
 exports.default = SubscriptionService;

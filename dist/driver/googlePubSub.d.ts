@@ -1,4 +1,4 @@
-import PubSubClient from '../interface/pubSubClient';
+import PubSubClient, { AllSubscriptions } from '../interface/pubSubClient';
 import { Topic, Payload, Subscriber } from '../index';
 import { PubSub as GooglePubSub, Topic as GCloudTopic } from '@google-cloud/pubsub';
 export default class GooglePubSubAdapter implements PubSubClient {
@@ -16,4 +16,5 @@ export default class GooglePubSubAdapter implements PubSubClient {
     private subscriptionExists;
     protected getClient(): GooglePubSub;
     protected createOrGetTopic(topicName: string): Promise<GCloudTopic>;
+    getAllSubscriptions(): Promise<AllSubscriptions[]>;
 }
