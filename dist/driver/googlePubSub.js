@@ -12,7 +12,6 @@ class GooglePubSubAdapter {
         this.createOrGetSubscription = this.createOrGetSubscription.bind(this);
     }
     static getInstance() {
-        console.log('test');
         if (!GooglePubSubAdapter.instance) {
             GooglePubSubAdapter.instance = new GooglePubSubAdapter(new pubsub_1.PubSub({
                 projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID,
