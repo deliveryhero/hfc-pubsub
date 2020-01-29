@@ -15,7 +15,7 @@ class Topic {
     async publish(message) {
         this.validateTopic(this.getName());
         this.validateMessage(message);
-        this.mq.publish(this, Object.assign(Object.assign({}, message), { _timestamp: new Date().toISOString() }));
+        return this.mq.publish(this, Object.assign(Object.assign({}, message), { _timestamp: new Date().toISOString() }));
     }
     getName() {
         return this.name;
