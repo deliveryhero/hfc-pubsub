@@ -16,6 +16,6 @@
     "baseUrl": "./src",
     "jsx": "react"
   },
-  "exclude": ["src/__tests__/**/*"],
+  "exclude": ["node_modules","src/__tests__/**/*"],
   "include": ["src/**/*"]
 }
