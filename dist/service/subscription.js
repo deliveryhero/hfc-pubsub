@@ -92,8 +92,7 @@ class SubscriptionService {
         });
     }
     static async getAllSubscriptions() {
-        const pubSubService = new pubsub_1.default();
-        return pubSubService.getAllSubscriptions();
+        return pubsub_1.default.getInstance().getAllSubscriptions();
     }
 }
 exports.default = SubscriptionService;
