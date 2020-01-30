@@ -3,9 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const events_1 = require("events");
+const events_1 = __importDefault(require("events"));
 const message_1 = __importDefault(require("../message"));
-class EventBus extends events_1.EventEmitter {
+class EventBus extends events_1.default {
     static getInstance() {
         if (!EventBus.instance) {
             EventBus.instance = new EventBus();
