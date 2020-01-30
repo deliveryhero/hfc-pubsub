@@ -76,7 +76,7 @@ class GooglePubSubAdapter {
     }
     async getAllSubscriptions() {
         const [subscriptionData] = await this.client.getSubscriptions();
-        const subscriptionList = subscriptionData.map(datum => {
+        const subscriptionList = subscriptionData.map((datum) => {
             var _a, _b;
             const { metadata } = datum;
             return {
