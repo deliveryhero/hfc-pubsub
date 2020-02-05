@@ -44,7 +44,7 @@ let subscriber: any;
 let topic: any;
 describe('pubsub.service - synchronous driver', () => {
   beforeAll(() => {
-    service = new PubSubService();
+    service =  PubSubService.getInstance();
     subscriber = new ExampleSubscriber();
     topic = new ExampleTopic();
   });

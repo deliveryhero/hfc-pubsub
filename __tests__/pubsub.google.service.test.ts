@@ -39,7 +39,7 @@ let subscriber: any;
 let topic: any;
 describe('pubsub.service', () => {
   beforeAll(() => {
-    service = new PubSubService();
+    service = PubSubService.getInstance();
     subscriber = new ExampleSubscriber();
     topic = new ExampleTopic();
   });

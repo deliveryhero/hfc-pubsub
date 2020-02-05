@@ -136,7 +136,7 @@ export default class GooglePubSubAdapter implements PubSubClient {
 
   public async getAllSubscriptions(): Promise<AllSubscriptions[]> {
     const [subscriptionData] = await this.client.getSubscriptions();
-    const subscriptionList = subscriptionData.map(datum => {
+    const subscriptionList = subscriptionData.map((datum): AllSubscriptions => {
       const { metadata } = datum;
       return {
         topicName: metadata?.topic || null,
