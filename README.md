@@ -80,6 +80,8 @@ If a topic does not exist yet with the name you defined, it will be created befo
 
 ## Subscribing to a Topic
 
+Create a `Subscriber` class which acts as a message handler for messages that arrive on the defined topic. A new instance of `Subscriber` will be created for each message published on the topic.
+
 1. Create a subscription class in `path/to/your/pubsub/subscriptions`
 
 Typescript example:
