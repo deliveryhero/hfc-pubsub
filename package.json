@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "nodemon --watch 'src/**/*' -e ts --exec yarn run build",
     "test": "jest --coverage",
-    "build": "tsc",
+    "build": "./node_modules/.bin/tsc",
     "prepare": "npm run build",
     "lint": "tslint -p tsconfig.json",
     "subscriptions": "ts-node src/cli/subscriptions.ts",
