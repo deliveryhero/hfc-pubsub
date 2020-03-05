@@ -24,7 +24,7 @@ export default class SubscriptionService {
 
   public static async init(): Promise<void> {}
 
-  public static getSubscribers(): (typeof Subscriber)[] {
+  public static getSubscribers(): typeof Subscriber[] {
     if (SubscriptionService.subscribers.length > 0) {
       return SubscriptionService.subscribers;
     }
@@ -86,15 +86,15 @@ export default class SubscriptionService {
       .filter((file): RegExpMatchArray | null => {
         return file.match(/\.js$/);
       });
-    for (let file of subscriptionFiles) {
-      let subscription = require(resolve(dir, file)).default;
+    for (const file of subscriptionFiles) {
+      const subscription = require(resolve(dir, file)).default;
       this.subscribers.push(subscription);
     }
   }
 
   protected static loadSubscribersFromService(
     subscriptionService: string,
-    init: boolean = false,
+    init = false,
   ): void {
     const service = require(resolve(subscriptionService)).default;
     if (init) service.init();
@@ -113,7 +113,7 @@ export default class SubscriptionService {
     }
     const subscribers = subscribersFile.subscribers;
     Object.keys(subscribers).forEach((key): void => {
-      let pathToSubscribers = resolve(
+      const pathToSubscribers = resolve(
         process.env.PUBSUB_ROOT_DIR || '',
         'subscriptions',
         `${subscribers[key]}.js`,

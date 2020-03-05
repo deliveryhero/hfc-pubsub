@@ -62,8 +62,8 @@ class SubscriptionService {
             .filter((file) => {
             return file.match(/\.js$/);
         });
-        for (let file of subscriptionFiles) {
-            let subscription = require(path_1.resolve(dir, file)).default;
+        for (const file of subscriptionFiles) {
+            const subscription = require(path_1.resolve(dir, file)).default;
             this.subscribers.push(subscription);
         }
     }
@@ -82,7 +82,7 @@ class SubscriptionService {
         }
         const subscribers = subscribersFile.subscribers;
         Object.keys(subscribers).forEach((key) => {
-            let pathToSubscribers = path_1.resolve(process.env.PUBSUB_ROOT_DIR || '', 'subscriptions', `${subscribers[key]}.js`);
+            const pathToSubscribers = path_1.resolve(process.env.PUBSUB_ROOT_DIR || '', 'subscriptions', `${subscribers[key]}.js`);
             if (!fs.existsSync(pathToSubscribers)) {
                 console.log(`Could not find subscription: ${subscribers[key]}.js`);
                 return;
