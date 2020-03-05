@@ -1,6 +1,6 @@
 {
   "name": "@honestfoodcompany/pubsub",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "pubsub framework for managing topics and subscriptions",
   "main": "dist/index.js",
   "scripts": {
