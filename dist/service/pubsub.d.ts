@@ -6,7 +6,7 @@ export default class PubSubService {
     protected static instance: PubSubService;
     protected static driver: 'synchronous' | 'google';
     private static status;
-    constructor();
+    private constructor();
     private bind;
     private initDriver;
     private syncDriverIsEnabled;

@@ -6,7 +6,7 @@ export default class SubscriptionService {
     constructor();
     protected checkExistence(object: any, property: string): void;
     static init(): Promise<void>;
-    static getSubscribers(): (typeof Subscriber)[];
+    static getSubscribers(): typeof Subscriber[];
     private static loadSubscribersFromLocations;
     static loadSubscriptionService(): SubscriptionService;
     protected static getSubscriptionLocations(): [string, string, string];
