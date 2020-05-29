@@ -39,7 +39,7 @@ export default class GooglePubSubAdapter implements PubSubClient {
     message: P,
   ): Promise<string> {
     const pubSubTopic = await this.createOrGetTopic(topic.getName());
-    let messageId = await pubSubTopic.publish(
+    const messageId = await pubSubTopic.publish(
       Buffer.from(JSON.stringify(message)),
     );
     return messageId;
@@ -63,15 +63,18 @@ export default class GooglePubSubAdapter implements PubSubClient {
         subscriber.init();
         try {
           await subscriber.handleMessage(Message.fromGCloud(message));
-        } catch(err) {
+        } catch (err) {
           message.nack();
         }
       },
     );
   }
 
-  private getSubscription(subscriber: typeof Subscriber): GCloudSubscription {
-    return this.getClient().subscription(
+  private getSubscription(
+    subscriber: typeof Subscriber,
+    client: GooglePubSub,
+  ): GCloudSubscription {
+    return client.subscription(
       subscriber.subscriptionName,
       this.getSubscriberOptions(subscriber),
     );
@@ -98,27 +101,36 @@ export default class GooglePubSubAdapter implements PubSubClient {
   private async createOrGetSubscription(
     subscriber: typeof Subscriber,
   ): Promise<GCloudSubscription> {
-    if (await this.subscriptionExists(subscriber.subscriptionName)) {
+    const client = new GooglePubSub({
+      projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID,
+    });
+    if (await this.subscriptionExists(subscriber.subscriptionName, client)) {
       console.log(
         chalk.gray(
           `Subscription ${subscriber.subscriptionName} already exists.`,
         ),
       );
-      return this.getSubscription(subscriber);
+      return this.getSubscription(subscriber, client);
     }
 
     // topic should be created before subscriptions are created
     const topic = await this.createOrGetTopic(subscriber.topicName);
     // Creates a new subscription
-    await topic.createSubscription(subscriber.subscriptionName);
+    await topic.createSubscription(
+      subscriber.subscriptionName,
+      this.getSubscriberOptions(subscriber),
+    );
     console.log(
       chalk.green(`Subscription ${subscriber.subscriptionName} created.`),
     );
-    return this.getSubscription(subscriber);
+    return this.getSubscription(subscriber, client);
   }
 
-  private async subscriptionExists(subscriptionName: string): Promise<boolean> {
-    const [subscriptionExists] = await this.getClient()
+  private async subscriptionExists(
+    subscriptionName: string,
+    client: GooglePubSub,
+  ): Promise<boolean> {
+    const [subscriptionExists] = await client
       .subscription(subscriptionName)
       .exists();
     return subscriptionExists;
@@ -136,14 +148,15 @@ export default class GooglePubSubAdapter implements PubSubClient {
 
   public async getAllSubscriptions(): Promise<AllSubscriptions[]> {
     const [subscriptionData] = await this.client.getSubscriptions();
-    const subscriptionList = subscriptionData.map((datum): AllSubscriptions => {
-      const { metadata } = datum;
-      return {
-        topicName: metadata?.topic || null,
-        subscriptionName: metadata?.name || datum.name,
-      };
-    });
+    const subscriptionList = subscriptionData.map(
+      (datum): AllSubscriptions => {
+        const { metadata } = datum;
+        return {
+          topicName: metadata?.topic || null,
+          subscriptionName: metadata?.name || datum.name,
+        };
+      },
+    );
     return subscriptionList;
   }
 }
-

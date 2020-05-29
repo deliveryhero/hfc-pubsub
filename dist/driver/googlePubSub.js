@@ -21,7 +21,7 @@ class GooglePubSubAdapter {
     }
     async publish(topic, message) {
         const pubSubTopic = await this.createOrGetTopic(topic.getName());
-        let messageId = await pubSubTopic.publish(Buffer.from(JSON.stringify(message)));
+        const messageId = await pubSubTopic.publish(Buffer.from(JSON.stringify(message)));
         return messageId;
     }
     async subscribe(subscriber) {
@@ -41,8 +41,8 @@ class GooglePubSubAdapter {
             }
         });
     }
-    getSubscription(subscriber) {
-        return this.getClient().subscription(subscriber.subscriptionName, this.getSubscriberOptions(subscriber));
+    getSubscription(subscriber, client) {
+        return client.subscription(subscriber.subscriptionName, this.getSubscriberOptions(subscriber));
     }
     log(message) {
         console.log(chalk_1.default.green.bold(message));
@@ -56,17 +56,20 @@ class GooglePubSubAdapter {
         };
     }
     async createOrGetSubscription(subscriber) {
-        if (await this.subscriptionExists(subscriber.subscriptionName)) {
+        const client = new pubsub_1.PubSub({
+            projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID,
+        });
+        if (await this.subscriptionExists(subscriber.subscriptionName, client)) {
             console.log(chalk_1.default.gray(`Subscription ${subscriber.subscriptionName} already exists.`));
-            return this.getSubscription(subscriber);
+            return this.getSubscription(subscriber, client);
         }
         const topic = await this.createOrGetTopic(subscriber.topicName);
-        await topic.createSubscription(subscriber.subscriptionName);
+        await topic.createSubscription(subscriber.subscriptionName, this.getSubscriberOptions(subscriber));
         console.log(chalk_1.default.green(`Subscription ${subscriber.subscriptionName} created.`));
-        return this.getSubscription(subscriber);
+        return this.getSubscription(subscriber, client);
     }
-    async subscriptionExists(subscriptionName) {
-        const [subscriptionExists] = await this.getClient()
+    async subscriptionExists(subscriptionName, client) {
+        const [subscriptionExists] = await client
             .subscription(subscriptionName)
             .exists();
         return subscriptionExists;
