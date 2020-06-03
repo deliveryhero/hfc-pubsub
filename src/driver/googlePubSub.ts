@@ -20,10 +20,14 @@ import Message from '../message';
 export default class GooglePubSubAdapter implements PubSubClient {
   protected static instance: GooglePubSubAdapter;
   protected client: GooglePubSub;
+  protected topics: Map<GCloudTopic['name'], GCloudTopic>;
+
   public constructor(client: GooglePubSub) {
     this.client = client;
+    this.topics = new Map();
     this.createOrGetSubscription = this.createOrGetSubscription.bind(this);
   }
+
   public static getInstance(): GooglePubSubAdapter {
     if (!GooglePubSubAdapter.instance) {
       GooglePubSubAdapter.instance = new GooglePubSubAdapter(
@@ -34,6 +38,7 @@ export default class GooglePubSubAdapter implements PubSubClient {
     }
     return GooglePubSubAdapter.instance;
   }
+
   public async publish<T extends Topic, P extends Payload>(
     topic: T,
     message: P,
@@ -44,6 +49,7 @@ export default class GooglePubSubAdapter implements PubSubClient {
     );
     return messageId;
   }
+
   public async subscribe(subscriber: typeof Subscriber): Promise<void> {
     const subscription = await this.createOrGetSubscription(subscriber);
     this.addHandler(subscriber, subscription);
@@ -63,7 +69,7 @@ export default class GooglePubSubAdapter implements PubSubClient {
         subscriber.init();
         try {
           await subscriber.handleMessage(Message.fromGCloud(message));
-        } catch(err) {
+        } catch (err) {
           message.nack();
         }
       },
@@ -129,21 +135,29 @@ export default class GooglePubSubAdapter implements PubSubClient {
   }
 
   protected async createOrGetTopic(topicName: string): Promise<GCloudTopic> {
+    const cachedTopic = this.topics.get(topicName);
+
+    if (cachedTopic) {
+      return cachedTopic;
+    }
+
     const pubSubTopic = this.getClient().topic(topicName);
     const [topic] = await pubSubTopic.get({ autoCreate: true });
+    this.topics.set(topicName, topic);
     return topic;
   }
 
   public async getAllSubscriptions(): Promise<AllSubscriptions[]> {
     const [subscriptionData] = await this.client.getSubscriptions();
-    const subscriptionList = subscriptionData.map((datum): AllSubscriptions => {
-      const { metadata } = datum;
-      return {
-        topicName: metadata?.topic || null,
-        subscriptionName: metadata?.name || datum.name,
-      };
-    });
+    const subscriptionList = subscriptionData.map(
+      (datum): AllSubscriptions => {
+        const { metadata } = datum;
+        return {
+          topicName: metadata?.topic || null,
+          subscriptionName: metadata?.name || datum.name,
+        };
+      },
+    );
     return subscriptionList;
   }
 }
-
