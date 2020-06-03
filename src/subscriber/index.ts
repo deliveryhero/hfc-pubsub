@@ -2,9 +2,9 @@
 import Message from '../message';
 
 export default class Subscriber {
-  public static topicName: string = '';
-  public static subscriptionName: string = '';
-  public static description: string = '';
+  public static topicName = '';
+  public static subscriptionName = '';
+  public static description = '';
   public static maxMessages = 1;
 
   /**
@@ -12,7 +12,7 @@ export default class Subscriber {
    * unset the initial value will be 10 seconds, but it will evolve into the
    * 99th percentile time it takes to acknowledge a message
    */
-  public static ackDeadlineSeconds: number = 10;
+  public static ackDeadlineSeconds = 10;
 
   public constructor() {
     this.handleMessage = this.handleMessage.bind(this);

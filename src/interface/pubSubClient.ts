@@ -2,8 +2,8 @@
 import { Topic, Payload, Subscriber } from '../index';
 
 export interface AllSubscriptions {
-  topicName: string | null | undefined,
-  subscriptionName: string,
+  topicName: string | null | undefined;
+  subscriptionName: string;
 }
 
 export default interface PubSubClient {
@@ -11,8 +11,7 @@ export default interface PubSubClient {
     topic: T,
     message: P,
   ): Promise<string>;
-
-  getAllSubscriptions(): Promise<AllSubscriptions[]>;
   subscribe(subscriber: typeof Subscriber): void;
+  getAllSubscriptions(): Promise<AllSubscriptions[]>;
+  //@todo: getAllTopics(): Promise<string[]>;
 }
-

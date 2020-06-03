@@ -3,7 +3,7 @@ import Topic, { Payload } from '../topic';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Subscriber from '../subscriber';
 import EventBus from '../driver/eventBus';
-import PubSubClient from '../interface/pubSubClient';
+import PubSubClient, { AllSubscriptions } from '../interface/pubSubClient';
 import GooglePubSubAdapter from '../driver/googlePubSub';
 import SubscriptionService from './subscription';
 
@@ -18,6 +18,7 @@ export default class PubSubService {
     this.initClient();
     this.bind(this);
   }
+
   private bind(instance: PubSubService): void {
     this.subscribe = this.subscribe.bind(instance);
     this.publish = this.publish.bind(instance);
@@ -32,12 +33,9 @@ export default class PubSubService {
   }
 
   private syncDriverIsEnabled(): boolean {
-    return (
-      (process.env.PUBSUB_DRIVER &&
-        process.env.PUBSUB_DRIVER.toLowerCase() == 'synchronous') ||
-      false
-    );
+    return process.env.PUBSUB_DRIVER?.toLowerCase() == 'synchronous' || false;
   }
+
   private initClient(): void {
     if (PubSubService.driver === 'synchronous') {
       PubSubService.client = EventBus.getInstance();
@@ -77,7 +75,7 @@ export default class PubSubService {
     return PubSubService.client;
   }
 
-  public getSubscribers(): (typeof Subscriber)[] {
+  public getSubscribers(): typeof Subscriber[] {
     return SubscriptionService.getSubscribers();
   }
 
@@ -85,7 +83,7 @@ export default class PubSubService {
     if (PubSubService.status === 'ready') return;
     if (PubSubService.driver !== 'synchronous')
       SubscriptionService.loadSubscriptionService();
-    for (let subscription of SubscriptionService.getSubscribers())
+    for (const subscription of SubscriptionService.getSubscribers())
       await this.subscribe(subscription);
     PubSubService.status = 'ready';
   }
@@ -113,7 +111,7 @@ export default class PubSubService {
   /**
    * Retrieves a list of subscribers
    */
-  public async getAllSubscriptions() {
+  public async getAllSubscriptions(): Promise<AllSubscriptions[]> {
     return this.getClient().getAllSubscriptions();
   }
 }

@@ -90,7 +90,7 @@ export default class GooglePubSubAdapter implements PubSubClient {
     return {
       ackDeadline: subscription.ackDeadlineSeconds,
       flowControl: {
-        maxMessages: subscription.maxMessages,
+        maxMessages: subscription.maxMessages || 10,
       },
     };
   }

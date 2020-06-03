@@ -25,9 +25,8 @@ class PubSubService {
         }
     }
     syncDriverIsEnabled() {
-        return ((process.env.PUBSUB_DRIVER &&
-            process.env.PUBSUB_DRIVER.toLowerCase() == 'synchronous') ||
-            false);
+        var _a;
+        return ((_a = process.env.PUBSUB_DRIVER) === null || _a === void 0 ? void 0 : _a.toLowerCase()) == 'synchronous' || false;
     }
     initClient() {
         if (PubSubService.driver === 'synchronous') {
@@ -64,7 +63,7 @@ class PubSubService {
             return;
         if (PubSubService.driver !== 'synchronous')
             subscription_1.default.loadSubscriptionService();
-        for (let subscription of subscription_1.default.getSubscribers())
+        for (const subscription of subscription_1.default.getSubscribers())
             await this.subscribe(subscription);
         PubSubService.status = 'ready';
     }
