@@ -18,13 +18,13 @@ exports.default = {
         else {
             cli_ux_1.cli.table(index_1.PubSubService.getInstance().getSubscribers(), {
                 'Topic Name': {
-                    get: (row) => row.topicName,
+                    get: (row) => row[1].topicName,
                 },
                 'Subscription Name': {
-                    get: (row) => row.subscriptionName,
+                    get: (row) => row[1].subscriptionName,
                 },
                 Description: {
-                    get: (row) => wrapAnsi(row.description, 100),
+                    get: (row) => wrapAnsi(row[1].description || '', 100),
                 },
             }, {
                 printLine: console.log,

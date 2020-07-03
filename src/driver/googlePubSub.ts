@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import PubSubClient, { AllSubscriptions } from '../interface/pubSubClient';
+import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Topic, Payload, Subscriber } from '../index';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -16,10 +16,13 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber';
 import Message from '../message';
+import { SubscriberTuple } from 'subscriber';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 
-export default class GooglePubSubAdapter implements PubSubClient {
+export default class GooglePubSubAdapter implements PubSubClientV2 {
   protected static instance: GooglePubSubAdapter;
   protected client: GooglePubSub;
+
   public constructor(client: GooglePubSub) {
     this.client = client;
     this.createOrGetSubscription = this.createOrGetSubscription.bind(this);
@@ -44,18 +47,20 @@ export default class GooglePubSubAdapter implements PubSubClient {
     );
     return messageId;
   }
-  public async subscribe(subscriber: typeof Subscriber): Promise<void> {
+  public async subscribe(subscriber: SubscriberTuple): Promise<void> {
+    const [, metadata] = subscriber;
     const subscription = await this.createOrGetSubscription(subscriber);
     this.addHandler(subscriber, subscription);
     this.log(
-      `   📭     ${subscriber.subscriptionName} is ready to receive messages at a controlled volume of ${subscriber.maxMessages} messages.`,
+      `   📭     ${metadata.subscriptionName} is ready to receive messages at a controlled volume of ${metadata.options?.flowControl?.maxMessages} messages.`,
     );
   }
 
   private addHandler(
-    subscriberClass: typeof Subscriber,
+    subscriber: SubscriberTuple,
     subscription: GCloudSubscription,
   ): void {
+    const [subscriberClass] = subscriber;
     subscription.on(
       'message',
       async (message: GCloudMessage): Promise<void> => {
@@ -71,11 +76,12 @@ export default class GooglePubSubAdapter implements PubSubClient {
   }
 
   private getSubscription(
-    subscriber: typeof Subscriber,
+    subscriber: SubscriberTuple,
     client: GooglePubSub,
   ): GCloudSubscription {
+    const [, metadata] = subscriber;
     return client.subscription(
-      subscriber.subscriptionName,
+      metadata.subscriptionName,
       this.getSubscriberOptions(subscriber),
     );
   }
@@ -85,43 +91,38 @@ export default class GooglePubSubAdapter implements PubSubClient {
   }
 
   private getSubscriberOptions(
-    subscription: typeof Subscriber,
-  ): SubscriberOptions {
-    return {
-      ackDeadline: subscription.ackDeadlineSeconds,
-      flowControl: {
-        maxMessages: subscription.maxMessages || 10,
-      },
-    };
+    subscriber: SubscriberTuple,
+  ): SubscriberOptions | undefined {
+    const [, metadata] = subscriber;
+    return metadata.options;
   }
 
   /**
    * Create subscription if it does not exist yet.
    */
   private async createOrGetSubscription(
-    subscriber: typeof Subscriber,
+    subscriber: SubscriberTuple,
   ): Promise<GCloudSubscription> {
     const client = new GooglePubSub({
       projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID,
     });
-    if (await this.subscriptionExists(subscriber.subscriptionName, client)) {
+    const [, metadata] = subscriber;
+    if (await this.subscriptionExists(metadata.subscriptionName, client)) {
       console.log(
-        chalk.gray(
-          `Subscription ${subscriber.subscriptionName} already exists.`,
-        ),
+        chalk.gray(`Subscription ${metadata.subscriptionName} already exists.`),
       );
       return this.getSubscription(subscriber, client);
     }
 
     // topic should be created before subscriptions are created
-    const topic = await this.createOrGetTopic(subscriber.topicName);
+    const topic = await this.createOrGetTopic(metadata.topicName);
     // Creates a new subscription
     await topic.createSubscription(
-      subscriber.subscriptionName,
+      metadata.subscriptionName,
       this.getSubscriberOptions(subscriber),
     );
     console.log(
-      chalk.green(`Subscription ${subscriber.subscriptionName} created.`),
+      chalk.green(`Subscription ${metadata.subscriptionName} created.`),
     );
     return this.getSubscription(subscriber, client);
   }

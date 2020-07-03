@@ -1,13 +1,13 @@
-import Subscriber from '../subscriber';
+import { Subscribers } from '../subscriber';
 import PubSubService from './pubsub';
 import { AllSubscriptions } from '../interface/pubSubClient';
 import { resolve } from 'path';
 import fs = require('fs');
-import { ClassLoader } from './classLoader';
+import SubscriberLoader from './subscriberLoader';
 import { ResourceResolver } from './resourceResolver';
 
 export default class SubscriptionService {
-  public static subscribers: typeof Subscriber[] = [];
+  public static subscribers: Subscribers;
   public static instance = new SubscriptionService();
   public constructor() {
     this.checkExistence(process.env, 'PUBSUB_ROOT_DIR');
@@ -26,7 +26,7 @@ export default class SubscriptionService {
 
   public static async init(): Promise<void> {}
 
-  public static getSubscribers(): typeof Subscriber[] {
+  public static getSubscribers(): Subscribers {
     if (SubscriptionService.subscribers.length > 0) {
       return SubscriptionService.subscribers;
     }
@@ -35,7 +35,6 @@ export default class SubscriptionService {
       ResourceResolver.getFiles(),
     );
 
-    SubscriptionService.validateSubscribers();
     return SubscriptionService.subscribers;
   }
 
@@ -43,8 +42,8 @@ export default class SubscriptionService {
     subscriptionService,
     subscribersJson,
     dir,
-  ]: [string, string, string]): typeof Subscriber[] {
-    const loader = new ClassLoader();
+  ]: [string, string, string]): Subscribers {
+    const loader = new SubscriberLoader();
     if (fs.existsSync(subscriptionService)) {
       this.subscribers = loader.loadSubscribersFromService(subscriptionService);
     } else if (fs.existsSync(subscribersJson)) {
@@ -60,17 +59,6 @@ export default class SubscriptionService {
     const service = require(resolve(subscriptionService)).default;
     service.init();
     return service;
-  }
-
-  protected static validateSubscribers(): void {
-    this.subscribers.forEach((subscriber: any): void => {
-      if (typeof subscriber !== typeof Subscriber) {
-        if (typeof subscriber === 'object') {
-          Object.assign(new Subscriber(), subscriber);
-        }
-        throw Error('Each subscriber must extend the base Subscriber class');
-      }
-    });
   }
 
   public static async getAllSubscriptions(): Promise<AllSubscriptions[]> {

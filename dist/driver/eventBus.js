@@ -17,8 +17,9 @@ class EventBus extends events_1.default {
         return 'done';
     }
     async subscribe(subscriber) {
-        EventBus.getInstance().addListener(subscriber.topicName, async (message) => {
-            const instance = new subscriber();
+        const [subscriberClass, metadata] = subscriber;
+        EventBus.getInstance().addListener(metadata.topicName, async (message) => {
+            const instance = new subscriberClass();
             instance.init();
             await instance.handleMessage(message_1.default.from(message));
         });

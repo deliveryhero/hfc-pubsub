@@ -25,11 +25,14 @@ class GooglePubSubAdapter {
         return messageId;
     }
     async subscribe(subscriber) {
+        var _a, _b;
+        const [, metadata] = subscriber;
         const subscription = await this.createOrGetSubscription(subscriber);
         this.addHandler(subscriber, subscription);
-        this.log(`   📭     ${subscriber.subscriptionName} is ready to receive messages at a controlled volume of ${subscriber.maxMessages} messages.`);
+        this.log(`   📭     ${metadata.subscriptionName} is ready to receive messages at a controlled volume of ${(_b = (_a = metadata.options) === null || _a === void 0 ? void 0 : _a.flowControl) === null || _b === void 0 ? void 0 : _b.maxMessages} messages.`);
     }
-    addHandler(subscriberClass, subscription) {
+    addHandler(subscriber, subscription) {
+        const [subscriberClass] = subscriber;
         subscription.on('message', async (message) => {
             const subscriber = new subscriberClass();
             subscriber.init();
@@ -42,30 +45,28 @@ class GooglePubSubAdapter {
         });
     }
     getSubscription(subscriber, client) {
-        return client.subscription(subscriber.subscriptionName, this.getSubscriberOptions(subscriber));
+        const [, metadata] = subscriber;
+        return client.subscription(metadata.subscriptionName, this.getSubscriberOptions(subscriber));
     }
     log(message) {
         console.log(chalk_1.default.green.bold(message));
     }
-    getSubscriberOptions(subscription) {
-        return {
-            ackDeadline: subscription.ackDeadlineSeconds,
-            flowControl: {
-                maxMessages: subscription.maxMessages || 10,
-            },
-        };
+    getSubscriberOptions(subscriber) {
+        const [, metadata] = subscriber;
+        return metadata.options;
     }
     async createOrGetSubscription(subscriber) {
         const client = new pubsub_1.PubSub({
             projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID,
         });
-        if (await this.subscriptionExists(subscriber.subscriptionName, client)) {
-            console.log(chalk_1.default.gray(`Subscription ${subscriber.subscriptionName} already exists.`));
+        const [, metadata] = subscriber;
+        if (await this.subscriptionExists(metadata.subscriptionName, client)) {
+            console.log(chalk_1.default.gray(`Subscription ${metadata.subscriptionName} already exists.`));
             return this.getSubscription(subscriber, client);
         }
-        const topic = await this.createOrGetTopic(subscriber.topicName);
-        await topic.createSubscription(subscriber.subscriptionName, this.getSubscriberOptions(subscriber));
-        console.log(chalk_1.default.green(`Subscription ${subscriber.subscriptionName} created.`));
+        const topic = await this.createOrGetTopic(metadata.topicName);
+        await topic.createSubscription(metadata.subscriptionName, this.getSubscriberOptions(subscriber));
+        console.log(chalk_1.default.green(`Subscription ${metadata.subscriptionName} created.`));
         return this.getSubscription(subscriber, client);
     }
     async subscriptionExists(subscriptionName, client) {

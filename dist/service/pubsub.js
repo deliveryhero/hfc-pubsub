@@ -63,8 +63,10 @@ class PubSubService {
             return;
         if (PubSubService.driver !== 'synchronous')
             subscription_1.default.loadSubscriptionService();
-        for (const subscription of subscription_1.default.getSubscribers())
+        const subscribers = subscription_1.default.getSubscribers();
+        for (const subscription of subscribers) {
             await this.subscribe(subscription);
+        }
         PubSubService.status = 'ready';
     }
     validate(topic, message) {

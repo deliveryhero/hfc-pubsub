@@ -2,6 +2,7 @@ import { PubSubService } from '../../index';
 import chalk from 'chalk';
 import { cli } from 'cli-ux';
 import wrapAnsi = require('wrap-ansi');
+import { SubscriberTuple } from 'subscriber';
 
 export default {
   command: 'list',
@@ -20,13 +21,14 @@ export default {
         PubSubService.getInstance().getSubscribers(),
         {
           'Topic Name': {
-            get: (row): string => row.topicName,
+            get: (row: SubscriberTuple): string => row[1].topicName,
           },
           'Subscription Name': {
-            get: (row): string => row.subscriptionName,
+            get: (row: SubscriberTuple): string => row[1].subscriptionName,
           },
           Description: {
-            get: (row): string => wrapAnsi(row.description, 100),
+            get: (row: SubscriberTuple): string =>
+              wrapAnsi(row[1].description || '', 100),
           },
         },
         {
