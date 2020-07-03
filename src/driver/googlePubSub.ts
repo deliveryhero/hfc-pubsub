@@ -22,11 +22,14 @@ import { SubscriberTuple } from 'subscriber';
 export default class GooglePubSubAdapter implements PubSubClientV2 {
   protected static instance: GooglePubSubAdapter;
   protected client: GooglePubSub;
+  protected topics: Map<GCloudTopic['name'], GCloudTopic>;
 
   public constructor(client: GooglePubSub) {
     this.client = client;
+    this.topics = new Map();
     this.createOrGetSubscription = this.createOrGetSubscription.bind(this);
   }
+
   public static getInstance(): GooglePubSubAdapter {
     if (!GooglePubSubAdapter.instance) {
       GooglePubSubAdapter.instance = new GooglePubSubAdapter(
@@ -37,6 +40,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     }
     return GooglePubSubAdapter.instance;
   }
+
   public async publish<T extends Topic, P extends Payload>(
     topic: T,
     message: P,
@@ -142,8 +146,15 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   }
 
   protected async createOrGetTopic(topicName: string): Promise<GCloudTopic> {
+    const cachedTopic = this.topics.get(topicName);
+
+    if (cachedTopic) {
+      return cachedTopic;
+    }
+
     const pubSubTopic = this.getClient().topic(topicName);
     const [topic] = await pubSubTopic.get({ autoCreate: true });
+    this.topics.set(topicName, topic);
     return topic;
   }
 

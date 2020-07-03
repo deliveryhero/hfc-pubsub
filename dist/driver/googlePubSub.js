@@ -9,6 +9,7 @@ const message_1 = __importDefault(require("../message"));
 class GooglePubSubAdapter {
     constructor(client) {
         this.client = client;
+        this.topics = new Map();
         this.createOrGetSubscription = this.createOrGetSubscription.bind(this);
     }
     static getInstance() {
@@ -79,8 +80,13 @@ class GooglePubSubAdapter {
         return this.client;
     }
     async createOrGetTopic(topicName) {
+        const cachedTopic = this.topics.get(topicName);
+        if (cachedTopic) {
+            return cachedTopic;
+        }
         const pubSubTopic = this.getClient().topic(topicName);
         const [topic] = await pubSubTopic.get({ autoCreate: true });
+        this.topics.set(topicName, topic);
         return topic;
     }
     async getAllSubscriptions() {
