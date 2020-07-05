@@ -1,9 +1,8 @@
-import { Subscribers, SubscriberTuple } from '../subscriber';
+import { Subscribers } from '../subscriber';
 import { SubscriptionServiceFile } from './resourceResolver';
 export default class SubscriberLoader {
-    subscribers: Subscribers;
-    constructor();
-    loadSubscribersFromDirectory(dir: string): SubscriberTuple[];
+    private subscribers;
+    loadSubscribersFromDirectory(dir: string): Subscribers;
     loadSubscribersFromService(subscriptionService: SubscriptionServiceFile, init?: boolean): Subscribers;
     private loadSubscriber;
 }

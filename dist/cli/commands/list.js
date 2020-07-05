@@ -11,7 +11,7 @@ exports.default = {
     command: 'list',
     desc: 'Lists all subscriptions',
     handler: async () => {
-        console.log(chalk_1.default.white.bgBlue.bold('\n Google Pub/Sub Subscriptions Registered in Framework '), '\n');
+        console.log(chalk_1.default.white.bgBlue.bold('\n Google Pub/Sub Subscriptions'), '\n');
         if (index_1.PubSubService.getInstance().getSubscribers().length == 0) {
             console.log(chalk_1.default.white.bold('\n No subscriptions found'));
         }
