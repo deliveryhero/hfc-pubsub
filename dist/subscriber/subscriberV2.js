@@ -37,11 +37,11 @@ class SubscriberV2 extends subscriber_1.default {
                             },
                         };
                     }
-                    static from(subscriber, version) {
-                        return SubscriberV2.from(subscriber, version);
+                    static from(subscriberClass, version) {
+                        return SubscriberV2.from(subscriberClass, version);
                     }
-                    static getSubscriberVersion(subscriber) {
-                        return SubscriberV2.getSubscriberVersion(subscriber);
+                    static getSubscriberVersion(subscriberClass) {
+                        return SubscriberV2.getSubscriberVersion(subscriberClass);
                     }
                 };
             }
@@ -70,15 +70,13 @@ class SubscriberV2 extends subscriber_1.default {
                 }
             }
             catch (e) {
-                console.error(e);
-                return 'v3';
+                return 'v1';
             }
         }
         if (typeof subscriber === 'object') {
             return 'v3';
         }
         throw new Error('Invalid Subscriber: Unable to determine Subscriber Version.');
-        return 'v1';
     }
 }
 exports.default = SubscriberV2;

@@ -27,22 +27,6 @@ jest.mock('../src/service/pubsub', (): any => ({
   },
 }));
 
-jest.mock('./pubsub/subscriptions/example.subscription', (): any => ({
-  __esModule: true,
-  default: jest.fn().mockImplementation((): any => ({
-    getTopicName: (): any => {
-      return 'test-topic';
-    },
-    setMongooseConnection: function(): any {
-      return this;
-    },
-    init: function(): any {
-      return this;
-    },
-    start: jest.fn(),
-  })),
-}));
-
 function cli(args: any, cwd: string | null = null): any {
   return new Promise((resolve): any => {
     exec(
@@ -73,9 +57,12 @@ describe('subscriptions cli', (): any => {
   });
 
   it('should list subscriptions', async (): Promise<any> => {
-    let result = await cli(['list']);
+    const result = await cli(['list']);
     expect(JSON.stringify(result)).toContain('test-topic');
+    expect(JSON.stringify(result)).toContain('v2-subscription');
+  });
+  it('should list subscriptions', async (): Promise<any> => {
     const subscriptions = SubscriptionService.getSubscribers();
-    expect(subscriptions.length).toEqual(2);
+    expect(subscriptions.length).toEqual(3);
   });
 });

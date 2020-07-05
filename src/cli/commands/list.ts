@@ -36,6 +36,7 @@ export default {
         },
       );
       console.log('\n');
+      process.exit(0);
     }
   },
 };

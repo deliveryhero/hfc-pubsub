@@ -8,7 +8,6 @@ const mockPubSub = jest.fn();
 
 process.env.PUBSUB_ROOT_DIR = path.resolve(__dirname, 'pubsub');
 
-console.log(process.env.PUBSUB_ROOT_DIR);
 jest.mock('@google-cloud/pubsub', () => ({
   __esModule: true,
   PubSub: mockPubSub,
@@ -60,26 +59,6 @@ function cli(args: any, cwd: string | null = null): any {
     );
   });
 }
-beforeAll((): any => {
-  if (
-    fs.existsSync(path.resolve(__dirname, 'pubsub/_subscription.service.js'))
-  ) {
-    fs.renameSync(
-      path.resolve(__dirname, 'pubsub/_subscription.service.js'),
-      path.resolve(__dirname, 'pubsub/subscription.service.js'),
-    ); // let's test subscription service
-  }
-});
-afterAll((): any => {
-  if (
-    fs.existsSync(path.resolve(__dirname, 'pubsub/subscription.service.js'))
-  ) {
-    fs.renameSync(
-      path.resolve(__dirname, 'pubsub/subscription.service.js'),
-      path.resolve(__dirname, 'pubsub/_subscription.service.js'),
-    ); // let's test subscription service
-  }
-});
 describe('subscriptions cli', (): any => {
   it('should load subscription service', async (): Promise<any> => {
     const service = SubscriptionService.loadSubscriptionService();

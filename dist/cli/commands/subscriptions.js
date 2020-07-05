@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require('dotenv').config({ path: require('find-config')('.env') });
 const index_1 = require("../../index");
 const chalk_1 = __importDefault(require("chalk"));
 const cli_ux_1 = require("cli-ux");

@@ -1,4 +1,9 @@
-import { Subscribers } from '../subscriber';
+import {
+  Subscribers,
+  SubscriberV1,
+  SubscriberV2,
+  SubscriberObject,
+} from '../subscriber';
 import PubSubService from './pubsub';
 import { AllSubscriptions } from '../interface/pubSubClient';
 import { resolve } from 'path';
@@ -7,7 +12,12 @@ import SubscriberLoader from './subscriberLoader';
 import { ResourceResolver } from './resourceResolver';
 
 export default class SubscriptionService {
-  public static subscribers: Subscribers;
+  public static subscribers:
+    | Subscribers
+    | typeof SubscriberV1[]
+    | typeof SubscriberV2[]
+    | SubscriberObject[] = [];
+  private static _subscribers: Subscribers = [];
   public static instance = new SubscriptionService();
   public constructor() {
     this.checkExistence(process.env, 'PUBSUB_ROOT_DIR');
@@ -27,31 +37,32 @@ export default class SubscriptionService {
   public static async init(): Promise<void> {}
 
   public static getSubscribers(): Subscribers {
-    if (SubscriptionService.subscribers.length > 0) {
-      return SubscriptionService.subscribers;
+    if (SubscriptionService._subscribers.length > 0) {
+      return SubscriptionService._subscribers as Subscribers;
     }
 
     SubscriptionService.loadSubscribersFromFilesystem(
       ResourceResolver.getFiles(),
     );
 
-    return SubscriptionService.subscribers;
+    return SubscriptionService._subscribers as Subscribers;
   }
 
-  private static loadSubscribersFromFilesystem([
-    subscriptionService,
-    subscribersJson,
-    dir,
-  ]: [string, string, string]): Subscribers {
+  private static loadSubscribersFromFilesystem([subscriptionService, dir]: [
+    string,
+    string,
+  ]): Subscribers {
     const loader = new SubscriberLoader();
     if (fs.existsSync(subscriptionService)) {
-      this.subscribers = loader.loadSubscribersFromService(subscriptionService);
-    } else if (fs.existsSync(subscribersJson)) {
-      this.subscribers = loader.loadSubscribersFromJson(subscribersJson);
+      SubscriptionService._subscribers = loader.loadSubscribersFromService(
+        subscriptionService,
+      );
     } else {
-      this.subscribers = loader.loadSubscribersFromDirectory(dir);
+      SubscriptionService._subscribers = loader.loadSubscribersFromDirectory(
+        dir,
+      );
     }
-    return this.subscribers;
+    return SubscriptionService._subscribers;
   }
 
   public static loadSubscriptionService(): SubscriptionService {

@@ -44,15 +44,15 @@ export default class SubscriberV2 extends Subscriber {
             },
           };
           public static from(
-            subscriber: SubscriberObject | typeof Subscriber,
+            subscriberClass: SubscriberObject | typeof Subscriber,
             version: SubscriberVersion,
           ): typeof SubscriberV2 {
-            return SubscriberV2.from(subscriber, version);
+            return SubscriberV2.from(subscriberClass, version);
           }
           public static getSubscriberVersion(
-            subscriber: typeof Subscriber,
+            subscriberClass: typeof Subscriber,
           ): SubscriberVersion {
-            return SubscriberV2.getSubscriberVersion(subscriber);
+            return SubscriberV2.getSubscriberVersion(subscriberClass);
           }
         };
       }
@@ -82,8 +82,7 @@ export default class SubscriberV2 extends Subscriber {
           return 'v1';
         }
       } catch (e) {
-        console.error(e);
-        return 'v3';
+        return 'v1';
       }
     }
     if (typeof subscriber === 'object') {
@@ -92,7 +91,6 @@ export default class SubscriberV2 extends Subscriber {
     throw new Error(
       'Invalid Subscriber: Unable to determine Subscriber Version.',
     );
-    return 'v1';
   }
 }
 

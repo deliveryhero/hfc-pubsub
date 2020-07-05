@@ -1,14 +1,12 @@
-import Subscriber, {
+import {
   SubscriberV2,
   Subscribers,
   SubscriberTuple,
+  SubscriberV1,
 } from '../subscriber';
 import { resolve } from 'path';
 import fs = require('fs');
-import {
-  SubscriptionServiceFile,
-  SubscribersJsonFile,
-} from './resourceResolver';
+import { SubscriptionServiceFile } from './resourceResolver';
 import {
   SubscriberMetadata,
   SubscriberObject,
@@ -16,7 +14,10 @@ import {
 } from 'subscriber/subscriberV2';
 
 export default class SubscriberLoader {
-  public subscribers?: Subscribers;
+  public subscribers: Subscribers = [];
+  public constructor() {
+    this.subscribers = [];
+  }
 
   public loadSubscribersFromDirectory(dir: string): SubscriberTuple[] {
     const subscriptionFiles = fs
@@ -26,79 +27,51 @@ export default class SubscriberLoader {
       });
     for (const file of subscriptionFiles) {
       const subscription = require(resolve(dir, file)).default;
-      this.subscribers?.push(subscription);
+      this.subscribers.push(subscription);
     }
-    return this.subscribers || [];
+    return this.subscribers;
   }
   public loadSubscribersFromService(
     subscriptionService: SubscriptionServiceFile,
     init = false,
-  ): SubscriberTuple[] {
+  ): Subscribers {
     const service = require(resolve(subscriptionService)).default;
     if (init) service.init();
     service.subscribers.map(
-      (subscriber: typeof Subscriber | SubscriberObject): void => {
+      (
+        subscriber:
+          | typeof SubscriberV1
+          | typeof SubscriberV2
+          | SubscriberObject,
+      ): void => {
         const version = SubscriberV2.getSubscriberVersion(subscriber) || '';
-        this.subscribers?.push(this.loadSubscriber(subscriber, version));
+        this.subscribers.push(this.loadSubscriber(subscriber, version));
       },
     );
-    return this.subscribers || [];
+    return this.subscribers;
   }
 
   private loadSubscriber(
-    subscriber: typeof Subscriber | SubscriberObject,
+    subscriber: typeof SubscriberV1 | SubscriberObject,
     version: SubscriberVersion,
   ): SubscriberTuple {
     switch (version) {
       case 'v1': {
         // v1 is getting an upgrade to v2
-        const v2Subscriber = SubscriberV2.from(subscriber, 'v1');
-        return [
-          v2Subscriber,
-          new v2Subscriber().metadata as SubscriberMetadata,
-        ];
+        const v2SubscriberClass = SubscriberV2.from(subscriber, 'v1');
+        const instance = new v2SubscriberClass();
+        return [v2SubscriberClass, instance.metadata as SubscriberMetadata];
       }
       case 'v2': {
-        const v2Subscriber = SubscriberV2.from(subscriber, 'v2');
-        return [
-          v2Subscriber,
-          new v2Subscriber().metadata as SubscriberMetadata,
-        ];
+        const v2SubscriberClass = SubscriberV2.from(subscriber, 'v2');
+        const instance = new v2SubscriberClass();
+        return [v2SubscriberClass, instance.metadata as SubscriberMetadata];
       }
       case 'v3':
         // let's convert a subscriber object to subscriber class
-        const v2Subscriber = SubscriberV2.from(subscriber, 'v3');
-        return [
-          v2Subscriber,
-          new v2Subscriber().metadata as SubscriberMetadata,
-        ];
+        const v2SubscriberClass = SubscriberV2.from(subscriber, 'v3');
+        const instance = new v2SubscriberClass();
+        return [v2SubscriberClass, instance.metadata as SubscriberMetadata];
     }
-  }
-
-  public loadSubscribersFromJson(
-    jsonFile: SubscribersJsonFile,
-  ): SubscriberTuple[] {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const subscribersFile = require(jsonFile);
-    if (typeof subscribersFile.subscribers == 'undefined') {
-      throw Error(
-        'subscribers.json is invalid. Make sure that subscribers key is defined',
-      );
-    }
-    const subscribers = subscribersFile.subscribers;
-    Object.keys(subscribers).forEach((key): void => {
-      const pathToSubscribers = resolve(
-        process.env.PUBSUB_ROOT_DIR || '',
-        'subscriptions',
-        `${subscribers[key]}.js`,
-      );
-      if (!fs.existsSync(pathToSubscribers)) {
-        console.log(`Could not find subscription: ${subscribers[key]}.js`);
-        return;
-      }
-      const subscription = require(pathToSubscribers).default;
-      this.subscribers?.push(subscription);
-    });
-    return this.subscribers || [];
   }
 }

@@ -20,24 +20,21 @@ class SubscriptionService {
     }
     static async init() { }
     static getSubscribers() {
-        if (SubscriptionService.subscribers.length > 0) {
-            return SubscriptionService.subscribers;
+        if (SubscriptionService._subscribers.length > 0) {
+            return SubscriptionService._subscribers;
         }
         SubscriptionService.loadSubscribersFromFilesystem(resourceResolver_1.ResourceResolver.getFiles());
-        return SubscriptionService.subscribers;
+        return SubscriptionService._subscribers;
     }
-    static loadSubscribersFromFilesystem([subscriptionService, subscribersJson, dir,]) {
+    static loadSubscribersFromFilesystem([subscriptionService, dir]) {
         const loader = new subscriberLoader_1.default();
         if (fs.existsSync(subscriptionService)) {
-            this.subscribers = loader.loadSubscribersFromService(subscriptionService);
-        }
-        else if (fs.existsSync(subscribersJson)) {
-            this.subscribers = loader.loadSubscribersFromJson(subscribersJson);
+            SubscriptionService._subscribers = loader.loadSubscribersFromService(subscriptionService);
         }
         else {
-            this.subscribers = loader.loadSubscribersFromDirectory(dir);
+            SubscriptionService._subscribers = loader.loadSubscribersFromDirectory(dir);
         }
-        return this.subscribers;
+        return SubscriptionService._subscribers;
     }
     static loadSubscriptionService() {
         const [subscriptionService] = resourceResolver_1.ResourceResolver.getFiles();
@@ -50,4 +47,6 @@ class SubscriptionService {
     }
 }
 exports.default = SubscriptionService;
+SubscriptionService.subscribers = [];
+SubscriptionService._subscribers = [];
 SubscriptionService.instance = new SubscriptionService();
