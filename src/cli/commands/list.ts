@@ -9,9 +9,7 @@ export default {
   desc: 'Lists all subscriptions',
   handler: async (): Promise<void> => {
     console.log(
-      chalk.white.bgBlue.bold(
-        '\n Subscriptions registered in SubscriptionService ',
-      ),
+      chalk.white.bgBlue.bold('\n Google Pub/Sub Subscriptions'),
       '\n',
     );
     if (PubSubService.getInstance().getSubscribers().length == 0) {

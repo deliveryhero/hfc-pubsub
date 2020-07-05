@@ -28,13 +28,18 @@ class SubscriptionService {
     }
     static loadSubscribersFromFilesystem([subscriptionService, dir]) {
         const loader = new subscriberLoader_1.default();
-        if (fs.existsSync(subscriptionService)) {
-            SubscriptionService._subscribers = loader.loadSubscribersFromService(subscriptionService);
-        }
-        SubscriptionService._subscribers = Array.from(new Set([
-            ...SubscriptionService._subscribers,
-            ...loader.loadSubscribersFromDirectory(dir),
-        ]));
+        const subscribersFromService = fs.existsSync(subscriptionService)
+            ? loader.loadSubscribersFromService(subscriptionService)
+            : [];
+        const subscribersFromDirectory = loader.loadSubscribersFromDirectory(dir);
+        SubscriptionService._subscribers = Array.from(subscribersFromService
+            .concat(subscribersFromDirectory)
+            .reduce((map, subscriber) => {
+            const subscriptionKey = subscriber[1].topicName + subscriber[1].subscriptionName;
+            map.set(subscriptionKey, subscriber);
+            return map;
+        }, new Map())
+            .values());
         return SubscriptionService._subscribers;
     }
     static loadSubscriptionService() {

@@ -3,6 +3,7 @@ import {
   SubscriberV1,
   SubscriberV2,
   SubscriberObject,
+  SubscriberTuple,
 } from '../subscriber';
 import PubSubService from './pubsub';
 import { AllSubscriptions } from '../interface/pubSubClient';
@@ -53,17 +54,24 @@ export default class SubscriptionService {
     string,
   ]): Subscribers {
     const loader = new SubscriberLoader();
-    if (fs.existsSync(subscriptionService)) {
-      SubscriptionService._subscribers = loader.loadSubscribersFromService(
-        subscriptionService,
-      );
-    }
+    const subscribersFromService = fs.existsSync(subscriptionService)
+      ? loader.loadSubscribersFromService(subscriptionService)
+      : [];
+
+    const subscribersFromDirectory = loader.loadSubscribersFromDirectory(dir);
+
     SubscriptionService._subscribers = Array.from(
-      new Set([
-        ...SubscriptionService._subscribers,
-        ...loader.loadSubscribersFromDirectory(dir),
-      ]),
+      subscribersFromService
+        .concat(subscribersFromDirectory)
+        .reduce((map, subscriber) => {
+          const subscriptionKey =
+            subscriber[1].topicName + subscriber[1].subscriptionName;
+          map.set(subscriptionKey, subscriber);
+          return map;
+        }, new Map<string, SubscriberTuple>())
+        .values(),
     );
+
     return SubscriptionService._subscribers;
   }
 
