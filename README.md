@@ -1,5 +1,5 @@
 # Google Pub/Sub Framework
-A small framework for publishing and subscribing to messages on Google PubSub.
+A small framework for publishing and subscribing to messages on Google Pub/Sub with minimal setup required.
 
 ## Features
 
@@ -26,9 +26,9 @@ A small framework for publishing and subscribing to messages on Google PubSub.
 
 ```pre
 | .env        <-- this can be in your project root directory
-| - pubsub    <-- this can be anywhere (defined in .env)
-|   | - subscriptions
-|   | - topics
+| - pubsub/    <-- this can be anywhere (defined in .env)
+|   | - subscriptions/
+|   | - topics/
 ```
 
 2. add the following to your `.env`
@@ -72,11 +72,12 @@ exports.default = {
 ```
 
 ## Running subscription server
+Install npx if you don't have it installed yet: `npm i npx -g`
 
-1. Run subscriptions `npx subscriptions start` or `./node_modules/.bin/subscriptions start`
-2. List subscriptions `npx subscriptions list` or `./node_modules/.bin/subscriptions list`
+1. Run subscriptions `npx subscriptions start` 
+2. List subscriptions `npx subscriptions list` 
 
-Note: If the subscription doesn't exist in google pub/sub it will be created when you run `./node_modules/.bin/subscriptions start`
+Note: If the subscription doesn't exist in google pub/sub it will be created when you run `npx subscriptions start`
 
 ## Publishing a Message
 
