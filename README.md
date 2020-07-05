@@ -25,7 +25,8 @@ A small framework for publishing and subscribing to messages on Google PubSub.
 1. This module expects that you've created a pubsub directory in your project with the following structure:
 
 ```pre
-| - pubsub
+| .env        <-- this can be in your project root director
+| - pubsub    <-- this can be anywhere (defined in .env)
 |   | - subscriptions
 |   | - topics
 ```
@@ -39,6 +40,10 @@ PUBSUB_ROOT_DIR=/path/to/module/pubsub
 ```
 
 `PUBSUB_ROOT_DIR` must be the path to your project's pubsub directory. This module only works with compiled JS, so if you are writing your code in typescript, you must set this variable to the pubsub root in your project's build directory.
+
+`GOOGLE_APPLICATION_CREDENTIALS` see https://cloud.google.com/docs/authentication/getting-started#creating_a_service_account to generate this
+
+`GOOGLE_CLOUD_PUB_SUB_PROJECT_ID` name of the project in Google Cloud Platform
 
 ## Adding a new subscription message handler
 
@@ -118,7 +123,7 @@ Typescript example:
 
 ```typescript
 // path/to/your/pubsub/subscriptions/simple.topic.name.subscription.sub.ts
-import { SubscriberObject } from "@honestfoodcompany/pubsub"; // optional, just to import the interface
+import { SubscriberObject, Message } from "@honestfoodcompany/pubsub"; // optional, just to import the interface
 export default: SubscriberObject = {
   topicName: 'test.topic',
   subscriptionName: 'test.topic.subscription',
