@@ -25,7 +25,7 @@ A small framework for publishing and subscribing to messages on Google PubSub.
 1. This module expects that you've created a pubsub directory in your project with the following structure:
 
 ```pre
-| .env        <-- this can be in your project root director
+| .env        <-- this can be in your project root directory
 | - pubsub    <-- this can be anywhere (defined in .env)
 |   | - subscriptions
 |   | - topics
