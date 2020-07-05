@@ -1,14 +1,26 @@
-# HFC Google Pub/Sub Module
-A slightly opinionated, micro-framework for publishing and subscribing to messages on Google PubSub.
+# Google Pub/Sub Framework
+A small framework for publishing and subscribing to messages on Google PubSub.
 
 ## Features
 
 1. CLI tool for starting subscription server and for listing subscriptions
-2. Create new topics and publish a message to those topics in 2 lines
-3. Automatic timestamping of all messages (ISO8601)
-4. Synchronous Driver and Google PubSub support
+2. Define your subscription handlers with a simple object
+3. Create new topics and publish a message to those topics in 2 lines
 
-## Prerequisites Requirements
+## Table of Contents
+- [Google Pub/Sub Framework](#google-pubsub-framework)
+  - [Features](#features)
+  - [Table of Contents](#table-of-contents)
+  - [Prerequisites](#prerequisites)
+  - [Adding a new subscription message handler](#adding-a-new-subscription-message-handler)
+  - [Running subscription server](#running-subscription-server)
+  - [Publishing a Message](#publishing-a-message)
+  - [Subscribing to a Topic](#subscribing-to-a-topic)
+  - [Connecting to a database](#connecting-to-a-database)
+  - [Enabling Synchronous Driver](#enabling-synchronous-driver)
+
+
+## Prerequisites
 
 1. This module expects that you've created a pubsub directory in your project with the following structure:
 
@@ -28,18 +40,36 @@ PUBSUB_ROOT_DIR=/path/to/module/pubsub
 
 `PUBSUB_ROOT_DIR` must be the path to your project's pubsub directory. This module only works with compiled JS, so if you are writing your code in typescript, you must set this variable to the pubsub root in your project's build directory.
 
-## Adding a new subscriber
+## Adding a new subscription message handler
 
-1. Add your subscriber in `pubsub/subscriptions/name.of.pubsub.subscription.sub` (Follow the template examples)
+1. Add your subscriber in `pubsub/subscriptions/name.of.subscription.sub.js`. By default, the subscriptions server will load all subscribers found in  `PUBSUB_ROOT_DIR/subscriptions` that are suffixed with `.sub` such as `pubsub/subscriptions/order.received.sub.js`. 
 
-As a convention the name of the file should match the name of the subscription so the file structure is self-documenting.
+Note: As a convention the name of the file should match the name of the subscription so the file structure is self-documenting.
 
-2. (Optional): By default, the subscriptions server will load all subscribers found in  `PUBSUB_ROOT_DIR/subscriptions` that are suffixed with `.sub` such as `pubsub/subscriptions/order.received.sub.js`. 
 
-## Running subscription handlers
+```javascript
+// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.sub.js
+exports.default = {
+  topicName: 'test.topic',
+  subscriptionName: 'test.topic.sub',
+  description: 'Will console log messages published on test.topic',
+  options: {
+    ackDeadline: 30, // in seconds
+    flowControl: {
+      maxMessages: 500,
+    },
+  },
+  handleMessage: function (message) {
+    console.log(`received a message on ${this.subscriptionName}`)
+    console.log(message.data.toString());
+  },
+};
+```
 
-1. Run subscriptions `npx subscriptions start`
-2. List subscriptions `npx subscriptions list`
+## Running subscription server
+
+1. Run subscriptions `npx subscriptions start` or `./node_modules/.bin/subscriptions start`
+2. List subscriptions `npx subscriptions list` or `./node_modules/.bin/subscriptions list`
 
 Note: If the subscription doesn't exist in google pub/sub it will be created when you run `./node_modules/.bin/subscriptions start`
 
@@ -89,7 +119,7 @@ Typescript example:
 ```typescript
 // path/to/your/pubsub/subscriptions/simple.topic.name.subscription.sub.ts
 import { SubscriberObject } from "@honestfoodcompany/pubsub"; // optional, just to import the interface
-export const ExampleSubscriber: SubscriberObject = {
+export default: SubscriberObject = {
   topicName: 'test.topic',
   subscriptionName: 'test.topic.subscription',
   description: 'Will console log messages published on test.topic',
@@ -99,7 +129,8 @@ export const ExampleSubscriber: SubscriberObject = {
       maxMessages: 500,
     },
   },
-  handleMessage: (message: Message): void => {
+  handleMessage: function(message: Message): void {
+    console.log(`received a message on ${this.subscriptionName}`)
     console.log(message.data.toString());
   },
 };
@@ -120,7 +151,8 @@ exports.default = {
       maxMessages: 500,
     },
   },
-  handleMessage: (message: Message): void => {
+  handleMessage: function(message) {
+    console.log(`received a message on ${this.subscriptionName}`)
     console.log(message.data.toString());
   },
 };
