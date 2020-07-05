@@ -188,8 +188,6 @@ export default class SubscriptionService extends BaseSubscriptionService {
 }
 ```
 
-This configuration will enable the subscription found in `PUBSUB_ROOT_DIR/subscriptions/test.subscription.js`. The key can be any string value. The value in the key-value pair is the name of the subscription file found in `PUBSUB_ROOT_DIR/subscriptions` without the `.js` extension.
-
 ## Enabling Synchronous Driver
 
 If you would like to bypass Google PubSub and run your subscriptions synchronously (for development purposes) set the following environment variable:
