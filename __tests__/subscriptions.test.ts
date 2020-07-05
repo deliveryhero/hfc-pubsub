@@ -63,6 +63,6 @@ describe('subscriptions cli', (): any => {
   });
   it('should list subscriptions', async (): Promise<any> => {
     const subscriptions = SubscriptionService.getSubscribers();
-    expect(subscriptions.length).toEqual(3);
+    expect(subscriptions.length).toEqual(4);
   });
 });

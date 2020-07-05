@@ -14,20 +14,18 @@ import {
 } from 'subscriber/subscriberV2';
 
 export default class SubscriberLoader {
-  public subscribers: Subscribers = [];
-  public constructor() {
-    this.subscribers = [];
-  }
+  private subscribers: Subscribers = [];
 
-  public loadSubscribersFromDirectory(dir: string): SubscriberTuple[] {
-    const subscriptionFiles = fs
+  public loadSubscribersFromDirectory(dir: string): Subscribers {
+    const subscribers = fs
       .readdirSync(dir)
       .filter((file): RegExpMatchArray | null => {
-        return file.match(/\.js$/);
+        return file.match(/\.sub\.js$/);
       });
-    for (const file of subscriptionFiles) {
-      const subscription = require(resolve(dir, file)).default;
-      this.subscribers.push(subscription);
+    for (const file of subscribers) {
+      const subscriber = require(resolve(dir, file)).default;
+      const version = SubscriberV2.getSubscriberVersion(subscriber) || '';
+      this.subscribers.push(this.loadSubscriber(subscriber, version));
     }
     return this.subscribers;
   }

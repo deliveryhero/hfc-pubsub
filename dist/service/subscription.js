@@ -31,9 +31,10 @@ class SubscriptionService {
         if (fs.existsSync(subscriptionService)) {
             SubscriptionService._subscribers = loader.loadSubscribersFromService(subscriptionService);
         }
-        else {
-            SubscriptionService._subscribers = loader.loadSubscribersFromDirectory(dir);
-        }
+        SubscriptionService._subscribers = Array.from(new Set([
+            ...SubscriptionService._subscribers,
+            ...loader.loadSubscribersFromDirectory(dir),
+        ]));
         return SubscriptionService._subscribers;
     }
     static loadSubscriptionService() {

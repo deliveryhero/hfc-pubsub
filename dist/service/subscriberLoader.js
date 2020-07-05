@@ -6,17 +6,17 @@ const fs = require("fs");
 class SubscriberLoader {
     constructor() {
         this.subscribers = [];
-        this.subscribers = [];
     }
     loadSubscribersFromDirectory(dir) {
-        const subscriptionFiles = fs
+        const subscribers = fs
             .readdirSync(dir)
             .filter((file) => {
-            return file.match(/\.js$/);
+            return file.match(/\.sub\.js$/);
         });
-        for (const file of subscriptionFiles) {
-            const subscription = require(path_1.resolve(dir, file)).default;
-            this.subscribers.push(subscription);
+        for (const file of subscribers) {
+            const subscriber = require(path_1.resolve(dir, file)).default;
+            const version = subscriber_1.SubscriberV2.getSubscriberVersion(subscriber) || '';
+            this.subscribers.push(this.loadSubscriber(subscriber, version));
         }
         return this.subscribers;
     }
