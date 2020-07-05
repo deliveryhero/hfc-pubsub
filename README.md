@@ -1,5 +1,5 @@
 # HFC Google Pub/Sub Module
-A slightly opinionated, micro-framework for publishing and subscribing to messages on Google PubSub. 
+A slightly opinionated, micro-framework for publishing and subscribing to messages on Google PubSub.
 
 ## Features
 
@@ -30,11 +30,11 @@ PUBSUB_ROOT_DIR=/path/to/module/pubsub
 
 ## Adding a new subscriber
 
-1. Add your subscriber in `pubsub/subscriptions/name.of.pubsub.subscription` (Follow the template examples)
+1. Add your subscriber in `pubsub/subscriptions/name.of.pubsub.subscription.sub` (Follow the template examples)
 
 As a convention the name of the file should match the name of the subscription so the file structure is self-documenting.
 
-2. (Optional): By default, the subscriptions server will load all subscribers found in  `PUBSUB_ROOT_DIR/subscriptions`, however you can explicitly define which subscriptions the server should run by including a `subscriptions.json` file in `PUBSUB_ROOT_DIR/subscriptions.json` or by including a `PUBSUB_ROOT_DIR/subscriptions.service.js` file. Examples are found below.
+2. (Optional): By default, the subscriptions server will load all subscribers found in  `PUBSUB_ROOT_DIR/subscriptions` that are suffixed with `.sub` such as `pubsub/subscriptions/order.received.sub.js`. 
 
 ## Running subscription handlers
 
@@ -80,89 +80,64 @@ If a topic does not exist yet with the name you defined, it will be created befo
 
 ## Subscribing to a Topic
 
-Create a `Subscriber` class which acts as a message handler for messages that arrive on the defined topic. A new instance of `Subscriber` will be created for each message published on the topic.
+Create a `Subscriber`  which defines a message handler function to run for each message that arrives on the corresponding topic. A new instance will be created for each message published on the topic.
 
-1. Create a subscription class in `path/to/your/pubsub/subscriptions`
+1. Create a subscriber in `path/to/your/pubsub/subscriptions`
 
 Typescript example:
 
 ```typescript
-// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.ts
+// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.sub.ts
+import { SubscriberObject } from "@honestfoodcompany/pubsub"; // optional, just to import the interface
+export const ExampleSubscriber: SubscriberObject = {
+  topicName: 'test.topic',
+  subscriptionName: 'test.topic.subscription',
+  description: 'Will console log messages published on test.topic',
+  options: {
+    ackDeadline: 30, // in seconds
+    flowControl: {
+      maxMessages: 500,
+    },
+  },
+  handleMessage: (message: Message): void => {
+    console.log(message.data.toString());
+  },
+};
 
-import { Subscriber, Message } from "@honestfoodcompany/pubsub";
-
-export default class SimpleSubscriber extends Subscriber {
-  public static topicName: string = "simple.topic.name";
-  public static subscriptionName: string = "simple.topic.name.subscription";
-  public static description: string = "Example subscription client";
-
-  public init(): void {
-    // set your instance properties here
-  }
-  public async handleMessage(message: Message): Promise<void> {
-    console.log(`Received message:`, message.data.toString());
-    // Do stuff with your message here
-    message.ack();
-  }
-}
 ```
 
 Javascript example:
 
 ```javascript
 // path/to/your/pubsub/subscriptions/simple.topic.name.subscription.js
-const PubSub = require("@honestfoodcompany/pubsub");
-class TestSubscription extends PubSub.Subscription {
-    constructor() {
-        super(...arguments);
-    }
-    async handleMessage(message) {
-        const payload = JSON.parse(message.data.toString());
-        message.ack();
-    }
-}
-TestSubscription.topicName = "test-topic";
-TestSubscription.subscriptionName = "test-topic.subscription";
-TestSubscription.description = "Just a test subscription";
-exports.default = TestSubscription
+exports.default = {
+  topicName: 'test.topic',
+  subscriptionName: 'test.topic.subscription',
+  description: 'Will console log messages published on test.topic',
+  options: {
+    ackDeadline: 30, // in seconds
+    flowControl: {
+      maxMessages: 500,
+    },
+  },
+  handleMessage: (message: Message): void => {
+    console.log(message.data.toString());
+  },
+};
 ```
 
 2. Start your subscriptions `./node_modules/.bin/subscriptions start`
 
-## Registering your subscription with the `SubscriptionService` (optional)
+## Connecting to a database
 
-If you would like to incorporate dependency injection or extend the default behavior of the `SubscriptionService` you may create your own `SubscriptionService` which extends the base service like in the example below:
-
-```typescript
-// path/to/your/pubsub/subscriptions.service.ts
-
-import { SubscriptionService as BaseSubscriptionService } from "@honestfoodcompany/pubsub";
-import SimpleSubscriber from "path/to/your/pubsub/subscriptions/simple.topic.name.subscriber";
-
-export default class SubscriptionService extends BaseSubscriptionService {
-  /**
-   * Add subscriptions to this array to register them
-   */
-  public static subscribers = [SimpleSubscription];
-}
-```
-
-## Connecting to Mongoose
-
-If you would like to connect to mongoose, you must include a `subscription.service` file in your `PUBSUB_ROOT_DIR` like this:
+If you would like your subscription handlers to connect to a database but don't want to create a new one connection for each message that is received, you must include a `subscription.service` file in your `PUBSUB_ROOT_DIR` whose `init` function connects to your database:
 
 ```typescript
 import { connect } from "mongoose";
 import { SubscriptionService as BaseSubscriptionService } from "@honestfoodcompany/pubsub";
 import ExampleSubscriber from "./subscriptions/example.subscriber";
-import chalk from "chalk";
 
 export default class SubscriptionService extends BaseSubscriptionService {
-  /**
-   * Add subscriptions to this array to register them
-   */
-  public static subscribers = [ExampleSubscriber];
-
   /**
    * connect to mongoose
    */
@@ -178,19 +153,6 @@ export default class SubscriptionService extends BaseSubscriptionService {
     );
     console.log(chalk.bold.green(`Connected to MongoDB at ${mongoURI}`));
   }
-}
-```
-
-## Registering your subscription with `subscriptions.json` (optional)
-
-If you prefer to explicitly define the subscriptions that the subscription server runs, you can define those subscriptions in `subscriptions.json`. Otherwise if no `subscriptions.json` file is set, and no `subscription.service.js` file defined, the subscription server's default behavior is to load all the `.js` files in `PUBSUB_ROOT_DIR/subscriptions`.
-
-```json
-// PUBSUB_ROOT_DIR/subscriptions.json
-{
-    "subscriptions": {
-        "TestSubscription": "test.subscription"
-    }
 }
 ```
 
