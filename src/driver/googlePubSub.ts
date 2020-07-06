@@ -17,6 +17,7 @@ import {
 import { SubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber';
 import Message from '../message';
 import { SubscriberTuple } from 'subscriber';
+import { SubscriberMetadata } from 'subscriber/subscriberV2';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 export default class GooglePubSubAdapter implements PubSubClientV2 {
@@ -120,15 +121,23 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
     // topic should be created before subscriptions are created
     const topic = await this.createOrGetTopic(metadata.topicName);
-    // Creates a new subscription
-    await topic.createSubscription(
-      metadata.subscriptionName,
-      this.getSubscriberOptions(subscriber),
-    );
+    await this.createSubscription(topic, subscriber);
+
     console.log(
       chalk.green(`Subscription ${metadata.subscriptionName} created.`),
     );
     return this.getSubscription(subscriber, client);
+  }
+  private async createSubscription(
+    topic: GCloudTopic,
+    subscriber: SubscriberTuple,
+  ): Promise<void> {
+    const [, metadata] = subscriber;
+    // Creates a new subscription
+    topic.createSubscription(
+      metadata.subscriptionName,
+      this.getSubscriberOptions(subscriber),
+    );
   }
 
   private async subscriptionExists(
