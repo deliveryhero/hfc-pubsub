@@ -88,8 +88,8 @@ exports.default = {
       maxMessages: 500,
     },
     deadLetterPolicy: {
-      deadLetterTopic: 'test.deadletter.topic';
-      maxDeliveryAttempts: 15;
+      deadLetterTopic: 'test.deadletter.topic',
+      maxDeliveryAttempts: 15,
     }
   },
   handleMessage: function (message) {
