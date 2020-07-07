@@ -128,9 +128,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     client: GooglePubSub,
   ): GCloudSubscription {
     const [, metadata] = subscriber;
-    return client.subscription(metadata.subscriptionName, {
-      ...this.getSubscriberOptions(subscriber),
-    });
+    return client.subscription(
+      metadata.subscriptionName,
+      this.getSubscriberOptions(subscriber),
+    );
   }
 
   private async subscriptionExists(

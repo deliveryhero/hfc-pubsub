@@ -72,7 +72,7 @@ class GooglePubSubAdapter {
     }
     getSubscription(subscriber, client) {
         const [, metadata] = subscriber;
-        return client.subscription(metadata.subscriptionName, Object.assign({}, this.getSubscriberOptions(subscriber)));
+        return client.subscription(metadata.subscriptionName, this.getSubscriberOptions(subscriber));
     }
     async subscriptionExists(subscriptionName, client) {
         const [subscriptionExists] = await client
