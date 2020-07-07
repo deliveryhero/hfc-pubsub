@@ -1,24 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import chalk from 'chalk';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Topic, Payload } from '../index';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Topic, Payload, Subscriber } from '../index';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {
   PubSub as GooglePubSub,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Message as GCloudMessage,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Subscription as GCloudSubscription,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Topic as GCloudTopic,
 } from '@google-cloud/pubsub';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { SubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber';
-import Message from '../message';
+import { SubscriberOptions } from '../subscriber/subscriberV2';
 import { SubscriberTuple } from 'subscriber';
-import { SubscriberMetadata } from 'subscriber/subscriberV2';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import Message from '../message';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 export default class GooglePubSubAdapter implements PubSubClientV2 {
   protected static instance: GooglePubSubAdapter;
@@ -80,17 +73,6 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     );
   }
 
-  private getSubscription(
-    subscriber: SubscriberTuple,
-    client: GooglePubSub,
-  ): GCloudSubscription {
-    const [, metadata] = subscriber;
-    return client.subscription(
-      metadata.subscriptionName,
-      this.getSubscriberOptions(subscriber),
-    );
-  }
-
   private log(message: string): void {
     console.log(chalk.green.bold(message));
   }
@@ -128,6 +110,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     );
     return this.getSubscription(subscriber, client);
   }
+
   private async createSubscription(
     topic: GCloudTopic,
     subscriber: SubscriberTuple,
@@ -138,6 +121,16 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       metadata.subscriptionName,
       this.getSubscriberOptions(subscriber),
     );
+  }
+
+  private getSubscription(
+    subscriber: SubscriberTuple,
+    client: GooglePubSub,
+  ): GCloudSubscription {
+    const [, metadata] = subscriber;
+    return client.subscription(metadata.subscriptionName, {
+      ...this.getSubscriberOptions(subscriber),
+    });
   }
 
   private async subscriptionExists(

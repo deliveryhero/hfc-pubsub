@@ -1,6 +1,6 @@
 import Subscriber from './subscriber';
 import Message from '../message';
-import { SubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber';
+import { SubscriberOptions as GoogleCloudSubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber';
 
 export type SubscriberVersion = 'v1' | 'v2' | 'v3';
 export default class SubscriberV2 extends Subscriber {
@@ -108,6 +108,12 @@ export const ExampleSubscriber: SubscriberObject = {
     console.log(message.data.toString());
   },
 };
+export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
+  deadLetterPolicy?: {
+    deadLetterTopic: string;
+    maxDeliveryAttempts: number;
+  };
+}
 
 export interface SubscriberMetadata {
   topicName: string;

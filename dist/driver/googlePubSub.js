@@ -45,10 +45,6 @@ class GooglePubSubAdapter {
             }
         });
     }
-    getSubscription(subscriber, client) {
-        const [, metadata] = subscriber;
-        return client.subscription(metadata.subscriptionName, this.getSubscriberOptions(subscriber));
-    }
     log(message) {
         console.log(chalk_1.default.green.bold(message));
     }
@@ -74,6 +70,10 @@ class GooglePubSubAdapter {
         const [, metadata] = subscriber;
         topic.createSubscription(metadata.subscriptionName, this.getSubscriberOptions(subscriber));
     }
+    getSubscription(subscriber, client) {
+        const [, metadata] = subscriber;
+        return client.subscription(metadata.subscriptionName, Object.assign({}, this.getSubscriberOptions(subscriber)));
+    }
     async subscriptionExists(subscriptionName, client) {
         const [subscriptionExists] = await client
             .subscription(subscriptionName)
@@ -96,10 +96,11 @@ class GooglePubSubAdapter {
     async getAllSubscriptions() {
         const [subscriptionData] = await this.client.getSubscriptions();
         const subscriptionList = subscriptionData.map((datum) => {
+            var _a, _b;
             const { metadata } = datum;
             return {
-                topicName: (metadata === null || metadata === void 0 ? void 0 : metadata.topic) || null,
-                subscriptionName: (metadata === null || metadata === void 0 ? void 0 : metadata.name) || datum.name,
+                topicName: ((_a = metadata) === null || _a === void 0 ? void 0 : _a.topic) || null,
+                subscriptionName: ((_b = metadata) === null || _b === void 0 ? void 0 : _b.name) || datum.name,
             };
         });
         return subscriptionList;

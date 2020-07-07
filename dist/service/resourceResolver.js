@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ResourceResolver = void 0;
 const path_1 = require("path");
 class ResourceResolver {
     static getFiles() {
