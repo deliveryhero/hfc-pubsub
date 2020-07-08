@@ -63,12 +63,30 @@ class GooglePubSubAdapter {
         }
         const topic = await this.createOrGetTopic(metadata.topicName);
         await this.createSubscription(topic, subscriber);
-        console.log(chalk_1.default.green(`Subscription ${metadata.subscriptionName} created.`));
         return this.getSubscription(subscriber, client);
     }
     async createSubscription(topic, subscriber) {
         const [, metadata] = subscriber;
-        topic.createSubscription(metadata.subscriptionName, this.getSubscriberOptions(subscriber));
+        try {
+            await topic.createSubscription(metadata.subscriptionName, Object.assign({}, (await this.mergeDeadLetterPolicy(this.getSubscriberOptions(subscriber)))));
+            console.log(chalk_1.default.green(`Subscription ${metadata.subscriptionName} created.`));
+        }
+        catch (e) {
+            console.error('There was an error creating a subscription.', e);
+        }
+    }
+    async mergeDeadLetterPolicy(options) {
+        if (!options)
+            return;
+        if (options.deadLetterPolicy) {
+            const deadLetterTopic = await this.createDeadLetterTopic(options.deadLetterPolicy);
+            return Object.assign(Object.assign({}, options), { deadLetterPolicy: Object.assign(Object.assign({}, options.deadLetterPolicy), { deadLetterTopic: deadLetterTopic }) });
+        }
+        return;
+    }
+    async createDeadLetterTopic(policy) {
+        const topic = await this.createOrGetTopic(policy.deadLetterTopic);
+        return topic.name;
     }
     getSubscription(subscriber, client) {
         const [, metadata] = subscriber;

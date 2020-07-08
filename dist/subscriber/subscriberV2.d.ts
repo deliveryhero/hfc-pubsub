@@ -11,7 +11,6 @@ export default class SubscriberV2 extends Subscriber {
     static from(subscriber: SubscriberObject | typeof Subscriber, version: SubscriberVersion): typeof SubscriberV2;
     static getSubscriberVersion(subscriber: unknown): SubscriberVersion;
 }
-export declare const ExampleSubscriber: SubscriberObject;
 export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
     deadLetterPolicy?: {
         deadLetterTopic: string;
