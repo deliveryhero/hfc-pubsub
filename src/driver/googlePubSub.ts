@@ -132,14 +132,13 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   ): Promise<SubscriberOptions | undefined> {
     if (!options) return;
     if (options.deadLetterPolicy) {
-      const deadLetterTopic = await this.createDeadLetterTopic(
-        options.deadLetterPolicy,
-      );
       return {
         ...options,
         deadLetterPolicy: {
           ...options.deadLetterPolicy,
-          deadLetterTopic: deadLetterTopic,
+          deadLetterTopic: await this.createDeadLetterTopic(
+            options.deadLetterPolicy,
+          ),
         },
       };
     }

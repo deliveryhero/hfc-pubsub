@@ -79,8 +79,7 @@ class GooglePubSubAdapter {
         if (!options)
             return;
         if (options.deadLetterPolicy) {
-            const deadLetterTopic = await this.createDeadLetterTopic(options.deadLetterPolicy);
-            return Object.assign(Object.assign({}, options), { deadLetterPolicy: Object.assign(Object.assign({}, options.deadLetterPolicy), { deadLetterTopic: deadLetterTopic }) });
+            return Object.assign(Object.assign({}, options), { deadLetterPolicy: Object.assign(Object.assign({}, options.deadLetterPolicy), { deadLetterTopic: await this.createDeadLetterTopic(options.deadLetterPolicy) }) });
         }
         return;
     }
