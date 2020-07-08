@@ -116,7 +116,6 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     subscriber: SubscriberTuple,
   ): Promise<void> {
     const [, metadata] = subscriber;
-    // Creates a new subscription
     topic.createSubscription(
       metadata.subscriptionName,
       this.getSubscriberOptions(subscriber),

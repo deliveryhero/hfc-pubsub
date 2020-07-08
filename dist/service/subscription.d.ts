@@ -1,7 +1,7 @@
 import { Subscribers, SubscriberV1, SubscriberV2, SubscriberObject } from '../subscriber';
 import { AllSubscriptions } from '../interface/pubSubClient';
 export default class SubscriptionService {
-    static subscribers: Subscribers | typeof SubscriberV1[] | typeof SubscriberV2[] | SubscriberObject[];
+    static subscribers: (typeof SubscriberV1 | typeof SubscriberV2 | SubscriberObject)[];
     private static _subscribers;
     static instance: SubscriptionService;
     constructor();
