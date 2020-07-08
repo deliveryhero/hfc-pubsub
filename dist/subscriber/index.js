@@ -1,17 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-class Subscriber {
-    constructor() {
-        this.handleMessage = this.handleMessage.bind(this);
-    }
-    init() { }
-    async handleMessage(message) {
-        message;
-    }
-}
-exports.default = Subscriber;
-Subscriber.topicName = '';
-Subscriber.subscriptionName = '';
-Subscriber.description = '';
-Subscriber.maxMessages = 1;
-Subscriber.ackDeadlineSeconds = 10;
+const subscriber_1 = __importDefault(require("./subscriber"));
+const subscriberV2_1 = __importDefault(require("./subscriberV2"));
+exports.default = subscriber_1.default;
+exports.SubscriberV1 = subscriber_1.default;
+exports.SubscriberV2 = subscriberV2_1.default;

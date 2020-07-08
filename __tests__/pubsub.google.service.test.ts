@@ -3,7 +3,6 @@ require('dotenv').config({ path: require('find-config')('.env') });
 import PubSubService from '../src/service/pubsub';
 import ExampleTopic from './pubsub/topics/example.topic';
 import ExampleSubscriber from './pubsub/subscriptions/example.subscription-ts';
-import GooglePubSubAdapter from '../src/driver/googlePubSub';
 
 process.env.PUBSUB_DRIVER = 'google';
 
@@ -29,7 +28,7 @@ jest.mock('../src/driver/googlePubSub', () => ({
       return mockSubscribe();
     }
     public async getAllSubscriptions(): Promise<any[]> {
-      return mockAllUsersList
+      return mockAllUsersList;
     }
   },
 }));
@@ -56,8 +55,7 @@ describe('pubsub.service', () => {
   });
   it('should return an array from getAllSubscriptions', async done => {
     const data = await service.getAllSubscriptions();
-    expect(data).toBe(mockAllUsersList)
+    expect(data).toBe(mockAllUsersList);
     done();
   });
 });
-  

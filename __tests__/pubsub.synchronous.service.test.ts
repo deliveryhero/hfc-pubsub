@@ -44,7 +44,7 @@ let subscriber: any;
 let topic: any;
 describe('pubsub.service - synchronous driver', () => {
   beforeAll(() => {
-    service =  PubSubService.getInstance();
+    service = PubSubService.getInstance();
     subscriber = new ExampleSubscriber();
     topic = new ExampleTopic();
   });
@@ -62,8 +62,10 @@ describe('pubsub.service - synchronous driver', () => {
   it('should throw if the synchronous driver is enabled for getAllSubscriptions', async done => {
     try {
       await service.getAllSubscriptions();
-    } catch(err) {
-      expect(err.message).toBe('This feature is not available with the synchronous driver')
+    } catch (err) {
+      expect(err.message).toBe(
+        'This feature is not available with the synchronous driver',
+      );
     }
     done();
   });

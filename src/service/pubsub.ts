@@ -1,14 +1,14 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Topic, { Payload } from '../topic';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Subscriber from '../subscriber';
+import Subscriber, { SubscriberTuple, Subscribers } from '../subscriber';
 import EventBus from '../driver/eventBus';
-import PubSubClient from '../interface/pubSubClient';
+import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
 import GooglePubSubAdapter from '../driver/googlePubSub';
 import SubscriptionService from './subscription';
 
 export default class PubSubService {
-  protected static client: PubSubClient;
+  protected static client: PubSubClientV2;
   protected static instance: PubSubService;
   protected static driver: 'synchronous' | 'google';
   private static status: 'ready' | 'pending' = 'pending';
@@ -18,6 +18,7 @@ export default class PubSubService {
     this.initClient();
     this.bind(this);
   }
+
   private bind(instance: PubSubService): void {
     this.subscribe = this.subscribe.bind(instance);
     this.publish = this.publish.bind(instance);
@@ -32,12 +33,9 @@ export default class PubSubService {
   }
 
   private syncDriverIsEnabled(): boolean {
-    return (
-      (process.env.PUBSUB_DRIVER &&
-        process.env.PUBSUB_DRIVER.toLowerCase() == 'synchronous') ||
-      false
-    );
+    return process.env.PUBSUB_DRIVER?.toLowerCase() == 'synchronous' || false;
   }
+
   private initClient(): void {
     if (PubSubService.driver === 'synchronous') {
       PubSubService.client = EventBus.getInstance();
@@ -73,20 +71,24 @@ export default class PubSubService {
     );
   }
 
-  private getClient(): PubSubClient {
+  private getClient(): PubSubClientV2 {
     return PubSubService.client;
   }
 
-  public getSubscribers(): (typeof Subscriber)[] {
+  public getSubscribers(): Subscribers {
     return SubscriptionService.getSubscribers();
   }
 
   public async startSubscriptions(): Promise<void> {
     if (PubSubService.status === 'ready') return;
+
     if (PubSubService.driver !== 'synchronous')
       SubscriptionService.loadSubscriptionService();
-    for (let subscription of SubscriptionService.getSubscribers())
+
+    const subscribers = SubscriptionService.getSubscribers();
+    for (const subscription of subscribers) {
       await this.subscribe(subscription);
+    }
     PubSubService.status = 'ready';
   }
 
@@ -106,14 +108,14 @@ export default class PubSubService {
   /**
    * Subscribes to any given topic
    */
-  public async subscribe(subscription: typeof Subscriber): Promise<void> {
+  public async subscribe(subscription: SubscriberTuple): Promise<void> {
     return this.getClient().subscribe(subscription);
   }
 
   /**
    * Retrieves a list of subscribers
    */
-  public async getAllSubscriptions() {
+  public async getAllSubscriptions(): Promise<AllSubscriptions[]> {
     return this.getClient().getAllSubscriptions();
   }
 }

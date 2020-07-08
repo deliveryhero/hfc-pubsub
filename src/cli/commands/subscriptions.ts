@@ -1,3 +1,4 @@
+require('dotenv').config({ path: require('find-config')('.env') });
 import { PubSubService } from '../../index';
 import chalk from 'chalk';
 import { cli } from 'cli-ux';

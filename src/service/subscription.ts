@@ -1,11 +1,24 @@
-import Subscriber from '../subscriber';
+import {
+  Subscribers,
+  SubscriberV1,
+  SubscriberV2,
+  SubscriberObject,
+  SubscriberTuple,
+} from '../subscriber';
 import PubSubService from './pubsub';
 import { AllSubscriptions } from '../interface/pubSubClient';
 import { resolve } from 'path';
 import fs = require('fs');
+import SubscriberLoader from './subscriberLoader';
+import { ResourceResolver } from './resourceResolver';
 
 export default class SubscriptionService {
-  public static subscribers: typeof Subscriber[] = [];
+  public static subscribers:
+    | Subscribers
+    | typeof SubscriberV1[]
+    | typeof SubscriberV2[]
+    | SubscriberObject[] = [];
+  private static _subscribers: Subscribers = [];
   public static instance = new SubscriptionService();
   public constructor() {
     this.checkExistence(process.env, 'PUBSUB_ROOT_DIR');
@@ -24,107 +37,49 @@ export default class SubscriptionService {
 
   public static async init(): Promise<void> {}
 
-  public static getSubscribers(): typeof Subscriber[] {
-    if (SubscriptionService.subscribers.length > 0) {
-      return SubscriptionService.subscribers;
+  public static getSubscribers(): Subscribers {
+    if (SubscriptionService._subscribers.length > 0) {
+      return SubscriptionService._subscribers as Subscribers;
     }
 
-    SubscriptionService.loadSubscribersFromLocations(
-      SubscriptionService.getSubscriptionLocations(),
+    SubscriptionService.loadSubscribersFromFilesystem(
+      ResourceResolver.getFiles(),
     );
 
-    SubscriptionService.validateSubscribers();
-    return SubscriptionService.subscribers;
+    return SubscriptionService._subscribers as Subscribers;
   }
 
-  private static loadSubscribersFromLocations([
-    subscriptionService,
-    subscribersJson,
-    dir,
-  ]: [string, string, string]): void {
-    if (fs.existsSync(subscriptionService)) {
-      SubscriptionService.loadSubscribersFromService(subscriptionService);
-    } else if (fs.existsSync(subscribersJson)) {
-      SubscriptionService.loadSubscribersFromJson(subscribersJson);
-    } else {
-      SubscriptionService.loadSubscribersFromDirectory(dir);
-    }
+  private static loadSubscribersFromFilesystem([subscriptionService, dir]: [
+    string,
+    string,
+  ]): Subscribers {
+    const loader = new SubscriberLoader();
+    const subscribersFromService = fs.existsSync(subscriptionService)
+      ? loader.loadSubscribersFromService(subscriptionService)
+      : [];
+
+    const subscribersFromDirectory = loader.loadSubscribersFromDirectory(dir);
+
+    SubscriptionService._subscribers = Array.from(
+      subscribersFromService
+        .concat(subscribersFromDirectory)
+        .reduce((map, subscriber) => {
+          const subscriptionKey =
+            subscriber[1].topicName + subscriber[1].subscriptionName;
+          map.set(subscriptionKey, subscriber);
+          return map;
+        }, new Map<string, SubscriberTuple>())
+        .values(),
+    );
+
+    return SubscriptionService._subscribers;
   }
+
   public static loadSubscriptionService(): SubscriptionService {
-    const [subscriptionService] = this.getSubscriptionLocations();
+    const [subscriptionService] = ResourceResolver.getFiles();
     const service = require(resolve(subscriptionService)).default;
     service.init();
     return service;
-  }
-
-  protected static getSubscriptionLocations(): [string, string, string] {
-    const dir = resolve(process.env.PUBSUB_ROOT_DIR || '', 'subscriptions');
-    const subscriptionService = resolve(
-      process.env.PUBSUB_ROOT_DIR || '',
-      'subscription.service.js',
-    );
-    const subscribersJson = resolve(
-      process.env.PUBSUB_ROOT_DIR || '',
-      'subscribers.json',
-    );
-    return [subscriptionService, subscribersJson, dir];
-  }
-
-  protected static validateSubscribers(): void {
-    this.subscribers.forEach((subscriber: any): void => {
-      if (typeof subscriber !== typeof Subscriber) {
-        throw Error(
-          'Each subscription must extend the base Subscription class',
-        );
-      }
-    });
-  }
-
-  protected static loadSubscribersFromDirectory(dir: string): void {
-    const subscriptionFiles = fs
-      .readdirSync(dir)
-      .filter((file): RegExpMatchArray | null => {
-        return file.match(/\.js$/);
-      });
-    for (const file of subscriptionFiles) {
-      const subscription = require(resolve(dir, file)).default;
-      this.subscribers.push(subscription);
-    }
-  }
-
-  protected static loadSubscribersFromService(
-    subscriptionService: string,
-    init = false,
-  ): void {
-    const service = require(resolve(subscriptionService)).default;
-    if (init) service.init();
-    service.subscribers.forEach((subscription: typeof Subscriber): void => {
-      this.subscribers.push(subscription);
-    });
-  }
-
-  protected static loadSubscribersFromJson(jsonFile: string): void {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const subscribersFile = require(jsonFile);
-    if (typeof subscribersFile.subscribers == 'undefined') {
-      throw Error(
-        'subscribers.json is invalid. Make sure that subscribers key is defined',
-      );
-    }
-    const subscribers = subscribersFile.subscribers;
-    Object.keys(subscribers).forEach((key): void => {
-      const pathToSubscribers = resolve(
-        process.env.PUBSUB_ROOT_DIR || '',
-        'subscriptions',
-        `${subscribers[key]}.js`,
-      );
-      if (!fs.existsSync(pathToSubscribers)) {
-        console.log(`Could not find subscription: ${subscribers[key]}.js`);
-        return;
-      }
-      const subscription = require(pathToSubscribers).default;
-      this.subscribers.push(subscription);
-    });
   }
 
   public static async getAllSubscriptions(): Promise<AllSubscriptions[]> {

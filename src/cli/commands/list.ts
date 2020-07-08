@@ -2,15 +2,14 @@ import { PubSubService } from '../../index';
 import chalk from 'chalk';
 import { cli } from 'cli-ux';
 import wrapAnsi = require('wrap-ansi');
+import { SubscriberTuple } from 'subscriber';
 
 export default {
   command: 'list',
   desc: 'Lists all subscriptions',
   handler: async (): Promise<void> => {
     console.log(
-      chalk.white.bgBlue.bold(
-        '\n Subscriptions registered in SubscriptionService ',
-      ),
+      chalk.white.bgBlue.bold('\n Google Pub/Sub Subscriptions'),
       '\n',
     );
     if (PubSubService.getInstance().getSubscribers().length == 0) {
@@ -20,13 +19,14 @@ export default {
         PubSubService.getInstance().getSubscribers(),
         {
           'Topic Name': {
-            get: (row): string => row.topicName,
+            get: (row: SubscriberTuple): string => row[1].topicName,
           },
           'Subscription Name': {
-            get: (row): string => row.subscriptionName,
+            get: (row: SubscriberTuple): string => row[1].subscriptionName,
           },
           Description: {
-            get: (row): string => wrapAnsi(row.description, 100),
+            get: (row: SubscriberTuple): string =>
+              wrapAnsi(row[1].description || '', 100),
           },
         },
         {
@@ -34,6 +34,7 @@ export default {
         },
       );
       console.log('\n');
+      process.exit(0);
     }
   },
 };

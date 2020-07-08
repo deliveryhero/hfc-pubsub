@@ -1,21 +1,34 @@
-# HFC Google Pub/Sub Module
-A slightly opinionated, micro-framework for publishing and subscribing to messages on Google PubSub. 
+# Google Pub/Sub Framework
+A small framework for publishing and subscribing to messages on Google Pub/Sub with minimal setup required.
 
 ## Features
 
 1. CLI tool for starting subscription server and for listing subscriptions
-2. Create new topics and publish a message to those topics in 2 lines
-3. Automatic timestamping of all messages (ISO8601)
-4. Synchronous Driver and Google PubSub support
+2. Define your subscription handlers with a simple object
+3. Create new topics and publish a message to those topics in 2 lines
 
-## Prerequisites Requirements
+## Table of Contents
+- [Google Pub/Sub Framework](#google-pubsub-framework)
+  - [Features](#features)
+  - [Table of Contents](#table-of-contents)
+  - [Prerequisites](#prerequisites)
+  - [Adding a new subscription message handler](#adding-a-new-subscription-message-handler)
+  - [Running subscription server](#running-subscription-server)
+  - [Publishing a Message](#publishing-a-message)
+  - [Subscribing to a Topic](#subscribing-to-a-topic)
+  - [Connecting to a database](#connecting-to-a-database)
+  - [Enabling Synchronous Driver](#enabling-synchronous-driver)
+
+
+## Prerequisites
 
 1. This module expects that you've created a pubsub directory in your project with the following structure:
 
 ```pre
-| - pubsub
-|   | - subscriptions
-|   | - topics
+| .env        <-- this can be in your project root directory
+| - pubsub/    <-- this can be anywhere (defined in .env)
+|   | - subscriptions/
+|   | - topics/
 ```
 
 2. add the following to your `.env`
@@ -28,20 +41,43 @@ PUBSUB_ROOT_DIR=/path/to/module/pubsub
 
 `PUBSUB_ROOT_DIR` must be the path to your project's pubsub directory. This module only works with compiled JS, so if you are writing your code in typescript, you must set this variable to the pubsub root in your project's build directory.
 
-## Adding a new subscriber
+`GOOGLE_APPLICATION_CREDENTIALS` see https://cloud.google.com/docs/authentication/getting-started#creating_a_service_account to generate this
 
-1. Add your subscriber in `pubsub/subscriptions/name.of.pubsub.subscription` (Follow the template examples)
+`GOOGLE_CLOUD_PUB_SUB_PROJECT_ID` name of the project in Google Cloud Platform
 
-As a convention the name of the file should match the name of the subscription so the file structure is self-documenting.
+## Adding a new subscription message handler
 
-2. (Optional): By default, the subscriptions server will load all subscribers found in  `PUBSUB_ROOT_DIR/subscriptions`, however you can explicitly define which subscriptions the server should run by including a `subscriptions.json` file in `PUBSUB_ROOT_DIR/subscriptions.json` or by including a `PUBSUB_ROOT_DIR/subscriptions.service.js` file. Examples are found below.
+1. Add your subscriber in `pubsub/subscriptions/name.of.subscription.sub.js`. By default, the subscriptions server will load all subscribers found in  `PUBSUB_ROOT_DIR/subscriptions` that are suffixed with `.sub` such as `pubsub/subscriptions/order.received.sub.js`. 
 
-## Running subscription handlers
+Note: As a convention the name of the file should match the name of the subscription so the file structure is self-documenting.
 
-1. Run subscriptions `npx subscriptions start`
-2. List subscriptions `npx subscriptions list`
 
-Note: If the subscription doesn't exist in google pub/sub it will be created when you run `./node_modules/.bin/subscriptions start`
+```javascript
+// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.sub.js
+exports.default = {
+  topicName: 'test.topic',
+  subscriptionName: 'test.topic.sub',
+  description: 'Will console log messages published on test.topic',
+  options: {
+    ackDeadline: 30, // in seconds
+    flowControl: {
+      maxMessages: 500,
+    },
+  },
+  handleMessage: function (message) {
+    console.log(`received a message on ${this.subscriptionName}`)
+    console.log(message.data.toString());
+  },
+};
+```
+
+## Running subscription server
+Install npx if you don't have it installed yet: `npm i npx -g`
+
+1. Run subscriptions `npx subscriptions start` 
+2. List subscriptions `npx subscriptions list` 
+
+Note: If the subscription doesn't exist in google pub/sub it will be created when you run `npx subscriptions start`
 
 ## Publishing a Message
 
@@ -80,89 +116,66 @@ If a topic does not exist yet with the name you defined, it will be created befo
 
 ## Subscribing to a Topic
 
-Create a `Subscriber` class which acts as a message handler for messages that arrive on the defined topic. A new instance of `Subscriber` will be created for each message published on the topic.
+Create a `Subscriber`  which defines a message handler function to run for each message that arrives on the corresponding topic. A new instance will be created for each message published on the topic.
 
-1. Create a subscription class in `path/to/your/pubsub/subscriptions`
+1. Create a subscriber in `path/to/your/pubsub/subscriptions`
 
 Typescript example:
 
 ```typescript
-// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.ts
+// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.sub.ts
+import { SubscriberObject, Message } from "@honestfoodcompany/pubsub"; // optional, just to import the interface
+export default: SubscriberObject = {
+  topicName: 'test.topic',
+  subscriptionName: 'test.topic.subscription',
+  description: 'Will console log messages published on test.topic',
+  options: {
+    ackDeadline: 30, // in seconds
+    flowControl: {
+      maxMessages: 500,
+    },
+  },
+  handleMessage: function(message: Message): void {
+    console.log(`received a message on ${this.subscriptionName}`)
+    console.log(message.data.toString());
+  },
+};
 
-import { Subscriber, Message } from "@honestfoodcompany/pubsub";
-
-export default class SimpleSubscriber extends Subscriber {
-  public static topicName: string = "simple.topic.name";
-  public static subscriptionName: string = "simple.topic.name.subscription";
-  public static description: string = "Example subscription client";
-
-  public init(): void {
-    // set your instance properties here
-  }
-  public async handleMessage(message: Message): Promise<void> {
-    console.log(`Received message:`, message.data.toString());
-    // Do stuff with your message here
-    message.ack();
-  }
-}
 ```
 
 Javascript example:
 
 ```javascript
 // path/to/your/pubsub/subscriptions/simple.topic.name.subscription.js
-const PubSub = require("@honestfoodcompany/pubsub");
-class TestSubscription extends PubSub.Subscription {
-    constructor() {
-        super(...arguments);
-    }
-    async handleMessage(message) {
-        const payload = JSON.parse(message.data.toString());
-        message.ack();
-    }
-}
-TestSubscription.topicName = "test-topic";
-TestSubscription.subscriptionName = "test-topic.subscription";
-TestSubscription.description = "Just a test subscription";
-exports.default = TestSubscription
+exports.default = {
+  topicName: 'test.topic',
+  subscriptionName: 'test.topic.subscription',
+  description: 'Will console log messages published on test.topic',
+  options: {
+    ackDeadline: 30, // in seconds
+    flowControl: {
+      maxMessages: 500,
+    },
+  },
+  handleMessage: function(message) {
+    console.log(`received a message on ${this.subscriptionName}`)
+    console.log(message.data.toString());
+  },
+};
 ```
 
 2. Start your subscriptions `./node_modules/.bin/subscriptions start`
 
-## Registering your subscription with the `SubscriptionService` (optional)
+## Connecting to a database
 
-If you would like to incorporate dependency injection or extend the default behavior of the `SubscriptionService` you may create your own `SubscriptionService` which extends the base service like in the example below:
-
-```typescript
-// path/to/your/pubsub/subscriptions.service.ts
-
-import { SubscriptionService as BaseSubscriptionService } from "@honestfoodcompany/pubsub";
-import SimpleSubscriber from "path/to/your/pubsub/subscriptions/simple.topic.name.subscriber";
-
-export default class SubscriptionService extends BaseSubscriptionService {
-  /**
-   * Add subscriptions to this array to register them
-   */
-  public static subscribers = [SimpleSubscription];
-}
-```
-
-## Connecting to Mongoose
-
-If you would like to connect to mongoose, you must include a `subscription.service` file in your `PUBSUB_ROOT_DIR` like this:
+If you would like your subscription handlers to connect to a database but don't want to create a new one connection for each message that is received, you must include a `subscription.service` file in your `PUBSUB_ROOT_DIR` whose `init` function connects to your database:
 
 ```typescript
 import { connect } from "mongoose";
 import { SubscriptionService as BaseSubscriptionService } from "@honestfoodcompany/pubsub";
 import ExampleSubscriber from "./subscriptions/example.subscriber";
-import chalk from "chalk";
 
 export default class SubscriptionService extends BaseSubscriptionService {
-  /**
-   * Add subscriptions to this array to register them
-   */
-  public static subscribers = [ExampleSubscriber];
-
   /**
    * connect to mongoose
    */
@@ -180,21 +193,6 @@ export default class SubscriptionService extends BaseSubscriptionService {
   }
 }
 ```
-
-## Registering your subscription with `subscriptions.json` (optional)
-
-If you prefer to explicitly define the subscriptions that the subscription server runs, you can define those subscriptions in `subscriptions.json`. Otherwise if no `subscriptions.json` file is set, and no `subscription.service.js` file defined, the subscription server's default behavior is to load all the `.js` files in `PUBSUB_ROOT_DIR/subscriptions`.
-
-```json
-// PUBSUB_ROOT_DIR/subscriptions.json
-{
-    "subscriptions": {
-        "TestSubscription": "test.subscription"
-    }
-}
-```
-
-This configuration will enable the subscription found in `PUBSUB_ROOT_DIR/subscriptions/test.subscription.js`. The key can be any string value. The value in the key-value pair is the name of the subscription file found in `PUBSUB_ROOT_DIR/subscriptions` without the `.js` extension.
 
 ## Enabling Synchronous Driver
 
