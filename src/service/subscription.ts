@@ -20,6 +20,7 @@ export default class SubscriptionService {
   )[] = [];
   private static _subscribers: Subscribers = [];
   public static instance = new SubscriptionService();
+
   public constructor() {
     this.checkExistence(process.env, 'PUBSUB_ROOT_DIR');
   }

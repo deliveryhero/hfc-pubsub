@@ -45,6 +45,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     );
     return messageId;
   }
+
   public async subscribe(subscriber: SubscriberTuple): Promise<void> {
     const [, metadata] = subscriber;
     const subscription = await this.createOrGetSubscription(subscriber);

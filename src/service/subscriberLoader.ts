@@ -29,6 +29,7 @@ export default class SubscriberLoader {
     }
     return this.subscribers;
   }
+
   public loadSubscribersFromService(
     subscriptionService: SubscriptionServiceFile,
     init = false,
