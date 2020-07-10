@@ -13,13 +13,14 @@ import SubscriberLoader from './subscriberLoader';
 import { ResourceResolver } from './resourceResolver';
 
 export default class SubscriptionService {
-  public static subscribers:
-    | Subscribers
-    | typeof SubscriberV1[]
-    | typeof SubscriberV2[]
-    | SubscriberObject[] = [];
+  public static subscribers: (
+    | typeof SubscriberV1
+    | typeof SubscriberV2
+    | SubscriberObject
+  )[] = [];
   private static _subscribers: Subscribers = [];
   public static instance = new SubscriptionService();
+
   public constructor() {
     this.checkExistence(process.env, 'PUBSUB_ROOT_DIR');
   }

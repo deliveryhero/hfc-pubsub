@@ -80,17 +80,3 @@ class SubscriberV2 extends subscriber_1.default {
     }
 }
 exports.default = SubscriberV2;
-exports.ExampleSubscriber = {
-    topicName: 'test.topic',
-    subscriptionName: 'test.topic.subscription',
-    description: 'Will console log messages published on test.topic',
-    options: {
-        ackDeadline: 30,
-        flowControl: {
-            maxMessages: 500,
-        },
-    },
-    handleMessage: (message) => {
-        console.log(message.data.toString());
-    },
-};

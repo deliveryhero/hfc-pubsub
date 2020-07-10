@@ -1,10 +1,11 @@
 import Subscriber from './subscriber';
 import Message from '../message';
-import { SubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber';
+import { SubscriberOptions as GoogleCloudSubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber';
 
 export type SubscriberVersion = 'v1' | 'v2' | 'v3';
 export default class SubscriberV2 extends Subscriber {
   public metadata?: SubscriberMetadata;
+
   public constructor(private subscriberObject?: SubscriberObject) {
     super();
     this.metadata = subscriberObject;
@@ -43,12 +44,14 @@ export default class SubscriberV2 extends Subscriber {
               },
             },
           };
+
           public static from(
             subscriberClass: SubscriberObject | typeof Subscriber,
             version: SubscriberVersion,
           ): typeof SubscriberV2 {
             return SubscriberV2.from(subscriberClass, version);
           }
+
           public static getSubscriberVersion(
             subscriberClass: typeof Subscriber,
           ): SubscriberVersion {
@@ -94,20 +97,12 @@ export default class SubscriberV2 extends Subscriber {
   }
 }
 
-export const ExampleSubscriber: SubscriberObject = {
-  topicName: 'test.topic',
-  subscriptionName: 'test.topic.subscription',
-  description: 'Will console log messages published on test.topic',
-  options: {
-    ackDeadline: 30, // in seconds
-    flowControl: {
-      maxMessages: 500,
-    },
-  },
-  handleMessage: (message: Message): void => {
-    console.log(message.data.toString());
-  },
-};
+export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
+  deadLetterPolicy?: {
+    deadLetterTopic: string;
+    maxDeliveryAttempts: number;
+  };
+}
 
 export interface SubscriberMetadata {
   topicName: string;
@@ -127,6 +122,7 @@ export interface MessageHandler {
    */
   init?: () => void;
 }
+
 export interface FlexibleObject {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;

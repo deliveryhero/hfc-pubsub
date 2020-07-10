@@ -13,6 +13,7 @@ A small framework for publishing and subscribing to messages on Google Pub/Sub w
   - [Table of Contents](#table-of-contents)
   - [Prerequisites](#prerequisites)
   - [Adding a new subscription message handler](#adding-a-new-subscription-message-handler)
+  - [Deadletter Configuration](#deadletter-configuration)
   - [Running subscription server](#running-subscription-server)
   - [Publishing a Message](#publishing-a-message)
   - [Subscribing to a Topic](#subscribing-to-a-topic)
@@ -71,7 +72,35 @@ exports.default = {
 };
 ```
 
+## Deadletter Configuration
+
+It is possible to define a deadltter policy for a subscription:
+
+```javascript
+// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.sub.js
+exports.default = {
+  topicName: 'test.topic',
+  subscriptionName: 'test.topic.sub',
+  description: 'Will console log messages published on test.topic',
+  options: {
+    ackDeadline: 30, // in seconds
+    flowControl: {
+      maxMessages: 500,
+    },
+    deadLetterPolicy: {
+      deadLetterTopic: 'test.deadletter.topic',
+      maxDeliveryAttempts: 15,
+    }
+  },
+  handleMessage: function (message) {
+    console.log(`received a message on ${this.subscriptionName}`)
+    console.log(message.data.toString());
+  },
+};
+```
+
 ## Running subscription server
+
 Install npx if you don't have it installed yet: `npm i npx -g`
 
 1. Run subscriptions `npx subscriptions start` 

@@ -45,10 +45,6 @@ class GooglePubSubAdapter {
             }
         });
     }
-    getSubscription(subscriber, client) {
-        const [, metadata] = subscriber;
-        return client.subscription(metadata.subscriptionName, this.getSubscriberOptions(subscriber));
-    }
     log(message) {
         console.log(chalk_1.default.green.bold(message));
     }
@@ -66,9 +62,34 @@ class GooglePubSubAdapter {
             return this.getSubscription(subscriber, client);
         }
         const topic = await this.createOrGetTopic(metadata.topicName);
-        await topic.createSubscription(metadata.subscriptionName, this.getSubscriberOptions(subscriber));
-        console.log(chalk_1.default.green(`Subscription ${metadata.subscriptionName} created.`));
+        await this.createSubscription(topic, subscriber);
         return this.getSubscription(subscriber, client);
+    }
+    async createSubscription(topic, subscriber) {
+        const [, metadata] = subscriber;
+        try {
+            await topic.createSubscription(metadata.subscriptionName, Object.assign({}, (await this.mergeDeadLetterPolicy(this.getSubscriberOptions(subscriber)))));
+            console.log(chalk_1.default.green(`Subscription ${metadata.subscriptionName} created.`));
+        }
+        catch (e) {
+            console.error('There was an error creating a subscription.', e);
+        }
+    }
+    async mergeDeadLetterPolicy(options) {
+        if (!options)
+            return;
+        if (options.deadLetterPolicy) {
+            return Object.assign(Object.assign({}, options), { deadLetterPolicy: Object.assign(Object.assign({}, options.deadLetterPolicy), { deadLetterTopic: await this.createDeadLetterTopic(options.deadLetterPolicy) }) });
+        }
+        return;
+    }
+    async createDeadLetterTopic(policy) {
+        const topic = await this.createOrGetTopic(policy.deadLetterTopic);
+        return topic.name;
+    }
+    getSubscription(subscriber, client) {
+        const [, metadata] = subscriber;
+        return client.subscription(metadata.subscriptionName, this.getSubscriberOptions(subscriber));
     }
     async subscriptionExists(subscriptionName, client) {
         const [subscriptionExists] = await client

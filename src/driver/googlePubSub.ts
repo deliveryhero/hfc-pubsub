@@ -1,28 +1,22 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import chalk from 'chalk';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Topic, Payload } from '../index';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Topic, Payload, Subscriber } from '../index';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {
   PubSub as GooglePubSub,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Message as GCloudMessage,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Subscription as GCloudSubscription,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Topic as GCloudTopic,
+  Message as GoogleCloudMessage,
+  Subscription as GoogleCloudSubscription,
+  Topic as GoogleCloudTopic,
 } from '@google-cloud/pubsub';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { SubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber';
-import Message from '../message';
+import { SubscriberOptions } from '../subscriber/subscriberV2';
 import { SubscriberTuple } from 'subscriber';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import Message from '../message';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 export default class GooglePubSubAdapter implements PubSubClientV2 {
   protected static instance: GooglePubSubAdapter;
   protected client: GooglePubSub;
-  protected topics: Map<GCloudTopic['name'], GCloudTopic>;
+  protected topics: Map<GoogleCloudTopic['name'], GoogleCloudTopic>;
 
   public constructor(client: GooglePubSub) {
     this.client = client;
@@ -51,6 +45,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     );
     return messageId;
   }
+
   public async subscribe(subscriber: SubscriberTuple): Promise<void> {
     const [, metadata] = subscriber;
     const subscription = await this.createOrGetSubscription(subscriber);
@@ -62,12 +57,12 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
   private addHandler(
     subscriber: SubscriberTuple,
-    subscription: GCloudSubscription,
+    subscription: GoogleCloudSubscription,
   ): void {
     const [subscriberClass] = subscriber;
     subscription.on(
       'message',
-      async (message: GCloudMessage): Promise<void> => {
+      async (message: GoogleCloudMessage): Promise<void> => {
         const subscriber = new subscriberClass();
         subscriber.init();
         try {
@@ -76,17 +71,6 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
           message.nack();
         }
       },
-    );
-  }
-
-  private getSubscription(
-    subscriber: SubscriberTuple,
-    client: GooglePubSub,
-  ): GCloudSubscription {
-    const [, metadata] = subscriber;
-    return client.subscription(
-      metadata.subscriptionName,
-      this.getSubscriberOptions(subscriber),
     );
   }
 
@@ -106,7 +90,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
    */
   private async createOrGetSubscription(
     subscriber: SubscriberTuple,
-  ): Promise<GCloudSubscription> {
+  ): Promise<GoogleCloudSubscription> {
     const client = new GooglePubSub({
       projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID,
     });
@@ -118,17 +102,65 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       return this.getSubscription(subscriber, client);
     }
 
-    // topic should be created before subscriptions are created
     const topic = await this.createOrGetTopic(metadata.topicName);
-    // Creates a new subscription
-    await topic.createSubscription(
+    await this.createSubscription(topic, subscriber);
+
+    return this.getSubscription(subscriber, client);
+  }
+
+  private async createSubscription(
+    topic: GoogleCloudTopic,
+    subscriber: SubscriberTuple,
+  ): Promise<void> {
+    const [, metadata] = subscriber;
+    try {
+      await topic.createSubscription(metadata.subscriptionName, {
+        ...(await this.mergeDeadLetterPolicy(
+          this.getSubscriberOptions(subscriber),
+        )),
+      });
+      console.log(
+        chalk.green(`Subscription ${metadata.subscriptionName} created.`),
+      );
+    } catch (e) {
+      console.error('There was an error creating a subscription.', e);
+    }
+  }
+
+  private async mergeDeadLetterPolicy(
+    options: SubscriberOptions | undefined,
+  ): Promise<SubscriberOptions | undefined> {
+    if (!options) return;
+    if (options.deadLetterPolicy) {
+      return {
+        ...options,
+        deadLetterPolicy: {
+          ...options.deadLetterPolicy,
+          deadLetterTopic: await this.createDeadLetterTopic(
+            options.deadLetterPolicy,
+          ),
+        },
+      };
+    }
+    return;
+  }
+
+  private async createDeadLetterTopic(
+    policy: NonNullable<SubscriberOptions['deadLetterPolicy']>,
+  ): Promise<string> {
+    const topic = await this.createOrGetTopic(policy.deadLetterTopic);
+    return topic.name;
+  }
+
+  private getSubscription(
+    subscriber: SubscriberTuple,
+    client: GooglePubSub,
+  ): GoogleCloudSubscription {
+    const [, metadata] = subscriber;
+    return client.subscription(
       metadata.subscriptionName,
       this.getSubscriberOptions(subscriber),
     );
-    console.log(
-      chalk.green(`Subscription ${metadata.subscriptionName} created.`),
-    );
-    return this.getSubscription(subscriber, client);
   }
 
   private async subscriptionExists(
@@ -145,7 +177,9 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     return this.client;
   }
 
-  protected async createOrGetTopic(topicName: string): Promise<GCloudTopic> {
+  protected async createOrGetTopic(
+    topicName: string,
+  ): Promise<GoogleCloudTopic> {
     const cachedTopic = this.topics.get(topicName);
 
     if (cachedTopic) {
