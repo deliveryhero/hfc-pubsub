@@ -1,5 +1,5 @@
-# Google Pub/Sub Framework
-A small framework for publishing and subscribing to messages on Google Pub/Sub with minimal setup required.
+# Google Pub/Sub Node.js Framework
+A small framework for publishing and subscribing to messages on Google Pub/Sub with minimal setup or boilerplate code required.
 
 ## Features
 
@@ -8,11 +8,12 @@ A small framework for publishing and subscribing to messages on Google Pub/Sub w
 3. Create new topics and publish a message to those topics in 2 lines
 
 ## Table of Contents
-- [Google Pub/Sub Framework](#google-pubsub-framework)
+- [Google Pub/Sub Node.js Framework](#google-pubsub-nodejs-framework)
   - [Features](#features)
   - [Table of Contents](#table-of-contents)
   - [Prerequisites](#prerequisites)
   - [Adding a new subscription message handler](#adding-a-new-subscription-message-handler)
+  - [Subscriber Options](#subscriber-options)
   - [Deadletter Configuration](#deadletter-configuration)
   - [Running subscription server](#running-subscription-server)
   - [Publishing a Message](#publishing-a-message)
@@ -70,6 +71,34 @@ exports.default = {
     console.log(message.data.toString());
   },
 };
+```
+
+## Subscriber Options
+
+```typescript
+interface SubscriberOptions {
+  ackDeadline?: number;
+  batching?: {
+    callOptions?: CallOptions; // see https://github.com/googleapis/gax-nodejs/blob/77f16fd2ac2f1bd90cc6abfcccafa94a20582017/src/gax.ts#L114
+    maxMessages?: number;
+    maxMilliseconds?: number;
+  },
+  flowControl?: {
+    allowExcessMessages?: boolean;
+    maxBytes?: number;
+    maxExtension?: number;
+    maxMessages?: number;
+  },
+  streamingOptions?: {
+    highWaterMark?: number;
+    maxStreams?: number;
+    timeout?: number;
+  },
+  deadLetterPolicy: {
+    deadLetterTopic: string;
+    maxDeliveryAttempts: number
+  }
+}
 ```
 
 ## Deadletter Configuration
