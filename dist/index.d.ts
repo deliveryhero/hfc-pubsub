@@ -1,5 +1,6 @@
 import Topic, { Payload } from './topic';
-import Subscription from './subscription';
-import SubscriptionService from './subscription.service';
-import { Message } from '@google-cloud/pubsub';
-export { Topic, Payload, Subscription, SubscriptionService, Message };
+import Subscriber, { SubscriberObject } from './subscriber';
+import SubscriptionService from './service/subscription';
+import PubSubService from './service/pubsub';
+import Message from './message';
+export { Topic, Payload, Subscriber, SubscriptionService, Message, PubSubService, SubscriberObject, };

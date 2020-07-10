@@ -9,17 +9,6 @@ const getTemplateEnv = () => {
   return envFile;
 };
 
-const getMainFile = () => {
-  const main =
-    cwd + '/node_modules/@honestfoodcompany/pubsub/src/cli/subscriptions.ts';
-  return main;
-};
-const getCliFile = () => {
-  const cli =
-    cwd + '/node_modules/@honestfoodcompany/pubsub/src/cli/subscriptions.ts';
-  return cli;
-};
-
 const copyFile = function(
   source,
   target,
@@ -36,45 +25,16 @@ const copyFile = function(
   }
 };
 
-const requireDotEnv = function(file, envReference) {
-  const source = cwd + '/.env';
-  const requireDotEnv = `require('dotenv').config({ path: ${envReference} });`;
-  if (
-    fs.existsSync(source) &&
-    fs.existsSync(file) &&
-    !fs
-      .readFileSync(file)
-      .toString()
-      .match(/require\('dotenv'\)/gm)
-  ) {
-    var fileLineByLine = fs
-      .readFileSync(file)
-      .toString()
-      .match(/^.+$/gm);
-    fileLineByLine[1] = fileLineByLine[1].concat(`\n${requireDotEnv}\n`);
-    fs.writeFileSync(file, fileLineByLine.join('\n'));
-  }
-};
-
 const copyEnv = () => {
   const source = getTemplateEnv();
-  let target = cwd + '/.env';
+  const target = cwd + '/.env';
   copyFile(source, target, false);
 };
 
-const setCliEnvLocation = () => {
-  const target = getCliFile();
-  requireDotEnv(target, "__dirname + '/../../../../../.env'");
-};
-const createBinDir = () => {
-  if (!fs.existsSync(cwd + '/bin')) {
-    fs.mkdirSync(cwd + '/bin');
+if (process.env.NODE_ENV !== 'production' || process.env.NODE_ENV !== 'prod') {
+  try {
+    copyEnv();
+  } catch (e) {
+    console.log(e);
   }
-};
-
-try {
-  copyEnv();
-  //setCliEnvLocation();
-} catch (e) {
-  console.log(e);
 }
