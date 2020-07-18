@@ -55,10 +55,10 @@ Note: As a convention the name of the file should match the name of the subscrip
 
 
 ```javascript
-// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.sub.js
+// path/to/your/pubsub/subscriptions/test.topic.console-log.sub.js
 exports.default = {
   topicName: 'test.topic',
-  subscriptionName: 'test.topic.sub',
+  subscriptionName: 'test.topic.console-log.sub',
   description: 'Will console log messages published on test.topic',
   options: {
     ackDeadline: 30, // in seconds
