@@ -1,0 +1,382 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>@honestfoodcompany/pubsub</title>
+	<meta name="description" content="Documentation for @honestfoodcompany/pubsub">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">@honestfoodcompany/pubsub</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1>@honestfoodcompany/pubsub</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#google-pubsub-nodejs-framework" id="google-pubsub-nodejs-framework" style="color: inherit; text-decoration: none;">
+					<h1>Google Pub/Sub Node.js Framework</h1>
+				</a>
+				<p>A small framework for publishing and subscribing to messages on Google Pub/Sub with minimal setup or boilerplate code required.</p>
+				<a href="#features" id="features" style="color: inherit; text-decoration: none;">
+					<h2>Features</h2>
+				</a>
+				<ol>
+					<li>CLI tool for starting subscription server and for listing subscriptions</li>
+					<li>Define your subscription handlers with a simple object</li>
+					<li>Create new topics and publish a message to those topics in 2 lines</li>
+				</ol>
+				<a href="#table-of-contents" id="table-of-contents" style="color: inherit; text-decoration: none;">
+					<h2>Table of Contents</h2>
+				</a>
+				<ul>
+					<li><a href="#google-pubsub-nodejs-framework">Google Pub/Sub Node.js Framework</a><ul>
+							<li><a href="#features">Features</a></li>
+							<li><a href="#table-of-contents">Table of Contents</a></li>
+							<li><a href="#prerequisites">Prerequisites</a></li>
+							<li><a href="#adding-a-new-subscription-message-handler">Adding a new subscription message handler</a></li>
+							<li><a href="#subscriber-options">Subscriber Options</a></li>
+							<li><a href="#deadletter-configuration">Deadletter Configuration</a></li>
+							<li><a href="#running-subscription-server">Running subscription server</a></li>
+							<li><a href="#publishing-a-message">Publishing a Message</a></li>
+							<li><a href="#subscribing-to-a-topic">Subscribing to a Topic</a></li>
+							<li><a href="#connecting-to-a-database">Connecting to a database</a></li>
+							<li><a href="#enabling-synchronous-driver">Enabling Synchronous Driver</a></li>
+						</ul>
+					</li>
+				</ul>
+				<a href="#prerequisites" id="prerequisites" style="color: inherit; text-decoration: none;">
+					<h2>Prerequisites</h2>
+				</a>
+				<ol>
+					<li>This module expects that you&#39;ve created a pubsub directory in your project with the following structure:</li>
+				</ol>
+				<pre><code class="language-pre">| .env        &lt;-- this can be in your project root directory
+| - pubsub/    &lt;-- this can be anywhere (defined in .env)
+|   | - subscriptions/
+|   | - topics/</code></pre>
+				<ol start="2">
+					<li>add the following to your <code>.env</code></li>
+				</ol>
+				<pre><code class="language-ini"><span class="hljs-attr">GOOGLE_APPLICATION_CREDENTIALS</span>=/path/to/hfc-experiments-<span class="hljs-number">83</span>d5537a8388-key.json
+<span class="hljs-attr">GOOGLE_CLOUD_PUB_SUB_PROJECT_ID</span>=<span class="hljs-string">&quot;hfc-experiments&quot;</span>
+<span class="hljs-attr">PUBSUB_ROOT_DIR</span>=/path/to/module/pubsub</code></pre>
+				<p><code>PUBSUB_ROOT_DIR</code> must be the path to your project&#39;s pubsub directory. This module only works with compiled JS, so if you are writing your code in typescript, you must set this variable to the pubsub root in your project&#39;s build directory.</p>
+				<p><code>GOOGLE_APPLICATION_CREDENTIALS</code> see <a href="https://cloud.google.com/docs/authentication/getting-started#creating_a_service_account">https://cloud.google.com/docs/authentication/getting-started#creating_a_service_account</a> to generate this</p>
+				<p><code>GOOGLE_CLOUD_PUB_SUB_PROJECT_ID</code> name of the project in Google Cloud Platform</p>
+				<a href="#adding-a-new-subscription-message-handler" id="adding-a-new-subscription-message-handler" style="color: inherit; text-decoration: none;">
+					<h2>Adding a new subscription message handler</h2>
+				</a>
+				<ol>
+					<li>Add your subscriber in <code>pubsub/subscriptions/name.of.subscription.sub.js</code>. By default, the subscriptions server will load all subscribers found in  <code>PUBSUB_ROOT_DIR/subscriptions</code> that are suffixed with <code>.sub</code> such as <code>pubsub/subscriptions/order.received.sub.js</code>. </li>
+				</ol>
+				<p>Note: As a convention the name of the file should match the name of the subscription so the file structure is self-documenting.</p>
+				<pre><code class="language-javascript"><span class="hljs-comment">// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.sub.js</span>
+<span class="hljs-built_in">exports</span>.default = {
+  <span class="hljs-attr">topicName</span>: <span class="hljs-string">&#x27;test.topic&#x27;</span>,
+  <span class="hljs-attr">subscriptionName</span>: <span class="hljs-string">&#x27;test.topic.sub&#x27;</span>,
+  <span class="hljs-attr">description</span>: <span class="hljs-string">&#x27;Will console log messages published on test.topic&#x27;</span>,
+  <span class="hljs-attr">options</span>: {
+    <span class="hljs-attr">ackDeadline</span>: <span class="hljs-number">30</span>, <span class="hljs-comment">// in seconds</span>
+    <span class="hljs-attr">flowControl</span>: {
+      <span class="hljs-attr">maxMessages</span>: <span class="hljs-number">500</span>,
+    },
+  },
+  <span class="hljs-attr">handleMessage</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">message</span>) </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`received a message on <span class="hljs-subst">${<span class="hljs-built_in">this</span>.subscriptionName}</span>`</span>)
+    <span class="hljs-built_in">console</span>.log(message.data.toString());
+  },
+};</code></pre>
+				<a href="#subscriber-options" id="subscriber-options" style="color: inherit; text-decoration: none;">
+					<h2>Subscriber Options</h2>
+				</a>
+				<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> SubscriberOptions {
+  ackDeadline?: <span class="hljs-built_in">number</span>;
+  batching?: {
+    callOptions?: CallOptions; <span class="hljs-comment">// see https://github.com/googleapis/gax-nodejs/blob/77f16fd2ac2f1bd90cc6abfcccafa94a20582017/src/gax.ts#L114</span>
+    maxMessages?: <span class="hljs-built_in">number</span>;
+    maxMilliseconds?: <span class="hljs-built_in">number</span>;
+  },
+  flowControl?: {
+    allowExcessMessages?: <span class="hljs-built_in">boolean</span>;
+    maxBytes?: <span class="hljs-built_in">number</span>;
+    maxExtension?: <span class="hljs-built_in">number</span>;
+    maxMessages?: <span class="hljs-built_in">number</span>;
+  },
+  streamingOptions?: {
+    highWaterMark?: <span class="hljs-built_in">number</span>;
+    maxStreams?: <span class="hljs-built_in">number</span>;
+    timeout?: <span class="hljs-built_in">number</span>;
+  },
+  deadLetterPolicy: {
+    deadLetterTopic: <span class="hljs-built_in">string</span>;
+    maxDeliveryAttempts: <span class="hljs-built_in">number</span>
+  }
+}</code></pre>
+				<a href="#deadletter-configuration" id="deadletter-configuration" style="color: inherit; text-decoration: none;">
+					<h2>Deadletter Configuration</h2>
+				</a>
+				<p>It is possible to define a deadltter policy for a subscription:</p>
+				<pre><code class="language-javascript"><span class="hljs-comment">// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.sub.js</span>
+<span class="hljs-built_in">exports</span>.default = {
+  <span class="hljs-attr">topicName</span>: <span class="hljs-string">&#x27;test.topic&#x27;</span>,
+  <span class="hljs-attr">subscriptionName</span>: <span class="hljs-string">&#x27;test.topic.sub&#x27;</span>,
+  <span class="hljs-attr">description</span>: <span class="hljs-string">&#x27;Will console log messages published on test.topic&#x27;</span>,
+  <span class="hljs-attr">options</span>: {
+    <span class="hljs-attr">ackDeadline</span>: <span class="hljs-number">30</span>, <span class="hljs-comment">// in seconds</span>
+    <span class="hljs-attr">flowControl</span>: {
+      <span class="hljs-attr">maxMessages</span>: <span class="hljs-number">500</span>,
+    },
+    <span class="hljs-attr">deadLetterPolicy</span>: {
+      <span class="hljs-attr">deadLetterTopic</span>: <span class="hljs-string">&#x27;test.deadletter.topic&#x27;</span>,
+      <span class="hljs-attr">maxDeliveryAttempts</span>: <span class="hljs-number">15</span>,
+    }
+  },
+  <span class="hljs-attr">handleMessage</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">message</span>) </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`received a message on <span class="hljs-subst">${<span class="hljs-built_in">this</span>.subscriptionName}</span>`</span>)
+    <span class="hljs-built_in">console</span>.log(message.data.toString());
+  },
+};</code></pre>
+				<a href="#running-subscription-server" id="running-subscription-server" style="color: inherit; text-decoration: none;">
+					<h2>Running subscription server</h2>
+				</a>
+				<p>Install npx if you don&#39;t have it installed yet: <code>npm i npx -g</code></p>
+				<ol>
+					<li>Run subscriptions <code>npx subscriptions start</code> </li>
+					<li>List subscriptions <code>npx subscriptions list</code> </li>
+				</ol>
+				<p>Note: If the subscription doesn&#39;t exist in google pub/sub it will be created when you run <code>npx subscriptions start</code></p>
+				<a href="#publishing-a-message" id="publishing-a-message" style="color: inherit; text-decoration: none;">
+					<h2>Publishing a Message</h2>
+				</a>
+				<ol>
+					<li>Create a topic in <code>pubsub/topics</code> which extends <code>Topic</code> and a payload which extends <code>BasePayload</code></li>
+				</ol>
+				<pre><code class="language-typescript"><span class="hljs-comment">// @lib/pubsub/topics/simple.topic.name.ts</span>
+<span class="hljs-keyword">import</span> { Topic, Payload <span class="hljs-keyword">as</span> BasePayload } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@honestfoodcompany/pubsub&quot;</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> SimpleTopic <span class="hljs-keyword">extends</span> Topic {
+  <span class="hljs-keyword">public</span> <span class="hljs-keyword">readonly</span> name = <span class="hljs-string">&quot;simple.topic.name&quot;</span>;
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> Payload <span class="hljs-keyword">extends</span> BasePayload {
+  id: <span class="hljs-built_in">number</span>;
+  data: <span class="hljs-built_in">string</span>;
+}</code></pre>
+				<blockquote>
+					<p>As a convention the name of the topic file should match the name of the topic name so the code and file structure becomes self-documenting.</p>
+				</blockquote>
+				<ol start="2">
+					<li>Compose your message and publish it</li>
+				</ol>
+				<pre><code class="language-typescript"><span class="hljs-comment">// client.example.ts</span>
+<span class="hljs-keyword">import</span> SimpleTopic, { Payload } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;pubsub/topics/simple.topic.name&quot;</span>;
+
+<span class="hljs-keyword">let</span> topic = <span class="hljs-keyword">new</span> SimpleTopic();
+topic.publish&lt;Payload&gt;({ id: <span class="hljs-number">1</span>, data: <span class="hljs-string">&quot;My first message&quot;</span> });
+
+<span class="hljs-comment">// publishing message: on simple.topic.name</span>
+<span class="hljs-comment">// { &quot;id&quot;: 1, &quot;data&quot;: &quot;My first message&quot;, &quot;_timestamp&quot;:&quot;2019-09-12T09:19:30.310Z&quot;}</span></code></pre>
+				<p>If a topic does not exist yet with the name you defined, it will be created before the message is sent.</p>
+				<a href="#subscribing-to-a-topic" id="subscribing-to-a-topic" style="color: inherit; text-decoration: none;">
+					<h2>Subscribing to a Topic</h2>
+				</a>
+				<p>Create a <code>Subscriber</code>  which defines a message handler function to run for each message that arrives on the corresponding topic. A new instance will be created for each message published on the topic.</p>
+				<ol>
+					<li>Create a subscriber in <code>path/to/your/pubsub/subscriptions</code></li>
+				</ol>
+				<p>Typescript example:</p>
+				<pre><code class="language-typescript"><span class="hljs-comment">// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.sub.ts</span>
+<span class="hljs-keyword">import</span> { SubscriberObject, Message } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@honestfoodcompany/pubsub&quot;</span>; <span class="hljs-comment">// optional, just to import the interface</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span>: SubscriberObject = {
+  topicName: <span class="hljs-string">&#x27;test.topic&#x27;</span>,
+  subscriptionName: <span class="hljs-string">&#x27;test.topic.subscription&#x27;</span>,
+  description: <span class="hljs-string">&#x27;Will console log messages published on test.topic&#x27;</span>,
+  options: {
+    ackDeadline: <span class="hljs-number">30</span>, <span class="hljs-comment">// in seconds</span>
+    flowControl: {
+      maxMessages: <span class="hljs-number">500</span>,
+    },
+  },
+  handleMessage: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">message: Message</span>): <span class="hljs-title">void</span> </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`received a message on <span class="hljs-subst">${<span class="hljs-built_in">this</span>.subscriptionName}</span>`</span>)
+    <span class="hljs-built_in">console</span>.log(message.data.toString());
+  },
+};
+</code></pre>
+				<p>Javascript example:</p>
+				<pre><code class="language-javascript"><span class="hljs-comment">// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.js</span>
+<span class="hljs-built_in">exports</span>.default = {
+  <span class="hljs-attr">topicName</span>: <span class="hljs-string">&#x27;test.topic&#x27;</span>,
+  <span class="hljs-attr">subscriptionName</span>: <span class="hljs-string">&#x27;test.topic.subscription&#x27;</span>,
+  <span class="hljs-attr">description</span>: <span class="hljs-string">&#x27;Will console log messages published on test.topic&#x27;</span>,
+  <span class="hljs-attr">options</span>: {
+    <span class="hljs-attr">ackDeadline</span>: <span class="hljs-number">30</span>, <span class="hljs-comment">// in seconds</span>
+    <span class="hljs-attr">flowControl</span>: {
+      <span class="hljs-attr">maxMessages</span>: <span class="hljs-number">500</span>,
+    },
+  },
+  <span class="hljs-attr">handleMessage</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">message</span>) </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`received a message on <span class="hljs-subst">${<span class="hljs-built_in">this</span>.subscriptionName}</span>`</span>)
+    <span class="hljs-built_in">console</span>.log(message.data.toString());
+  },
+};</code></pre>
+				<ol start="2">
+					<li>Start your subscriptions <code>./node_modules/.bin/subscriptions start</code></li>
+				</ol>
+				<a href="#connecting-to-a-database" id="connecting-to-a-database" style="color: inherit; text-decoration: none;">
+					<h2>Connecting to a database</h2>
+				</a>
+				<p>If you would like your subscription handlers to connect to a database but don&#39;t want to create a new one connection for each message that is received, you must include a <code>subscription.service</code> file in your <code>PUBSUB_ROOT_DIR</code> whose <code>init</code> function connects to your database:</p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { connect } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;mongoose&quot;</span>;
+<span class="hljs-keyword">import</span> { SubscriptionService <span class="hljs-keyword">as</span> BaseSubscriptionService } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@honestfoodcompany/pubsub&quot;</span>;
+<span class="hljs-keyword">import</span> ExampleSubscriber <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./subscriptions/example.subscriber&quot;</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> SubscriptionService <span class="hljs-keyword">extends</span> BaseSubscriptionService {
+  <span class="hljs-comment">/**
+   * connect to mongoose
+   */</span>
+  <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">async</span> init(): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt; {
+    <span class="hljs-built_in">console</span>.log(chalk.bold.blue(<span class="hljs-string">&quot;Connecting to MongoDB&quot;</span>));
+    <span class="hljs-keyword">const</span> mongoURI = process.env.MONGODB_URI ? process.env.MONGODB_URI : <span class="hljs-string">&quot;&quot;</span>;
+    <span class="hljs-keyword">await</span> connect(
+      mongoURI,
+      {
+        useNewUrlParser: <span class="hljs-literal">true</span>,
+        useFindAndModify: <span class="hljs-literal">false</span>,
+      },
+    );
+    <span class="hljs-built_in">console</span>.log(chalk.bold.green(<span class="hljs-string">`Connected to MongoDB at <span class="hljs-subst">${mongoURI}</span>`</span>));
+  }
+}</code></pre>
+				<a href="#enabling-synchronous-driver" id="enabling-synchronous-driver" style="color: inherit; text-decoration: none;">
+					<h2>Enabling Synchronous Driver</h2>
+				</a>
+				<p>If you would like to bypass Google PubSub and run your subscriptions synchronously (for development purposes) set the following environment variable:</p>
+				<p><code>PUBSUB_DRIVER=synchronous</code></p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class="label tsd-is-external">
+						<span>Internals</span>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_index_.html">&quot;index&quot;</a>
+					</li>
+					<li class="label tsd-is-external">
+						<span>Externals</span>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="modules/_driver_eventbus_.html">&quot;driver/event<wbr>Bus&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="modules/_driver_googlepubsub_.html">&quot;driver/google<wbr>Pub<wbr>Sub&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="modules/_interface_pubsubclient_.html">&quot;interface/pub<wbr>Sub<wbr>Client&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="modules/_message_index_.html">&quot;message/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="modules/_service_pubsub_.html">&quot;service/pubsub&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="modules/_service_resourceresolver_.html">&quot;service/resource<wbr>Resolver&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="modules/_service_subscriberloader_.html">&quot;service/subscriber<wbr>Loader&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="modules/_service_subscription_.html">&quot;service/subscription&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="modules/_subscriber_index_.html">&quot;subscriber/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="modules/_subscriber_subscriber_.html">&quot;subscriber/subscriber&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="modules/_subscriber_subscriberv2_.html">&quot;subscriber/subscriber<wbr>V2&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="modules/_topic_index_.html">&quot;topic/index&quot;</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

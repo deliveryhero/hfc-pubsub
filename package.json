@@ -33,6 +33,7 @@
     "moment": "^2.27.0",
     "mongoose": "^5.9.21",
     "nodemon": "^1.19.4",
+    "typedoc": "^0.17.8",
     "wrap-ansi": "^6.2.0",
     "yargs": "^14.2.3"
   },
