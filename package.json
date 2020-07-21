@@ -1,6 +1,6 @@
 {
   "name": "@honestfoodcompany/pubsub",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "pubsub framework for managing topics and subscriptions",
   "main": "dist/index.js",
   "scripts": {
@@ -29,7 +29,7 @@
     "find-config": "^1.0.0",
     "fs": "0.0.1-security",
     "humanize-duration": "^3.23.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "moment": "^2.27.0",
     "mongoose": "^5.9.21",
     "nodemon": "^1.19.4",
@@ -64,10 +64,10 @@
       "git add"
     ]
   },
-  "author": "Anthony Martin",
+  "author": "Delivery Hero HF Kitchens GmbH",
   "repository": {
     "type": "git",
-    "url": "https://anthonydmartin@bitbucket.org/anthonydmartin/hfc-pubsub.git"
+    "url": "https://github.com/honest-food-company/pubsub.git"
   },
   "license": "MIT",
   "bin": {
