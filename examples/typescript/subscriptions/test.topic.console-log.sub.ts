@@ -1,3 +1,9 @@
+/**
+ * this file will be autoloaded because of the .sub.ts suffix.
+ * Alternatively, one can explicitly load a subscription by adding
+ * this default export to the subscriber array in subscription.service.ts
+ */
+
 export default {
   topicName: 'test.topic',
   subscriptionName: 'test.topic.console-log',
