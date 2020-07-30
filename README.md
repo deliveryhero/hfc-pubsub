@@ -22,10 +22,10 @@ This package contains a lightweight framework for [Google Pub/Sub](https://cloud
 
 ## Features
 
-1. Pub/sub subscription server
-2. Declaratively define pub/sub subscriptions and topics
+1. Pub/sub subscription server to run all your subscriptions
+2. Define pub/sub subscriptions and topics in a declarative way
 3. Define your subscription handlers with a simple object
-4. Get started quickly: define a topic and publish messages
+4. Get started quickly: define a topic and publish messages with a few lines of code
    
 ## Prerequisites
 
