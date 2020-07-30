@@ -1,34 +1,39 @@
 # Google Pub/Sub Node.js Framework
-A small framework for publishing and subscribing to messages on Google Pub/Sub with minimal setup or boilerplate code required.
 
-## Features
-
-1. CLI tool for starting subscription server and for listing subscriptions
-2. Define your subscription handlers with a simple object
-3. Create new topics and publish a message to those topics in 2 lines
+This package contains a lightweight framework for [Google Pub/Sub](https://cloud.google.com/pubsub). It was created to speed up development time and it provides a common foundation for building event driven applications. It lets developers define topics and subscriptions simply and declaratively, while additionally offering a simple subscription server to run all of a project's subscription handlers.
 
 ## Table of Contents
 - [Google Pub/Sub Node.js Framework](#google-pubsub-nodejs-framework)
-  - [Features](#features)
   - [Table of Contents](#table-of-contents)
+  - [Features](#features)
   - [Prerequisites](#prerequisites)
   - [Adding a new subscription message handler](#adding-a-new-subscription-message-handler)
-  - [Subscriber Options](#subscriber-options)
   - [Deadletter Configuration](#deadletter-configuration)
   - [Running subscription server](#running-subscription-server)
   - [Publishing a Message](#publishing-a-message)
-  - [Subscribing to a Topic](#subscribing-to-a-topic)
+  - [Defining subscription handlers](#defining-subscription-handlers)
+    - [Typescript example](#typescript-example)
+    - [Javascript example](#javascript-example)
+    - [with subscriber options:](#with-subscriber-options)
+  - [Subscriber Options](#subscriber-options)
   - [Connecting to a database](#connecting-to-a-database)
   - [Enabling Synchronous Driver](#enabling-synchronous-driver)
 
 
+## Features
+
+1. Pub/sub subscription server
+2. Declaratively define pub/sub subscriptions and topics
+3. Define your subscription handlers with a simple object
+4. Get started quickly: define a topic and publish messages
+   
 ## Prerequisites
 
 1. This module expects that you've created a pubsub directory in your project with the following structure:
 
 ```pre
-| .env        <-- this can be in your project root directory
-| - pubsub/    <-- this can be anywhere (defined in .env)
+| .env        <-- this should be in your project root directory
+| - pubsub/    <-- this can be anywhere (defined in .env as PUBSUB_ROOT_DIR)
 |   | - subscriptions/
 |   | - topics/
 ```
@@ -36,9 +41,9 @@ A small framework for publishing and subscribing to messages on Google Pub/Sub w
 2. add the following to your `.env`
 
 ```ini
-GOOGLE_APPLICATION_CREDENTIALS=/path/to/hfc-experiments-83d5537a8388-key.json
-GOOGLE_CLOUD_PUB_SUB_PROJECT_ID="hfc-experiments"
-PUBSUB_ROOT_DIR=/path/to/module/pubsub
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/gcp-project-83d5537a8388-key.json
+GOOGLE_CLOUD_PUB_SUB_PROJECT_ID=gcp-project-id
+PUBSUB_ROOT_DIR=/path/to/your/pubsub/directory # this can be a relative path
 ```
 
 `PUBSUB_ROOT_DIR` must be the path to your project's pubsub directory. This module only works with compiled JS, so if you are writing your code in typescript, you must set this variable to the pubsub root in your project's build directory.
@@ -49,9 +54,7 @@ PUBSUB_ROOT_DIR=/path/to/module/pubsub
 
 ## Adding a new subscription message handler
 
-1. Add your subscriber in `pubsub/subscriptions/name.of.subscription.sub.js`. By default, the subscriptions server will load all subscribers found in  `PUBSUB_ROOT_DIR/subscriptions` that are suffixed with `.sub` such as `pubsub/subscriptions/order.received.sub.js`. 
-
-Note: As a convention the name of the file should match the name of the subscription so the file structure is self-documenting.
+1. Add your subscriber in `PUBSUB_ROOT_DIR/subscriptions/name.of.subscription.sub.js`. By default, the subscriptions server will load all subscribers found in  `PUBSUB_ROOT_DIR/subscriptions` that are suffixed with `.sub` such as `PUBSUB_ROOT_DIR/subscriptions/order.received.sub.js`. 
 
 
 ```javascript
@@ -60,11 +63,30 @@ exports.default = {
   topicName: 'test.topic',
   subscriptionName: 'test.topic.console-log.sub',
   description: 'Will console log messages published on test.topic',
+  handleMessage: function (message) {
+    console.log(`received a message on ${this.subscriptionName}`)
+    console.log(message.data.toString());
+  },
+};
+```
+
+> Note: As a convention the name of the file should match the name of the subscription so the file structure is self-documenting.
+
+## Deadletter Configuration
+
+It is possible to define a deadltter policy for a subscription. If the dead letter topic does not exist, it will be created automatically by the framework:
+
+```javascript
+// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.sub.js
+exports.default = {
+  topicName: 'test.topic',
+  subscriptionName: 'test.topic.sub',
+  description: 'Will console log messages published on test.topic',
   options: {
-    ackDeadline: 30, // in seconds
-    flowControl: {
-      maxMessages: 500,
-    },
+    deadLetterPolicy: {
+      deadLetterTopic: 'test.deadletter.topic',
+      maxDeliveryAttempts: 15,
+    }
   },
   handleMessage: function (message) {
     console.log(`received a message on ${this.subscriptionName}`)
@@ -73,7 +95,118 @@ exports.default = {
 };
 ```
 
+## Running subscription server
+
+Install npx if you don't have it installed yet: `npm i npx -g`
+
+1. Run subscriptions `npx subscriptions start` 
+2. List subscriptions `npx subscriptions list` 
+
+Note: If the subscription doesn't exist in google pub/sub it will be created when you run `npx subscriptions start`
+
+## Publishing a Message
+
+1. Create a topic in `PUBSUB_ROOT_DIR/topics` which extends `Topic` and a payload which extends `BasePayload`
+
+```typescript
+// @lib/pubsub/topics/simple.topic.name.ts
+import { Topic, Payload as BasePayload } from "@honestfoodcompany/pubsub";
+
+export default class SimpleTopic extends Topic {
+  public readonly name = "simple.topic.name";
+}
+
+export interface Payload extends BasePayload {
+  id: number;
+  data: string;
+}
+```
+
+> As a convention the name of the topic file should match the name of the topic name so the filenames become self-documenting.
+
+2. Compose your message and publish it.  
+
+> If a topic does not yet exist, it will be created before the message is published.
+
+```typescript
+// client.example.ts
+import SimpleTopic, { Payload } from "PUBS_ROOT_DIR/topics/simple.topic.name";
+
+new SimpleTopic().publish<Payload>({ id: 1, data: "My first message" });
+
+// publishing message: on simple.topic.name
+// { "id": 1, "data": "My first message", "_timestamp":"2019-09-12T09:19:30.310Z"}
+```
+
+## Defining subscription handlers
+
+Create a `Subscriber`  to define a message handler to be executed for each message that arrives on the corresponding topic. A new instance will be created for each message published on the topic.
+
+1. Create a subscriber in `path/to/your/pubsub/subscriptions`
+
+### Typescript example
+
+```typescript
+// PUBSUB_ROOT_DIR/subscriptions/simple.topic.name.console-log.sub.ts
+import { SubscriberObject, Message } from "@honestfoodcompany/pubsub"; // optional, just to import the interface
+
+export default: SubscriberObject = {
+  topicName: 'simple.topic',
+  subscriptionName: 'simple.topic.console-log.sub',
+  description: 'Will console log messages published on test.topic',
+
+  handleMessage: function(message: Message): void {
+    console.log(`received a message on ${this.subscriptionName}`);
+    console.log(message.data.toString());
+  },
+};
+
+```
+
+### Javascript example
+
+```javascript
+// PUBSUB_ROOT_DIR/subscriptions/simple.topic.name.sub.js
+exports.default = {
+
+  topicName: 'test.topic',
+  subscriptionName: 'test.topic.sub',
+  description: 'Will console log messages published on test.topic',
+
+  handleMessage: function(message) {
+    console.log(`received a message on ${this.subscriptionName}`)
+    console.log(message.data.toString());
+  },
+};
+```
+
+
+### with [subscriber options](#subscriber-options):
+
+```javascript
+// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.js
+exports.default = {
+  topicName: 'test.topic',
+  subscriptionName: 'test.topic.subscription',
+  description: 'Will console log messages published on test.topic',
+  options: {
+    ackDeadline: 30, // in seconds
+    flowControl: {
+      maxMessages: 500,
+    },
+  },
+  handleMessage: function(message) {
+    console.log(`received a message on ${this.subscriptionName}`)
+    console.log(message.data.toString());
+  },
+};
+```
+
+2. Start your subscriptions `npx subscriptions start` or `./node_modules/.bin/subscriptions start`
+
 ## Subscriber Options
+
+[Usage Example](#with-subscriber-options)
 
 ```typescript
 interface SubscriberOptions {
@@ -101,134 +234,13 @@ interface SubscriberOptions {
 }
 ```
 
-## Deadletter Configuration
-
-It is possible to define a deadltter policy for a subscription:
-
-```javascript
-// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.sub.js
-exports.default = {
-  topicName: 'test.topic',
-  subscriptionName: 'test.topic.sub',
-  description: 'Will console log messages published on test.topic',
-  options: {
-    ackDeadline: 30, // in seconds
-    flowControl: {
-      maxMessages: 500,
-    },
-    deadLetterPolicy: {
-      deadLetterTopic: 'test.deadletter.topic',
-      maxDeliveryAttempts: 15,
-    }
-  },
-  handleMessage: function (message) {
-    console.log(`received a message on ${this.subscriptionName}`)
-    console.log(message.data.toString());
-  },
-};
-```
-
-## Running subscription server
-
-Install npx if you don't have it installed yet: `npm i npx -g`
-
-1. Run subscriptions `npx subscriptions start` 
-2. List subscriptions `npx subscriptions list` 
-
-Note: If the subscription doesn't exist in google pub/sub it will be created when you run `npx subscriptions start`
-
-## Publishing a Message
-
-1. Create a topic in `pubsub/topics` which extends `Topic` and a payload which extends `BasePayload`
-
-```typescript
-// @lib/pubsub/topics/simple.topic.name.ts
-import { Topic, Payload as BasePayload } from "@honestfoodcompany/pubsub";
-
-export default class SimpleTopic extends Topic {
-  public readonly name = "simple.topic.name";
-}
-
-export interface Payload extends BasePayload {
-  id: number;
-  data: string;
-}
-```
-
-> As a convention the name of the topic file should match the name of the topic name so the code and file structure becomes self-documenting.
-
-2. Compose your message and publish it
-
-```typescript
-// client.example.ts
-import SimpleTopic, { Payload } from "pubsub/topics/simple.topic.name";
-
-let topic = new SimpleTopic();
-topic.publish<Payload>({ id: 1, data: "My first message" });
-
-// publishing message: on simple.topic.name
-// { "id": 1, "data": "My first message", "_timestamp":"2019-09-12T09:19:30.310Z"}
-```
-
-If a topic does not exist yet with the name you defined, it will be created before the message is sent.
-
-## Subscribing to a Topic
-
-Create a `Subscriber`  which defines a message handler function to run for each message that arrives on the corresponding topic. A new instance will be created for each message published on the topic.
-
-1. Create a subscriber in `path/to/your/pubsub/subscriptions`
-
-Typescript example:
-
-```typescript
-// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.sub.ts
-import { SubscriberObject, Message } from "@honestfoodcompany/pubsub"; // optional, just to import the interface
-export default: SubscriberObject = {
-  topicName: 'test.topic',
-  subscriptionName: 'test.topic.subscription',
-  description: 'Will console log messages published on test.topic',
-  options: {
-    ackDeadline: 30, // in seconds
-    flowControl: {
-      maxMessages: 500,
-    },
-  },
-  handleMessage: function(message: Message): void {
-    console.log(`received a message on ${this.subscriptionName}`)
-    console.log(message.data.toString());
-  },
-};
-
-```
-
-Javascript example:
-
-```javascript
-// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.js
-exports.default = {
-  topicName: 'test.topic',
-  subscriptionName: 'test.topic.subscription',
-  description: 'Will console log messages published on test.topic',
-  options: {
-    ackDeadline: 30, // in seconds
-    flowControl: {
-      maxMessages: 500,
-    },
-  },
-  handleMessage: function(message) {
-    console.log(`received a message on ${this.subscriptionName}`)
-    console.log(message.data.toString());
-  },
-};
-```
-
-2. Start your subscriptions `./node_modules/.bin/subscriptions start`
-
 ## Connecting to a database
 
-If you would like your subscription handlers to connect to a database but don't want to create a new one connection for each message that is received, you must include a `subscription.service` file in your `PUBSUB_ROOT_DIR` whose `init` function connects to your database:
+If you have several subscribers that require a database connection, it is recommended to connect to a database in the `subscription.service` file in your `PUBSUB_ROOT_DIR`. Insert your database connection logic in  the `init` method.
 
 ```typescript
+// PUBSUB_ROOT_DIR/subscription.service.ts
+
 import { connect } from "mongoose";
 import { SubscriptionService as BaseSubscriptionService } from "@honestfoodcompany/pubsub";
 import ExampleSubscriber from "./subscriptions/example.subscriber";
