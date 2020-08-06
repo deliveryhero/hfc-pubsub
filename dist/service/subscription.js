@@ -44,9 +44,14 @@ class SubscriptionService {
     }
     static loadSubscriptionService() {
         const [subscriptionService] = resourceResolver_1.ResourceResolver.getFiles();
-        const service = require(path_1.resolve(subscriptionService)).default;
-        service.init();
-        return service;
+        try {
+            const service = require(path_1.resolve(subscriptionService)).default;
+            service.init();
+            return service;
+        }
+        catch (e) {
+            return SubscriptionService;
+        }
     }
     static async getAllSubscriptions() {
         return pubsub_1.default.getInstance().getAllSubscriptions();

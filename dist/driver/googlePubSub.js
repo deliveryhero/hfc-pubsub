@@ -113,11 +113,10 @@ class GooglePubSubAdapter {
     async getAllSubscriptions() {
         const [subscriptionData] = await this.client.getSubscriptions();
         const subscriptionList = subscriptionData.map((datum) => {
-            var _a, _b;
             const { metadata } = datum;
             return {
-                topicName: ((_a = metadata) === null || _a === void 0 ? void 0 : _a.topic) || null,
-                subscriptionName: ((_b = metadata) === null || _b === void 0 ? void 0 : _b.name) || datum.name,
+                topicName: (metadata === null || metadata === void 0 ? void 0 : metadata.topic) || null,
+                subscriptionName: (metadata === null || metadata === void 0 ? void 0 : metadata.name) || datum.name,
             };
         });
         return subscriptionList;

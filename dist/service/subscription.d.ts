@@ -9,6 +9,6 @@ export default class SubscriptionService {
     static init(): Promise<void>;
     static getSubscribers(): Subscribers;
     private static loadSubscribersFromFilesystem;
-    static loadSubscriptionService(): SubscriptionService;
+    static loadSubscriptionService(): typeof SubscriptionService;
     static getAllSubscriptions(): Promise<AllSubscriptions[]>;
 }

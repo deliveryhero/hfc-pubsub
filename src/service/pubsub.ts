@@ -6,6 +6,7 @@ import EventBus from '../driver/eventBus';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
 import GooglePubSubAdapter from '../driver/googlePubSub';
 import SubscriptionService from './subscription';
+import { RetryConfig, RecursivePartial } from 'interface/retryConfig';
 
 export default class PubSubService {
   protected static client: PubSubClientV2;
@@ -57,12 +58,13 @@ export default class PubSubService {
   public async publish<T extends Topic, P extends Payload>(
     topic: T,
     message: P,
+    retryConfig: RetryConfig,
   ): Promise<string> {
     this.validate(topic, message);
     if (this.shouldStartSynchronousSubscriptions()) {
       await this.startSubscriptions();
     }
-    return await this.getClient().publish(topic, message);
+    return await this.getClient().publish(topic, message, retryConfig);
   }
 
   private shouldStartSynchronousSubscriptions(): boolean {

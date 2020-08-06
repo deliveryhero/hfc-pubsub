@@ -76,11 +76,15 @@ export default class SubscriptionService {
     return SubscriptionService._subscribers;
   }
 
-  public static loadSubscriptionService(): SubscriptionService {
+  public static loadSubscriptionService(): typeof SubscriptionService {
     const [subscriptionService] = ResourceResolver.getFiles();
-    const service = require(resolve(subscriptionService)).default;
-    service.init();
-    return service;
+    try {
+      const service = require(resolve(subscriptionService)).default;
+      service.init();
+      return service;
+    } catch (e) {
+      return SubscriptionService;
+    }
   }
 
   public static async getAllSubscriptions(): Promise<AllSubscriptions[]> {
