@@ -34,15 +34,12 @@ class GooglePubSubAdapter {
     }
     addHandler(subscriber, subscription) {
         const [subscriberClass] = subscriber;
-        subscription.on('message', async (message) => {
+        subscription.on('message', (message) => {
             const subscriber = new subscriberClass();
             subscriber.init();
-            try {
-                await subscriber.handleMessage(message_1.default.fromGCloud(message));
-            }
-            catch (err) {
+            subscriber.handleMessage(message_1.default.fromGCloud(message)).catch(() => {
                 message.nack();
-            }
+            });
         });
     }
     log(message) {
