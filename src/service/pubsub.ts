@@ -6,7 +6,7 @@ import EventBus from '../driver/eventBus';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
 import GooglePubSubAdapter from '../driver/googlePubSub';
 import SubscriptionService from './subscription';
-import { RetryConfig, RecursivePartial } from 'interface/retryConfig';
+import { RetryConfig } from '../interface/retryConfig';
 
 export default class PubSubService {
   protected static client: PubSubClientV2;

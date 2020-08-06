@@ -1,7 +1,7 @@
 import Topic, { Payload } from '../topic';
 import { SubscriberTuple, Subscribers } from '../subscriber';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
-import { RetryConfig } from 'interface/retryConfig';
+import { RetryConfig } from '../interface/retryConfig';
 export default class PubSubService {
     protected static client: PubSubClientV2;
     protected static instance: PubSubService;

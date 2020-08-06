@@ -1,5 +1,5 @@
 import PubSubService from '../service/pubsub';
-import { RecursivePartial, RetryConfig } from 'interface/retryConfig';
+import { RecursivePartial, RetryConfig } from '../interface/retryConfig';
 
 /**
  * extend this interface to define your own payload

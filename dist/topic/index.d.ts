@@ -1,5 +1,5 @@
 import PubSubService from '../service/pubsub';
-import { RecursivePartial, RetryConfig } from 'interface/retryConfig';
+import { RecursivePartial, RetryConfig } from '../interface/retryConfig';
 export interface Payload {
     _timestamp?: string;
 }
