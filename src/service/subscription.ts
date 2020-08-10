@@ -11,6 +11,7 @@ import { resolve } from 'path';
 import fs = require('fs');
 import SubscriberLoader from './subscriberLoader';
 import { ResourceResolver } from './resourceResolver';
+import { SubscriberOptions } from 'subscriber/subscriberV2';
 
 export default class SubscriptionService {
   public static subscribers: (
@@ -19,6 +20,12 @@ export default class SubscriptionService {
     | SubscriberObject
   )[] = [];
   private static _subscribers: Subscribers = [];
+  private static defaultSubscriberOptions: SubscriberOptions = {
+    ackDeadline: 30,
+    flowControl: {
+      maxMessages: 5
+    }
+  }
   public static instance = new SubscriptionService();
 
   public constructor() {
@@ -54,12 +61,13 @@ export default class SubscriptionService {
     string,
     string,
   ]): Subscribers {
+    const subscriptionClass = SubscriptionService.loadSubscriptionService();
     const loader = new SubscriberLoader();
     const subscribersFromService = fs.existsSync(subscriptionService)
-      ? loader.loadSubscribersFromService(subscriptionService)
+      ? loader.loadSubscribersFromService(subscriptionService,undefined, subscriptionClass.defaultSubscriberOptions)
       : [];
 
-    const subscribersFromDirectory = loader.loadSubscribersFromDirectory(dir);
+    const subscribersFromDirectory = loader.loadSubscribersFromDirectory(dir, subscriptionClass.defaultSubscriberOptions);
 
     SubscriptionService._subscribers = Array.from(
       subscribersFromService

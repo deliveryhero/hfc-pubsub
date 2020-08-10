@@ -1,6 +1,7 @@
 import Subscriber from './subscriber';
 import Message from '../message';
 import { SubscriberOptions as GoogleCloudSubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber';
+import defaults from 'defaults';
 
 export type SubscriberVersion = 'v1' | 'v2' | 'v3';
 export default class SubscriberV2 extends Subscriber {
@@ -27,6 +28,7 @@ export default class SubscriberV2 extends Subscriber {
   public static from(
     subscriber: SubscriberObject | typeof Subscriber,
     version: SubscriberVersion,
+    defaultOptions: SubscriberOptions,
   ): typeof SubscriberV2 {
     switch (version) {
       case 'v1': {
@@ -38,9 +40,9 @@ export default class SubscriberV2 extends Subscriber {
             subscriptionName: subscriber.subscriptionName,
             description: subscriber.description,
             options: {
-              ackDeadline: subscriber.ackDeadlineSeconds,
+              ackDeadline: subscriber.ackDeadlineSeconds !== undefined ? subscriber.ackDeadlineSeconds : defaultOptions.ackDeadline,
               flowControl: {
-                maxMessages: subscriber.maxMessages,
+                maxMessages: subscriber.maxMessages !== undefined ? subscriber.maxMessages : defaultOptions.flowControl?.maxMessages,
               },
             },
           };
@@ -49,7 +51,7 @@ export default class SubscriberV2 extends Subscriber {
             subscriberClass: SubscriberObject | typeof Subscriber,
             version: SubscriberVersion,
           ): typeof SubscriberV2 {
-            return SubscriberV2.from(subscriberClass, version);
+            return SubscriberV2.from(subscriberClass, version, defaultOptions);
           }
 
           public static getSubscriberVersion(
@@ -59,10 +61,30 @@ export default class SubscriberV2 extends Subscriber {
           }
         };
       }
-      case 'v2':
-        return (subscriber as unknown) as typeof SubscriberV2;
+      case 'v2': 
+        const subscriberClass = (subscriber as unknown) as typeof SubscriberV2;
+        const subscriberObj = new subscriberClass();
+        if(!subscriberObj.metadata) {
+          subscriberObj.metadata = {
+            topicName: '',
+            subscriptionName: '',
+            options : {}};
+        }
+        if(!subscriberObj.metadata.options) {
+          subscriberObj.metadata.options = {};
+        }
+        
+        defaults(subscriberObj.metadata.options, defaultOptions);
+        return class extends subscriberClass {
+          metadata = subscriberObj.metadata;
+        }  
+
       case 'v3':
         const subscriberObject = (subscriber as unknown) as SubscriberObject;
+        if(!subscriberObject.options) {
+          subscriberObject.options = {}
+        }
+        defaults(subscriberObject.options, defaultOptions)
         return class extends SubscriberV2 {
           constructor() {
             super(subscriberObject);
