@@ -3,6 +3,7 @@ import { AllSubscriptions } from '../interface/pubSubClient';
 export default class SubscriptionService {
     static subscribers: (typeof SubscriberV1 | typeof SubscriberV2 | SubscriberObject)[];
     private static _subscribers;
+    private static defaultSubscriberOptions;
     static instance: SubscriptionService;
     constructor();
     protected checkExistence(object: any, property: string): void;

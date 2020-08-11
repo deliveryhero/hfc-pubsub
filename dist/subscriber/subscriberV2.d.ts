@@ -8,7 +8,7 @@ export default class SubscriberV2 extends Subscriber {
     constructor(subscriberObject?: SubscriberObject | undefined);
     init(): Promise<void>;
     handleMessage(message: Message): Promise<void>;
-    static from(subscriber: SubscriberObject | typeof Subscriber, version: SubscriberVersion): typeof SubscriberV2;
+    static from(subscriber: SubscriberObject | typeof Subscriber, version: SubscriberVersion, defaultOptions: SubscriberOptions): typeof SubscriberV2;
     static getSubscriberVersion(subscriber: unknown): SubscriberVersion;
 }
 export interface SubscriberOptions extends GoogleCloudSubscriberOptions {

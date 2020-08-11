@@ -40,9 +40,15 @@ export default class SubscriberV2 extends Subscriber {
             subscriptionName: subscriber.subscriptionName,
             description: subscriber.description,
             options: {
-              ackDeadline: subscriber.ackDeadlineSeconds !== undefined ? subscriber.ackDeadlineSeconds : defaultOptions.ackDeadline,
+              ackDeadline:
+                subscriber.ackDeadlineSeconds !== undefined
+                  ? subscriber.ackDeadlineSeconds
+                  : defaultOptions.ackDeadline,
               flowControl: {
-                maxMessages: subscriber.maxMessages !== undefined ? subscriber.maxMessages : defaultOptions.flowControl?.maxMessages,
+                maxMessages:
+                  subscriber.maxMessages !== undefined
+                    ? subscriber.maxMessages
+                    : defaultOptions.flowControl?.maxMessages,
               },
             },
           };
@@ -61,30 +67,27 @@ export default class SubscriberV2 extends Subscriber {
           }
         };
       }
-      case 'v2': 
+      case 'v2':
         const subscriberClass = (subscriber as unknown) as typeof SubscriberV2;
         const subscriberObj = new subscriberClass();
-        if(!subscriberObj.metadata) {
-          subscriberObj.metadata = {
-            topicName: '',
-            subscriptionName: '',
-            options : {}};
+        if (!subscriberObj.metadata) {
+          throw new Error('A subscriber must contain a metadata property');
         }
-        if(!subscriberObj.metadata.options) {
+        if (!subscriberObj.metadata.options) {
           subscriberObj.metadata.options = {};
         }
-        
+
         defaults(subscriberObj.metadata.options, defaultOptions);
         return class extends subscriberClass {
           metadata = subscriberObj.metadata;
-        }  
+        };
 
       case 'v3':
         const subscriberObject = (subscriber as unknown) as SubscriberObject;
-        if(!subscriberObject.options) {
-          subscriberObject.options = {}
+        if (!subscriberObject.options) {
+          subscriberObject.options = {};
         }
-        defaults(subscriberObject.options, defaultOptions)
+        defaults(subscriberObject.options, defaultOptions);
         return class extends SubscriberV2 {
           constructor() {
             super(subscriberObject);

@@ -7,7 +7,7 @@ class SubscriberLoader {
     constructor() {
         this.subscribers = [];
     }
-    loadSubscribersFromDirectory(dir) {
+    loadSubscribersFromDirectory(dir, defaultOptions) {
         const subscribers = fs
             .readdirSync(dir)
             .filter((file) => {
@@ -16,34 +16,34 @@ class SubscriberLoader {
         for (const file of subscribers) {
             const subscriber = require(path_1.resolve(dir, file)).default;
             const version = subscriber_1.SubscriberV2.getSubscriberVersion(subscriber) || '';
-            this.subscribers.push(this.loadSubscriber(subscriber, version));
+            this.subscribers.push(this.loadSubscriber(subscriber, version, defaultOptions));
         }
         return this.subscribers;
     }
-    loadSubscribersFromService(subscriptionService, init = false) {
+    loadSubscribersFromService(subscriptionService, init = false, defaultOptions) {
         const service = require(path_1.resolve(subscriptionService)).default;
         if (init)
             service.init();
         service.subscribers.map((subscriber) => {
             const version = subscriber_1.SubscriberV2.getSubscriberVersion(subscriber) || '';
-            this.subscribers.push(this.loadSubscriber(subscriber, version));
+            this.subscribers.push(this.loadSubscriber(subscriber, version, defaultOptions));
         });
         return this.subscribers;
     }
-    loadSubscriber(subscriber, version) {
+    loadSubscriber(subscriber, version, defaultOptions) {
         switch (version) {
             case 'v1': {
-                const v2SubscriberClass = subscriber_1.SubscriberV2.from(subscriber, 'v1');
+                const v2SubscriberClass = subscriber_1.SubscriberV2.from(subscriber, 'v1', defaultOptions);
                 const instance = new v2SubscriberClass();
                 return [v2SubscriberClass, instance.metadata];
             }
             case 'v2': {
-                const v2SubscriberClass = subscriber_1.SubscriberV2.from(subscriber, 'v2');
+                const v2SubscriberClass = subscriber_1.SubscriberV2.from(subscriber, 'v2', defaultOptions);
                 const instance = new v2SubscriberClass();
                 return [v2SubscriberClass, instance.metadata];
             }
             case 'v3':
-                const v2SubscriberClass = subscriber_1.SubscriberV2.from(subscriber, 'v3');
+                const v2SubscriberClass = subscriber_1.SubscriberV2.from(subscriber, 'v3', defaultOptions);
                 const instance = new v2SubscriberClass();
                 return [v2SubscriberClass, instance.metadata];
         }

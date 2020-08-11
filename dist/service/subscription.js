@@ -27,11 +27,12 @@ class SubscriptionService {
         return SubscriptionService._subscribers;
     }
     static loadSubscribersFromFilesystem([subscriptionService, dir]) {
+        const subscriptionClass = SubscriptionService.loadSubscriptionService();
         const loader = new subscriberLoader_1.default();
         const subscribersFromService = fs.existsSync(subscriptionService)
-            ? loader.loadSubscribersFromService(subscriptionService)
+            ? loader.loadSubscribersFromService(subscriptionService, undefined, subscriptionClass.defaultSubscriberOptions)
             : [];
-        const subscribersFromDirectory = loader.loadSubscribersFromDirectory(dir);
+        const subscribersFromDirectory = loader.loadSubscribersFromDirectory(dir, subscriptionClass.defaultSubscriberOptions);
         SubscriptionService._subscribers = Array.from(subscribersFromService
             .concat(subscribersFromDirectory)
             .reduce((map, subscriber) => {
@@ -60,4 +61,10 @@ class SubscriptionService {
 exports.default = SubscriptionService;
 SubscriptionService.subscribers = [];
 SubscriptionService._subscribers = [];
+SubscriptionService.defaultSubscriberOptions = {
+    ackDeadline: 30,
+    flowControl: {
+        maxMessages: 5
+    }
+};
 SubscriptionService.instance = new SubscriptionService();
