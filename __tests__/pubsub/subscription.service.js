@@ -10,6 +10,12 @@ const ExampleSubscriptionV3 = require('./subscriptions/example.v3.subscription')
   .default;
 const ExampleSubscriptionV3_2 = require('./subscriptions/example.auto-load.subscription-2.sub')
   .default;
+const ExampleSubscriptionV3_3 = require('./subscriptions//example.v3_3.subscription')
+  .default;
+const ExampleSubscriptionV2Override = require('./subscriptions//example.v2_overrideoptions.subscription')
+  .default;
+const ExampleSubscriptionV3Override = require('./subscriptions//example.v3_overrideoptions.subscription')
+  .default;
 
 class SubscriptionService extends pubsub_1.SubscriptionService {}
 SubscriptionService.subscribers = [
@@ -17,6 +23,9 @@ SubscriptionService.subscribers = [
   ExampleSubscriptionV2,
   ExampleSubscriptionV3,
   ExampleSubscriptionV3_2,
+  ExampleSubscriptionV3_3,
+  ExampleSubscriptionV2Override,
+  ExampleSubscriptionV3Override,
 ];
 
 exports.default = SubscriptionService;

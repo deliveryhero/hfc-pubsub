@@ -11,6 +11,7 @@ import {
 import { SubscriberOptions } from '../subscriber/subscriberV2';
 import { SubscriberTuple } from 'subscriber';
 import Message from '../message';
+import defaults from 'defaults';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 export default class GooglePubSubAdapter implements PubSubClientV2 {

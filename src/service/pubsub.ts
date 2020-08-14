@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Topic, { Payload } from '../topic';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Subscriber, { SubscriberTuple, Subscribers } from '../subscriber';
+import { SubscriberTuple, Subscribers } from '../subscriber';
 import EventBus from '../driver/eventBus';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
 import GooglePubSubAdapter from '../driver/googlePubSub';
@@ -86,6 +86,8 @@ export default class PubSubService {
 
     if (PubSubService.driver !== 'synchronous')
       SubscriptionService.loadSubscriptionService();
+
+    SubscriptionService.init();
 
     const subscribers = SubscriptionService.getSubscribers();
     for (const subscription of subscribers) {

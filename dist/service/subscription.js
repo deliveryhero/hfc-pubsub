@@ -3,9 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const pubsub_1 = __importDefault(require("./pubsub"));
 const path_1 = require("path");
-const fs = require("fs");
 const subscriberLoader_1 = __importDefault(require("./subscriberLoader"));
 const resourceResolver_1 = require("./resourceResolver");
 class SubscriptionService {
@@ -23,16 +21,18 @@ class SubscriptionService {
         if (SubscriptionService._subscribers.length > 0) {
             return SubscriptionService._subscribers;
         }
-        SubscriptionService.loadSubscribersFromFilesystem(resourceResolver_1.ResourceResolver.getFiles());
+        SubscriptionService.loadSubscribers();
         return SubscriptionService._subscribers;
     }
-    static loadSubscribersFromFilesystem([subscriptionService, dir]) {
+    static loadSubscribers() {
+        const [subscriptionService, dir] = resourceResolver_1.ResourceResolver.getFiles();
+        const subscriptionServiceClass = SubscriptionService.loadSubscriptionService();
         const loader = new subscriberLoader_1.default();
-        const subscribersFromService = fs.existsSync(subscriptionService)
-            ? loader.loadSubscribersFromService(subscriptionService)
-            : [];
-        const subscribersFromDirectory = loader.loadSubscribersFromDirectory(dir);
-        SubscriptionService._subscribers = Array.from(subscribersFromService
+        SubscriptionService._subscribers = this.mergeSubscribers(loader.loadSubscribersFromService(subscriptionService, subscriptionServiceClass.defaultSubscriberOptions), loader.loadSubscribersFromDirectory(dir, subscriptionServiceClass.defaultSubscriberOptions));
+        return SubscriptionService._subscribers;
+    }
+    static mergeSubscribers(subscribersFromService, subscribersFromDirectory) {
+        return Array.from(subscribersFromService
             .concat(subscribersFromDirectory)
             .reduce((map, subscriber) => {
             const subscriptionKey = subscriber[1].topicName + subscriber[1].subscriptionName;
@@ -40,24 +40,25 @@ class SubscriptionService {
             return map;
         }, new Map())
             .values());
-        return SubscriptionService._subscribers;
     }
     static loadSubscriptionService() {
         const [subscriptionService] = resourceResolver_1.ResourceResolver.getFiles();
         try {
             const service = require(path_1.resolve(subscriptionService)).default;
-            service.init();
             return service;
         }
         catch (e) {
             return SubscriptionService;
         }
     }
-    static async getAllSubscriptions() {
-        return pubsub_1.default.getInstance().getAllSubscriptions();
-    }
 }
 exports.default = SubscriptionService;
 SubscriptionService.subscribers = [];
 SubscriptionService._subscribers = [];
+SubscriptionService.defaultSubscriberOptions = {
+    ackDeadline: 30,
+    flowControl: {
+        maxMessages: 5,
+    },
+};
 SubscriptionService.instance = new SubscriptionService();

@@ -10,7 +10,7 @@ exports.default = {
     desc: 'Will listen to Google Pub/Sub topics and initialize their event handlers',
     handler: async (argv) => {
         argv;
-        console.log(chalk_1.default.bold.blue('Starting HFC Subscriptions Server'));
+        console.log(chalk_1.default.bold.blue('Starting Google Pub/Sub Subscriptions Server'));
         index_1.PubSubService.getInstance().startSubscriptions();
     },
 };

@@ -38,4 +38,36 @@ describe('subscription v2 test', (): any => {
       'test-topic.v2-subscription',
     );
   });
+
+  it('should have default options when not specified (v2)', () => {
+    const subscription = subscriptions.find((sub) => {
+      const [, {subscriptionName}] = sub;
+      return (subscriptionName === 'test-topic.v2-subscription');
+    });    
+
+    const subscriptionObj = (subscription && subscription.length > 1) ? subscription[1] : {
+      options: {
+        ackDeadline: 1,
+        flowControl: {maxMessages: 10}
+      }
+    };
+    expect(subscriptionObj?.options?.ackDeadline).toBe(30);
+    expect(subscriptionObj?.options?.flowControl?.maxMessages).toBe(5);
+  });
+  
+  it('should allow the default values to be overridden (v2)', () => {
+    const subscription = subscriptions.find((sub) => {
+      const [, {subscriptionName}] = sub;
+      return (subscriptionName === 'example.v2_override.options.subscription');
+    });    
+
+    const subscriptionObj = (subscription && subscription.length > 1) ? subscription[1] : {
+      options: {
+        ackDeadline: 1,
+        flowControl: {maxMessages: 10}
+      }
+    };
+    expect(subscriptionObj?.options?.ackDeadline).toBe(20);
+    expect(subscriptionObj?.options?.flowControl?.maxMessages).toBe(40);
+  });
 });

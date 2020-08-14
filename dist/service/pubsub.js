@@ -63,6 +63,7 @@ class PubSubService {
             return;
         if (PubSubService.driver !== 'synchronous')
             subscription_1.default.loadSubscriptionService();
+        subscription_1.default.init();
         const subscribers = subscription_1.default.getSubscribers();
         for (const subscription of subscribers) {
             await this.subscribe(subscription);
