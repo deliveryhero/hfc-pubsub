@@ -19,7 +19,7 @@ This package contains a lightweight framework for [Google Pub/Sub](https://cloud
     - [Javascript subscription example](#javascript-subscription-example)
     - [Subscription example with subscriber options](#subscription-example-with-subscriber-options)
     - [Subscription with a Deadletter Policy](#subscription-with-a-deadletter-policy)
-    - [Retry Policy](#retry-policy)
+    - [Subscription with Retry Policy](#subscription-with-retry-policy)
   - [Subscriber Options](#subscriber-options)
   - [Connecting to a database](#connecting-to-a-database)
   - [Enabling Synchronous Driver](#enabling-synchronous-driver)
@@ -216,7 +216,7 @@ exports.default = {
 };
 ```
 
-### Retry Policy
+### Subscription with Retry Policy
 
 It is possible to define a retry configuration for a subscription:
 
