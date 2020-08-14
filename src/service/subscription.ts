@@ -5,12 +5,10 @@ import {
   SubscriberObject,
   SubscriberTuple,
 } from '../subscriber';
-import PubSubService from './pubsub';
-import { AllSubscriptions } from '../interface/pubSubClient';
 import { resolve } from 'path';
-import fs = require('fs');
 import SubscriberLoader from './subscriberLoader';
 import { ResourceResolver } from './resourceResolver';
+import { SubscriberOptions } from 'subscriber/subscriberV2';
 
 export default class SubscriptionService {
   public static subscribers: (
@@ -19,6 +17,12 @@ export default class SubscriptionService {
     | SubscriberObject
   )[] = [];
   private static _subscribers: Subscribers = [];
+  private static defaultSubscriberOptions: SubscriberOptions = {
+    ackDeadline: 30,
+    flowControl: {
+      maxMessages: 5,
+    },
+  };
   public static instance = new SubscriptionService();
 
   public constructor() {
@@ -42,26 +46,37 @@ export default class SubscriptionService {
     if (SubscriptionService._subscribers.length > 0) {
       return SubscriptionService._subscribers as Subscribers;
     }
-
-    SubscriptionService.loadSubscribersFromFilesystem(
-      ResourceResolver.getFiles(),
-    );
+    SubscriptionService.loadSubscribers();
 
     return SubscriptionService._subscribers as Subscribers;
   }
 
-  private static loadSubscribersFromFilesystem([subscriptionService, dir]: [
-    string,
-    string,
-  ]): Subscribers {
+  private static loadSubscribers(): Subscribers {
+    const [subscriptionService, dir] = ResourceResolver.getFiles();
+
+    const subscriptionServiceClass = SubscriptionService.loadSubscriptionService();
+
     const loader = new SubscriberLoader();
-    const subscribersFromService = fs.existsSync(subscriptionService)
-      ? loader.loadSubscribersFromService(subscriptionService)
-      : [];
 
-    const subscribersFromDirectory = loader.loadSubscribersFromDirectory(dir);
+    SubscriptionService._subscribers = this.mergeSubscribers(
+      loader.loadSubscribersFromService(
+        subscriptionService,
+        subscriptionServiceClass.defaultSubscriberOptions,
+      ),
+      loader.loadSubscribersFromDirectory(
+        dir,
+        subscriptionServiceClass.defaultSubscriberOptions,
+      ),
+    );
 
-    SubscriptionService._subscribers = Array.from(
+    return SubscriptionService._subscribers;
+  }
+
+  private static mergeSubscribers(
+    subscribersFromService: Subscribers,
+    subscribersFromDirectory: Subscribers,
+  ): Subscribers {
+    return Array.from(
       subscribersFromService
         .concat(subscribersFromDirectory)
         .reduce((map, subscriber) => {
@@ -72,18 +87,15 @@ export default class SubscriptionService {
         }, new Map<string, SubscriberTuple>())
         .values(),
     );
-
-    return SubscriptionService._subscribers;
   }
 
-  public static loadSubscriptionService(): SubscriptionService {
+  public static loadSubscriptionService(): typeof SubscriptionService {
     const [subscriptionService] = ResourceResolver.getFiles();
-    const service = require(resolve(subscriptionService)).default;
-    service.init();
-    return service;
-  }
-
-  public static async getAllSubscriptions(): Promise<AllSubscriptions[]> {
-    return PubSubService.getInstance().getAllSubscriptions();
+    try {
+      const service = require(resolve(subscriptionService)).default;
+      return service;
+    } catch (e) {
+      return SubscriptionService;
+    }
   }
 }

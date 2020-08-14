@@ -1,11 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Topic, { Payload } from '../topic';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Subscriber, { SubscriberTuple, Subscribers } from '../subscriber';
+import { SubscriberTuple, Subscribers } from '../subscriber';
 import EventBus from '../driver/eventBus';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
 import GooglePubSubAdapter from '../driver/googlePubSub';
 import SubscriptionService from './subscription';
+import { RetryConfig } from '../interface/retryConfig';
 
 export default class PubSubService {
   protected static client: PubSubClientV2;
@@ -57,12 +58,13 @@ export default class PubSubService {
   public async publish<T extends Topic, P extends Payload>(
     topic: T,
     message: P,
+    retryConfig: RetryConfig,
   ): Promise<string> {
     this.validate(topic, message);
     if (this.shouldStartSynchronousSubscriptions()) {
       await this.startSubscriptions();
     }
-    return await this.getClient().publish(topic, message);
+    return await this.getClient().publish(topic, message, retryConfig);
   }
 
   private shouldStartSynchronousSubscriptions(): boolean {
@@ -82,13 +84,15 @@ export default class PubSubService {
   public async startSubscriptions(): Promise<void> {
     if (PubSubService.status === 'ready') return;
 
-    if (PubSubService.driver !== 'synchronous')
-      SubscriptionService.loadSubscriptionService();
+    const subscriptionServiceClass = SubscriptionService.loadSubscriptionService();
 
-    const subscribers = SubscriptionService.getSubscribers();
+    subscriptionServiceClass.init();
+
+    const subscribers = subscriptionServiceClass.getSubscribers();
     for (const subscription of subscribers) {
       await this.subscribe(subscription);
     }
+
     PubSubService.status = 'ready';
   }
 
