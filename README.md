@@ -19,6 +19,7 @@ This package contains a lightweight framework for [Google Pub/Sub](https://cloud
     - [Javascript subscription example](#javascript-subscription-example)
     - [Subscription example with subscriber options](#subscription-example-with-subscriber-options)
     - [Subscription with a Deadletter Policy](#subscription-with-a-deadletter-policy)
+    - [Subscription with Retry Policy](#retry-policy)
   - [Subscriber Options](#subscriber-options)
   - [Connecting to a database](#connecting-to-a-database)
   - [Enabling Synchronous Driver](#enabling-synchronous-driver)
@@ -29,7 +30,7 @@ This package contains a lightweight framework for [Google Pub/Sub](https://cloud
 2. Define pub/sub subscriptions and topics in a declarative way
 3. Define your subscription handlers with a simple object
 4. Get started quickly: define a topic and publish messages with a few lines of code
-   
+
 ## Getting started
 
 The framework expects that you've created a pubsub directory in your project with the following structure:
@@ -92,22 +93,18 @@ If a topic does not exist, it will be created before a message is published.
 
 ```typescript
 // client.example.ts
-import SimpleTopic, { Payload } from "PUBSUB_ROOT_DIR/topics/simple.topic.name";
+import SimpleTopic, { Payload } from 'PUBSUB_ROOT_DIR/topics/simple.topic.name';
 
-new SimpleTopic()
-  .publish<Payload>({ id: 1, data: "My first message" });
-
+new SimpleTopic().publish<Payload>({ id: 1, data: 'My first message' });
 ```
 
 #### Javascript example
 
 ```typescript
 // client.example.ts
-import SimpleTopic from "PUBSUB_ROOT_DIR/topics/simple.topic.name";
+import SimpleTopic from 'PUBSUB_ROOT_DIR/topics/simple.topic.name';
 
-new SimpleTopic()
-  .publish({ id: 1, data: "My first message" });
-
+new SimpleTopic().publish({ id: 1, data: 'My first message' });
 ```
 
 ### Publishing a message with retry settings
@@ -132,7 +129,7 @@ topic.publish<Payload>(
 
 ## Subscriptions
 
-Create a `Subscriber`  to define a message handler for messages that are published on the corresponding topic.
+Create a `Subscriber` to define a message handler for messages that are published on the corresponding topic.
 
 Subscribers are contained in `PUBSUB_ROOT_DIR/subscriptions`.
 
@@ -174,7 +171,6 @@ exports.default = {
   },
 };
 ```
-
 
 ### Subscription example with [subscriber options](#subscriber-options)
 
@@ -220,6 +216,29 @@ exports.default = {
 };
 ```
 
+### Retry Policy
+
+It is possible to define a retry configuration for a subscription:
+
+```javascript
+// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.sub.js
+exports.default = {
+  topicName: 'test.topic',
+  subscriptionName: 'test.topic.sub',
+  description: 'Will console log messages published on test.topic',
+  options: {
+    retryPolicy: {
+      minimumBackoff: { seconds: 20, nanos: 20 },
+      maximumBackoff: { seconds: 400, nanos: 2 },
+    },
+  },
+  handleMessage: function(message) {
+    console.log(`received a message on ${this.subscriptionName}`);
+    console.log(message.data.toString());
+  },
+};
+```
+
 ## Subscriber Options
 
 [Usage Example](#with-subscriber-options)
@@ -247,12 +266,16 @@ interface SubscriberOptions {
     deadLetterTopic: string;
     maxDeliveryAttempts: number;
   };
+  retryPolicy: {
+    minimumBackoff: { seconds?: number; nanos?: number }; // "10s"-"599s"
+    maximumBackoff: { seconds?: number; nanos?: number }; // "11s"-"600s"
+  };
 }
 ```
 
 ## Connecting to a database
 
-If you have several subscribers that require a database connection, it is recommended to connect to a database in the `subscription.service` file in your `PUBSUB_ROOT_DIR`. Insert your database connection logic in  the `init` method.
+If you have several subscribers that require a database connection, it is recommended to connect to a database in the `subscription.service` file in your `PUBSUB_ROOT_DIR`. Insert your database connection logic in the `init` method.
 
 ```typescript
 // PUBSUB_ROOT_DIR/subscription.service.ts

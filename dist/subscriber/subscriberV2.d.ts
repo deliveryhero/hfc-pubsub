@@ -16,6 +16,16 @@ export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
         deadLetterTopic: string;
         maxDeliveryAttempts: number;
     };
+    retryPolicy?: {
+        minimumBackoff: {
+            seconds: number;
+            nanos?: number;
+        };
+        maximumBackoff: {
+            seconds: number;
+            nanos?: number;
+        };
+    };
 }
 export interface SubscriberMetadata {
     topicName: string;

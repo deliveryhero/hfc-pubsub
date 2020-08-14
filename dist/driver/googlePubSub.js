@@ -65,7 +65,7 @@ class GooglePubSubAdapter {
     async createSubscription(topic, subscriber) {
         const [, metadata] = subscriber;
         try {
-            await topic.createSubscription(metadata.subscriptionName, Object.assign({}, (await this.mergeDeadLetterPolicy(this.getSubscriberOptions(subscriber)))));
+            await topic.createSubscription(metadata.subscriptionName, Object.assign(Object.assign({}, this.getSubscriberOptions(subscriber)), (await this.mergeDeadLetterPolicy(this.getSubscriberOptions(subscriber)))));
             console.log(chalk_1.default.green(`Subscription ${metadata.subscriptionName} created.`));
         }
         catch (e) {
