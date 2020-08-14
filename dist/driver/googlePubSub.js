@@ -55,7 +55,7 @@ class GooglePubSubAdapter {
         });
         const [, metadata] = subscriber;
         if (await this.subscriptionExists(metadata.subscriptionName, client)) {
-            console.log(chalk_1.default.gray(`Subscription ${metadata.subscriptionName} already exists.`));
+            console.log(chalk_1.default.gray(`   ✅     ${metadata.subscriptionName} already exists.`));
             return this.getSubscription(subscriber, client);
         }
         const topic = await this.createOrGetTopic(metadata.topicName);

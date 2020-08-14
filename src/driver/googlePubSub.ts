@@ -94,7 +94,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const [, metadata] = subscriber;
     if (await this.subscriptionExists(metadata.subscriptionName, client)) {
       console.log(
-        chalk.gray(`Subscription ${metadata.subscriptionName} already exists.`),
+        chalk.gray(`   ✅     ${metadata.subscriptionName} already exists.`),
       );
       return this.getSubscription(subscriber, client);
     }
