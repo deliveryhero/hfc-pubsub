@@ -1,6 +1,6 @@
 # Google Pub/Sub Node.js Framework
 
-This package contains a lightweight framework for [Google Pub/Sub](https://cloud.google.com/pubsub). It was created to speed up development time and it provides a common foundation for building event driven applications. It lets developers define topics and subscriptions simply and declaratively, while additionally offering a simple subscription server to run all of a project's subscription handlers.
+This package contains a lightweight framework and subscription server for [Google Pub/Sub](https://cloud.google.com/pubsub). It was created to speed up development time and it provides a common foundation for building event driven applications. It lets developers define topics and subscriptions simply and declaratively, while additionally offering a simple subscription server to run all of a project's subscription handlers.
 
 ## Table of Contents
 
@@ -19,7 +19,7 @@ This package contains a lightweight framework for [Google Pub/Sub](https://cloud
     - [Javascript subscription example](#javascript-subscription-example)
     - [Subscription example with subscriber options](#subscription-example-with-subscriber-options)
     - [Subscription with a Deadletter Policy](#subscription-with-a-deadletter-policy)
-    - [Subscription with Retry Policy](#retry-policy)
+    - [Subscription with Retry Policy](#subscription-with-retry-policy)
   - [Subscriber Options](#subscriber-options)
   - [Connecting to a database](#connecting-to-a-database)
   - [Enabling Synchronous Driver](#enabling-synchronous-driver)
@@ -216,7 +216,7 @@ exports.default = {
 };
 ```
 
-### Retry Policy
+### Subscription with Retry Policy
 
 It is possible to define a retry configuration for a subscription:
 
@@ -241,7 +241,7 @@ exports.default = {
 
 ## Subscriber Options
 
-[Usage Example](#with-subscriber-options)
+[Usage Example](#subscription-example-with-subscriber-options)
 
 ```typescript
 interface SubscriberOptions {
@@ -262,7 +262,7 @@ interface SubscriberOptions {
     maxStreams?: number;
     timeout?: number;
   };
-  deadLetterPolicy: {
+  deadLetterPolicy?: {
     deadLetterTopic: string;
     maxDeliveryAttempts: number;
   };

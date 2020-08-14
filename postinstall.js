@@ -1,11 +1,18 @@
 #!/bin/node
 const fs = require('fs');
+const { resolve } = require('path');
 
 const cwd = process.env.INIT_CWD;
 console.log('cwd', cwd);
 
 const getTemplateEnv = () => {
-  const envFile = cwd + '/node_modules/@honestfoodcompany/pubsub/.env.example';
+  const envFile = resolve(
+    cwd,
+    'node_modules',
+    '@honest-food-company',
+    'pubsub',
+    '.env.example',
+  );
   return envFile;
 };
 
@@ -27,7 +34,7 @@ const copyFile = function(
 
 const copyEnv = () => {
   const source = getTemplateEnv();
-  const target = cwd + '/.env';
+  const target = resolve(cwd, '.env');
   copyFile(source, target, false);
 };
 
