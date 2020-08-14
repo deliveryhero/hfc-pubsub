@@ -84,15 +84,15 @@ export default class PubSubService {
   public async startSubscriptions(): Promise<void> {
     if (PubSubService.status === 'ready') return;
 
-    if (PubSubService.driver !== 'synchronous')
-      SubscriptionService.loadSubscriptionService();
+    const subscriptionServiceClass = SubscriptionService.loadSubscriptionService();
 
-    SubscriptionService.init();
+    subscriptionServiceClass.init();
 
-    const subscribers = SubscriptionService.getSubscribers();
+    const subscribers = subscriptionServiceClass.getSubscribers();
     for (const subscription of subscribers) {
       await this.subscribe(subscription);
     }
+
     PubSubService.status = 'ready';
   }
 

@@ -24,8 +24,7 @@ class SubscriberLoader {
         if (!fs.existsSync(subscriptionService))
             return [];
         const service = require(path_1.resolve(subscriptionService)).default;
-        this.subscribers = service.subscribers.map((subscriber) => this.loadSubscriber(subscriber, subscriber_1.SubscriberV2.getSubscriberVersion(subscriber), defaultOptions));
-        return this.subscribers;
+        return this.subscribers.concat(service.subscribers.map((subscriber) => this.loadSubscriber(subscriber, subscriber_1.SubscriberV2.getSubscriberVersion(subscriber), defaultOptions)));
     }
     loadSubscriber(subscriber, version, defaultOptions) {
         const v2SubscriberClass = subscriber_1.SubscriberV2.from(subscriber, version, defaultOptions);
