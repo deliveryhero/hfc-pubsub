@@ -43,20 +43,21 @@ export default class SubscriberLoader {
     if (!fs.existsSync(subscriptionService)) return [];
 
     const service = require(resolve(subscriptionService)).default;
-    this.subscribers = service.subscribers.map(
-      (
-        subscriber:
-          | typeof SubscriberV1
-          | typeof SubscriberV2
-          | SubscriberObject,
-      ): SubscriberTuple =>
-        this.loadSubscriber(
-          subscriber,
-          SubscriberV2.getSubscriberVersion(subscriber),
-          defaultOptions,
-        ),
+    return this.subscribers.concat(
+      service.subscribers.map(
+        (
+          subscriber:
+            | typeof SubscriberV1
+            | typeof SubscriberV2
+            | SubscriberObject,
+        ): SubscriberTuple =>
+          this.loadSubscriber(
+            subscriber,
+            SubscriberV2.getSubscriberVersion(subscriber),
+            defaultOptions,
+          ),
+      ),
     );
-    return this.subscribers;
   }
 
   private loadSubscriber(
