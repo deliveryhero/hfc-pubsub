@@ -2,7 +2,6 @@ require('dotenv').config({ path: require('find-config')('.env') });
 import { PubSubService } from '../../index';
 import chalk from 'chalk';
 import { cli } from 'cli-ux';
-import wrapAnsi = require('wrap-ansi');
 
 export default {
   command: 'subscriptions',
