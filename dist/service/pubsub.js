@@ -3,8 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const eventBus_1 = __importDefault(require("../driver/eventBus"));
-const googlePubSub_1 = __importDefault(require("../driver/googlePubSub"));
+const eventBus_1 = __importDefault(require("../client/eventBus"));
+const googlePubSub_1 = __importDefault(require("../client/googlePubSub"));
 const subscription_1 = __importDefault(require("./subscription"));
 class PubSubService {
     constructor() {
