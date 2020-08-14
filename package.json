@@ -17,10 +17,7 @@
     "pubsub",
     "publish/subscribe",
     "subscriptions",
-    "pubsub framework",
-    "subscription server",
-    "google pull subscriptions",
-    "pubsub pull subscriptions"
+    "pubsub framework"
   ],
   "types": "dist/index.d.ts",
   "dependencies": {
@@ -32,7 +29,8 @@
     "find-config": "^1.0.0",
     "fs": "0.0.1-security",
     "wrap-ansi": "^6.2.0",
-    "yargs": "^14.2.3"
+    "yargs": "^14.2.3",
+    "dot-prop": ">=5.1.1"
   },
   "devDependencies": {
     "@types/defaults": "^1.0.3",
