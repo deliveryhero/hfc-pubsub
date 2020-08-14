@@ -34,15 +34,12 @@ class GooglePubSubAdapter {
     }
     addHandler(subscriber, subscription) {
         const [subscriberClass] = subscriber;
-        subscription.on('message', async (message) => {
+        subscription.on('message', (message) => {
             const subscriber = new subscriberClass();
             subscriber.init();
-            try {
-                await subscriber.handleMessage(message_1.default.fromGCloud(message));
-            }
-            catch (err) {
+            subscriber.handleMessage(message_1.default.fromGCloud(message)).catch(() => {
                 message.nack();
-            }
+            });
         });
     }
     log(message) {
@@ -58,7 +55,7 @@ class GooglePubSubAdapter {
         });
         const [, metadata] = subscriber;
         if (await this.subscriptionExists(metadata.subscriptionName, client)) {
-            console.log(chalk_1.default.gray(`Subscription ${metadata.subscriptionName} already exists.`));
+            console.log(chalk_1.default.gray(`   ✔️      ${metadata.subscriptionName} already exists.`));
             return this.getSubscription(subscriber, client);
         }
         const topic = await this.createOrGetTopic(metadata.topicName);
@@ -68,8 +65,8 @@ class GooglePubSubAdapter {
     async createSubscription(topic, subscriber) {
         const [, metadata] = subscriber;
         try {
-            await topic.createSubscription(metadata.subscriptionName, Object.assign({}, (await this.mergeDeadLetterPolicy(this.getSubscriberOptions(subscriber)))));
-            console.log(chalk_1.default.green(`Subscription ${metadata.subscriptionName} created.`));
+            await topic.createSubscription(metadata.subscriptionName, Object.assign(Object.assign({}, this.getSubscriberOptions(subscriber)), (await this.mergeDeadLetterPolicy(this.getSubscriberOptions(subscriber)))));
+            console.log(chalk_1.default.gray(`   ✔️      ${metadata.subscriptionName} created.`));
         }
         catch (e) {
             console.error('There was an error creating a subscription.', e);
@@ -113,11 +110,10 @@ class GooglePubSubAdapter {
     async getAllSubscriptions() {
         const [subscriptionData] = await this.client.getSubscriptions();
         const subscriptionList = subscriptionData.map((datum) => {
-            var _a, _b;
             const { metadata } = datum;
             return {
-                topicName: ((_a = metadata) === null || _a === void 0 ? void 0 : _a.topic) || null,
-                subscriptionName: ((_b = metadata) === null || _b === void 0 ? void 0 : _b.name) || datum.name,
+                topicName: (metadata === null || metadata === void 0 ? void 0 : metadata.topic) || null,
+                subscriptionName: (metadata === null || metadata === void 0 ? void 0 : metadata.name) || datum.name,
             };
         });
         return subscriptionList;
