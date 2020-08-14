@@ -32,19 +32,17 @@ export default class SubscriberLoader {
 
   public loadSubscribersFromService(
     subscriptionService: SubscriptionServiceFile,
-    init = false,
   ): Subscribers {
     const service = require(resolve(subscriptionService)).default;
-    if (init) service.init();
-    service.subscribers.map(
+    this.subscribers = service.subscribers.map(
       (
         subscriber:
           | typeof SubscriberV1
           | typeof SubscriberV2
           | SubscriberObject,
-      ): void => {
+      ): SubscriberTuple => {
         const version = SubscriberV2.getSubscriberVersion(subscriber) || '';
-        this.subscribers.push(this.loadSubscriber(subscriber, version));
+        return this.loadSubscriber(subscriber, version);
       },
     );
     return this.subscribers;
@@ -54,23 +52,8 @@ export default class SubscriberLoader {
     subscriber: typeof SubscriberV1 | SubscriberObject,
     version: SubscriberVersion,
   ): SubscriberTuple {
-    switch (version) {
-      case 'v1': {
-        // v1 is getting an upgrade to v2
-        const v2SubscriberClass = SubscriberV2.from(subscriber, 'v1');
-        const instance = new v2SubscriberClass();
-        return [v2SubscriberClass, instance.metadata as SubscriberMetadata];
-      }
-      case 'v2': {
-        const v2SubscriberClass = SubscriberV2.from(subscriber, 'v2');
-        const instance = new v2SubscriberClass();
-        return [v2SubscriberClass, instance.metadata as SubscriberMetadata];
-      }
-      case 'v3':
-        // let's convert a subscriber object to subscriber class
-        const v2SubscriberClass = SubscriberV2.from(subscriber, 'v3');
-        const instance = new v2SubscriberClass();
-        return [v2SubscriberClass, instance.metadata as SubscriberMetadata];
-    }
+    const v2SubscriberClass = SubscriberV2.from(subscriber, version);
+    const instance = new v2SubscriberClass();
+    return [v2SubscriberClass, instance.metadata as SubscriberMetadata];
   }
 }

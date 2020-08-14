@@ -42,18 +42,14 @@ export default class SubscriptionService {
     if (SubscriptionService._subscribers.length > 0) {
       return SubscriptionService._subscribers as Subscribers;
     }
-
-    SubscriptionService.loadSubscribersFromFilesystem(
-      ResourceResolver.getFiles(),
-    );
+    SubscriptionService.loadSubscribers();
 
     return SubscriptionService._subscribers as Subscribers;
   }
 
-  private static loadSubscribersFromFilesystem([subscriptionService, dir]: [
-    string,
-    string,
-  ]): Subscribers {
+  private static loadSubscribers(): Subscribers {
+    const [subscriptionService, dir] = ResourceResolver.getFiles();
+
     const loader = new SubscriberLoader();
     const subscribersFromService = fs.existsSync(subscriptionService)
       ? loader.loadSubscribersFromService(subscriptionService)
@@ -80,7 +76,7 @@ export default class SubscriptionService {
     const [subscriptionService] = ResourceResolver.getFiles();
     try {
       const service = require(resolve(subscriptionService)).default;
-      service.init();
+      if (service) service.init();
       return service;
     } catch (e) {
       return SubscriptionService;
