@@ -11,7 +11,6 @@ import {
 import { SubscriberOptions } from '../subscriber/subscriberV2';
 import { SubscriberTuple } from 'subscriber';
 import Message from '../message';
-import defaults from 'defaults';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -94,7 +93,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const [, metadata] = subscriber;
     if (await this.subscriptionExists(metadata.subscriptionName, client)) {
       console.log(
-        chalk.gray(`   ✅     ${metadata.subscriptionName} already exists.`),
+        chalk.gray(`   ✔️      ${metadata.subscriptionName} already exists.`),
       );
       return this.getSubscription(subscriber, client);
     }
@@ -118,7 +117,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         )),
       });
       console.log(
-        chalk.green(`Subscription ${metadata.subscriptionName} created.`),
+        chalk.gray(`   ✔️      ${metadata.subscriptionName} created.`),
       );
     } catch (e) {
       console.error('There was an error creating a subscription.', e);

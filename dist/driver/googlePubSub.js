@@ -55,7 +55,7 @@ class GooglePubSubAdapter {
         });
         const [, metadata] = subscriber;
         if (await this.subscriptionExists(metadata.subscriptionName, client)) {
-            console.log(chalk_1.default.gray(`   ✅     ${metadata.subscriptionName} already exists.`));
+            console.log(chalk_1.default.gray(`   ✔️      ${metadata.subscriptionName} already exists.`));
             return this.getSubscription(subscriber, client);
         }
         const topic = await this.createOrGetTopic(metadata.topicName);
@@ -66,7 +66,7 @@ class GooglePubSubAdapter {
         const [, metadata] = subscriber;
         try {
             await topic.createSubscription(metadata.subscriptionName, Object.assign(Object.assign({}, this.getSubscriberOptions(subscriber)), (await this.mergeDeadLetterPolicy(this.getSubscriberOptions(subscriber)))));
-            console.log(chalk_1.default.green(`Subscription ${metadata.subscriptionName} created.`));
+            console.log(chalk_1.default.gray(`   ✔️      ${metadata.subscriptionName} created.`));
         }
         catch (e) {
             console.error('There was an error creating a subscription.', e);
