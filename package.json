@@ -17,7 +17,10 @@
     "pubsub",
     "publish/subscribe",
     "subscriptions",
-    "pubsub framework"
+    "pubsub framework",
+    "subscription server",
+    "google pull subscriptions",
+    "pubsub pull subscriptions"
   ],
   "types": "dist/index.d.ts",
   "dependencies": {
@@ -32,26 +35,26 @@
     "yargs": "^14.2.3"
   },
   "devDependencies": {
+    "@types/defaults": "^1.0.3",
     "@types/jest": "^24.9.1",
     "@types/node": ">=4.2.0 < 13",
-    "@types/yargs": "^13.0.9",
-    "@types/defaults": "^1.0.3",
     "@types/wrap-ansi": "^3.0.0",
+    "@types/yargs": "^13.0.9",
     "@typescript-eslint/eslint-plugin": "2.17.0",
     "@typescript-eslint/parser": "2.17.0",
     "@typescript-eslint/typescript-estree": "2.17.0",
     "eslint": "5.16.0",
     "eslint-config-prettier": "6.9.0",
     "eslint-plugin-prettier": "3.1.2",
-    "typedoc": "^0.17.8",
     "husky": "^3.1.0",
-    "nodemon": "^1.19.4",
     "jest": "^24.9.0",
     "lint-staged": "8.1.7",
+    "nodemon": "^2.0.4",
     "prettier": "^1.19.1",
     "ts-jest": "^24.3.0",
     "ts-node": "8.1.0",
     "tslint": "5.16.0",
+    "typedoc": "^0.17.8",
     "typescript": "^3.9.6",
     "yarn": "^1.22.4"
   },
