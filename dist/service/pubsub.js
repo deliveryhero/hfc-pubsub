@@ -3,8 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const eventBus_1 = __importDefault(require("../driver/eventBus"));
-const googlePubSub_1 = __importDefault(require("../driver/googlePubSub"));
+const eventBus_1 = __importDefault(require("../client/eventBus"));
+const googlePubSub_1 = __importDefault(require("../client/googlePubSub"));
 const subscription_1 = __importDefault(require("./subscription"));
 class PubSubService {
     constructor() {
@@ -42,12 +42,12 @@ class PubSubService {
         }
         return PubSubService.instance;
     }
-    async publish(topic, message) {
+    async publish(topic, message, retryConfig) {
         this.validate(topic, message);
         if (this.shouldStartSynchronousSubscriptions()) {
             await this.startSubscriptions();
         }
-        return await this.getClient().publish(topic, message);
+        return await this.getClient().publish(topic, message, retryConfig);
     }
     shouldStartSynchronousSubscriptions() {
         return (PubSubService.driver === 'synchronous' && PubSubService.status !== 'ready');
@@ -61,9 +61,9 @@ class PubSubService {
     async startSubscriptions() {
         if (PubSubService.status === 'ready')
             return;
-        if (PubSubService.driver !== 'synchronous')
-            subscription_1.default.loadSubscriptionService();
-        const subscribers = subscription_1.default.getSubscribers();
+        const subscriptionServiceClass = subscription_1.default.loadSubscriptionService();
+        subscriptionServiceClass.init();
+        const subscribers = subscriptionServiceClass.getSubscribers();
         for (const subscription of subscribers) {
             await this.subscribe(subscription);
         }

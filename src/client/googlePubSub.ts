@@ -11,6 +11,7 @@ import {
 import { SubscriberOptions } from '../subscriber/subscriberV2';
 import { SubscriberTuple } from 'subscriber';
 import Message from '../message';
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 export default class GooglePubSubAdapter implements PubSubClientV2 {
@@ -60,18 +61,13 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     subscription: GoogleCloudSubscription,
   ): void {
     const [subscriberClass] = subscriber;
-    subscription.on(
-      'message',
-      async (message: GoogleCloudMessage): Promise<void> => {
-        const subscriber = new subscriberClass();
-        subscriber.init();
-        try {
-          await subscriber.handleMessage(Message.fromGCloud(message));
-        } catch (err) {
-          message.nack();
-        }
-      },
-    );
+    subscription.on('message', (message: GoogleCloudMessage): void => {
+      const subscriber = new subscriberClass();
+      subscriber.init();
+      subscriber.handleMessage(Message.fromGCloud(message)).catch(() => {
+        message.nack();
+      });
+    });
   }
 
   private log(message: string): void {
@@ -97,7 +93,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const [, metadata] = subscriber;
     if (await this.subscriptionExists(metadata.subscriptionName, client)) {
       console.log(
-        chalk.gray(`Subscription ${metadata.subscriptionName} already exists.`),
+        chalk.gray(`   ✔️      ${metadata.subscriptionName} already exists.`),
       );
       return this.getSubscription(subscriber, client);
     }
@@ -115,12 +111,13 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const [, metadata] = subscriber;
     try {
       await topic.createSubscription(metadata.subscriptionName, {
+        ...this.getSubscriberOptions(subscriber),
         ...(await this.mergeDeadLetterPolicy(
           this.getSubscriberOptions(subscriber),
         )),
       });
       console.log(
-        chalk.green(`Subscription ${metadata.subscriptionName} created.`),
+        chalk.gray(`   ✔️      ${metadata.subscriptionName} created.`),
       );
     } catch (e) {
       console.error('There was an error creating a subscription.', e);

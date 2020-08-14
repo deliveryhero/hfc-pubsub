@@ -17,10 +17,13 @@ jest.mock('../src/service/pubsub', (): any => ({
 }));
 
 describe('topics', (): void => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
   it('should publish to pubsub', async (): Promise<void> => {
     const spy = jest.spyOn(PubSubService, 'getInstance');
     const topic = new exampleTopic();
-    topic.publish<Payload>({ data: 'test' });
+    await topic.publish<Payload>({ data: 'test' });
     expect(spy).toBeCalledTimes(1);
     expect(mockPublish).toBeCalledTimes(1);
   });
@@ -31,8 +34,60 @@ describe('topics', (): void => {
     const spy = jest.spyOn(PubSubService, 'getInstance');
     const topic = new exampleTopic();
     const data = await topic.publish<Payload>({ data: 'test' });
-    expect(spy).toBeCalledTimes(2);
+    expect(spy).toBeCalledTimes(1);
     expect(data).toBe('testid');
-    expect(mockPublish).toBeCalledTimes(2);
+    expect(mockPublish).toBeCalledTimes(1);
+  });
+
+  it('Should test retry config to be the default one', async (): Promise<
+    void
+  > => {
+    const spy = jest.spyOn(PubSubService.prototype, 'publish');
+    const topic = new exampleTopic();
+    const data = await topic.publish<Payload>({ data: 'test' });
+    expect(data).toBe('testid');
+    expect(spy).toBeCalledWith(
+      expect.any(Object),
+      expect.any(Object),
+      expect.objectContaining({
+        backoffSettings: {
+          initialRetryDelayMillis: 100,
+          initialRpcTimeoutMillis: 5000,
+          maxRetryDelayMillis: 60000,
+          maxRpcTimeoutMillis: 600000,
+          retryDelayMultiplier: 1.3,
+          rpcTimeoutMultiplier: 1,
+          totalTimeoutMillis: 600000,
+        },
+        retryCodes: [10, 1, 4, 13, 8, 14, 2],
+      }),
+    );
+  });
+  it('Should test retry config to be the updated retry config one', async (): Promise<
+    void
+  > => {
+    const spy = jest.spyOn(PubSubService.prototype, 'publish');
+    const topic = new exampleTopic();
+    const data = await topic.publish<Payload>(
+      { data: 'test' },
+      { backoffSettings: { initialRetryDelayMillis: 500 } },
+    );
+    expect(data).toBe('testid');
+    expect(spy).toBeCalledWith(
+      expect.any(Object),
+      expect.any(Object),
+      expect.objectContaining({
+        backoffSettings: {
+          initialRetryDelayMillis: 500,
+          initialRpcTimeoutMillis: 5000,
+          maxRetryDelayMillis: 60000,
+          maxRpcTimeoutMillis: 600000,
+          retryDelayMultiplier: 1.3,
+          rpcTimeoutMultiplier: 1,
+          totalTimeoutMillis: 600000,
+        },
+        retryCodes: [10, 1, 4, 13, 8, 14, 2],
+      }),
+    );
   });
 });

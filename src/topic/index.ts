@@ -1,4 +1,5 @@
 import PubSubService from '../service/pubsub';
+import { RecursivePartial, RetryConfig } from '../interface/retryConfig';
 
 /**
  * extend this interface to define your own payload
@@ -21,7 +22,20 @@ interface NamedTopic {
 
 export default class Topic implements NamedTopic {
   public readonly name: string = '';
+  public retryConfig: RetryConfig = {
+    retryCodes: [10, 1, 4, 13, 8, 14, 2],
+    backoffSettings: {
+      initialRetryDelayMillis: 100,
+      retryDelayMultiplier: 1.3,
+      maxRetryDelayMillis: 60000,
+      initialRpcTimeoutMillis: 5000,
+      rpcTimeoutMultiplier: 1.0,
+      maxRpcTimeoutMillis: 600000,
+      totalTimeoutMillis: 600000,
+    },
+  };
   protected mq: PubSubService;
+
   public constructor() {
     this.mq = PubSubService.getInstance();
   }
@@ -36,13 +50,29 @@ export default class Topic implements NamedTopic {
     message;
   }
 
-  public async publish<T extends Payload>(message: T): Promise<string> {
+  public async publish<T extends Payload>(
+    message: T,
+    customRetryConfig?: RecursivePartial<RetryConfig>,
+  ): Promise<string> {
     this.validateTopic(this.getName());
     this.validateMessage(message);
-    return this.mq.publish(this, {
-      ...message,
-      _timestamp: new Date().toISOString(),
-    });
+    return this.mq.publish(
+      this,
+      {
+        ...message,
+        _timestamp: new Date().toISOString(),
+      },
+      {
+        ...this.retryConfig,
+        ...customRetryConfig,
+        ...(customRetryConfig?.backoffSettings && {
+          backoffSettings: {
+            ...this.retryConfig.backoffSettings,
+            ...customRetryConfig?.backoffSettings,
+          },
+        }),
+      } as RetryConfig,
+    );
   }
 
   public getName(): string {
