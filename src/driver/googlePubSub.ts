@@ -12,6 +12,7 @@ import { SubscriberOptions } from '../subscriber/subscriberV2';
 import { SubscriberTuple } from 'subscriber';
 import Message from '../message';
 import defaults from 'defaults';
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 export default class GooglePubSubAdapter implements PubSubClientV2 {
@@ -111,6 +112,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const [, metadata] = subscriber;
     try {
       await topic.createSubscription(metadata.subscriptionName, {
+        ...this.getSubscriberOptions(subscriber),
         ...(await this.mergeDeadLetterPolicy(
           this.getSubscriberOptions(subscriber),
         )),

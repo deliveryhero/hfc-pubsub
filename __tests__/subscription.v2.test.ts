@@ -28,7 +28,7 @@ jest.mock('../src/service/pubsub', (): any => ({
   },
 }));
 
-describe('subscription v2 test', (): any => {
+describe.only('subscription v2 test', (): any => {
   let subscriptions: Subscribers;
   beforeAll(() => {
     subscriptions = SubscriptionService.getSubscribers();
@@ -40,33 +40,52 @@ describe('subscription v2 test', (): any => {
   });
 
   it('should have default options when not specified (v2)', () => {
-    const subscription = subscriptions.find((sub) => {
-      const [, {subscriptionName}] = sub;
-      return (subscriptionName === 'test-topic.v2-subscription');
-    });    
+    const subscription = subscriptions.find(sub => {
+      const [, { subscriptionName }] = sub;
+      return subscriptionName === 'test-topic.v2-subscription';
+    });
 
-    const subscriptionObj = (subscription && subscription.length > 1) ? subscription[1] : {
-      options: {
-        ackDeadline: 1,
-        flowControl: {maxMessages: 10}
-      }
-    };
+    const subscriptionObj =
+      subscription && subscription.length > 1
+        ? subscription[1]
+        : {
+            options: {
+              ackDeadline: 1,
+              flowControl: { maxMessages: 10 },
+            },
+          };
     expect(subscriptionObj?.options?.ackDeadline).toBe(30);
     expect(subscriptionObj?.options?.flowControl?.maxMessages).toBe(5);
   });
-  
-  it('should allow the default values to be overridden (v2)', () => {
-    const subscription = subscriptions.find((sub) => {
-      const [, {subscriptionName}] = sub;
-      return (subscriptionName === 'example.v2_override.options.subscription');
-    });    
+  it('test retry config is present', () => {
+    const subscription = subscriptions.find(sub => {
+      const [, { subscriptionName }] = sub;
+      return subscriptionName === 'example.v2_retryConfig.options.subscription';
+    });
+    const subscriptionObj =
+      subscription?.[0] && subscription?.length > 1
+        ? subscription[1]
+        : ({} as any);
+    expect(subscriptionObj?.options?.retryPolicy?.maximumBackoff?.seconds).toBe(
+      100,
+    );
+  });
 
-    const subscriptionObj = (subscription && subscription.length > 1) ? subscription[1] : {
-      options: {
-        ackDeadline: 1,
-        flowControl: {maxMessages: 10}
-      }
-    };
+  it('should allow the default values to be overridden (v2)', () => {
+    const subscription = subscriptions.find(sub => {
+      const [, { subscriptionName }] = sub;
+      return subscriptionName === 'example.v2_override.options.subscription';
+    });
+
+    const subscriptionObj =
+      subscription && subscription.length > 1
+        ? subscription[1]
+        : {
+            options: {
+              ackDeadline: 1,
+              flowControl: { maxMessages: 10 },
+            },
+          };
     expect(subscriptionObj?.options?.ackDeadline).toBe(20);
     expect(subscriptionObj?.options?.flowControl?.maxMessages).toBe(40);
   });
