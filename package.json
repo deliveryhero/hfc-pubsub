@@ -1,13 +1,12 @@
 {
   "name": "@honestfoodcompany/pubsub",
-  "version": "1.5.5",
+  "version": "1.7.0",
   "description": "pubsub framework for managing topics and subscriptions",
   "main": "dist/index.js",
   "scripts": {
     "watch": "nodemon --watch 'src/**/*' -e ts --exec yarn run build",
     "test": "jest --coverage",
-    "build": "./node_modules/.bin/tsc",
-    "prepare": "npm run build",
+    "prepare": "./node_modules/.bin/tsc --declaration",
     "lint": "tslint -p tsconfig.json",
     "subscriptions": "ts-node src/cli/subscriptions.ts",
     "postinstall": "node postinstall.js"
@@ -22,26 +21,21 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "@google-cloud/pubsub": "^2.3.0",
-    "@types/defaults": "^1.0.3",
-    "@types/wrap-ansi": "^3.0.0",
     "chalk": "^2.4.2",
     "cli-ux": "^5.4.9",
     "defaults": "^1.0.3",
     "dotenv": "^8.2.0",
     "find-config": "^1.0.0",
     "fs": "0.0.1-security",
-    "humanize-duration": "^3.23.1",
-    "lodash": "^4.17.19",
-    "moment": "^2.27.0",
-    "mongoose": "^5.9.21",
-    "nodemon": "^1.19.4",
-    "typedoc": "^0.17.8",
     "wrap-ansi": "^6.2.0",
-    "yargs": "^14.2.3"
+    "yargs": "^14.2.3",
+    "dot-prop": ">=5.1.1"
   },
   "devDependencies": {
+    "@types/defaults": "^1.0.3",
     "@types/jest": "^24.9.1",
-    "@types/node": "^12.12.47",
+    "@types/node": ">=4.2.0 < 13",
+    "@types/wrap-ansi": "^3.0.0",
     "@types/yargs": "^13.0.9",
     "@typescript-eslint/eslint-plugin": "2.17.0",
     "@typescript-eslint/parser": "2.17.0",
@@ -52,17 +46,18 @@
     "husky": "^3.1.0",
     "jest": "^24.9.0",
     "lint-staged": "8.1.7",
+    "nodemon": "^2.0.4",
     "prettier": "^1.19.1",
-    "replace-in-file": "^4.3.1",
     "ts-jest": "^24.3.0",
     "ts-node": "8.1.0",
     "tslint": "5.16.0",
+    "typedoc": "^0.17.8",
     "typescript": "^3.9.6",
     "yarn": "^1.22.4"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "prettier --write",
+      "./node_modules/.bin/prettier --write",
       "git add"
     ]
   },

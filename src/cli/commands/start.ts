@@ -7,7 +7,9 @@ export default {
     'Will listen to Google Pub/Sub topics and initialize their event handlers',
   handler: async (argv: any): Promise<void> => {
     argv;
-    console.log(chalk.bold.blue('Starting HFC Subscriptions Server'));
+    console.log(
+      chalk.bold.blue('Starting Google Pub/Sub Subscriptions Server'),
+    );
     PubSubService.getInstance().startSubscriptions();
   },
 };
