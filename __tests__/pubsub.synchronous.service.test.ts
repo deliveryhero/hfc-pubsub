@@ -19,7 +19,7 @@ jest.mock('@google-cloud/pubsub', () => ({
   })),
 }));
 
-jest.mock('../src/driver/eventBus', () => ({
+jest.mock('../src/client/eventBus', () => ({
   __esModule: true,
   default: class {
     public static getInstance(): any {

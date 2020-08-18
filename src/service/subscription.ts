@@ -52,7 +52,10 @@ export default class SubscriptionService {
   }
 
   private static loadSubscribers(): Subscribers {
-    const [subscriptionService, dir] = ResourceResolver.getFiles();
+    const [
+      subscriptionService,
+      pubsubSubscriptionsDir,
+    ] = ResourceResolver.getFiles();
 
     const subscriptionServiceClass = SubscriptionService.loadSubscriptionService();
 
@@ -64,7 +67,7 @@ export default class SubscriptionService {
         subscriptionServiceClass.defaultSubscriberOptions,
       ),
       loader.loadSubscribersFromDirectory(
-        dir,
+        pubsubSubscriptionsDir,
         subscriptionServiceClass.defaultSubscriberOptions,
       ),
     );

@@ -15,7 +15,7 @@ const mockAllUsersList = [
   { topicName: 'test.topic', subscriptionName: 'test.subscription' },
 ];
 
-jest.mock('../src/driver/googlePubSub', () => ({
+jest.mock('../src/client/googlePubSub', () => ({
   __esModule: true,
   default: class {
     public static getInstance(): any {
