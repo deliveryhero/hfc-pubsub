@@ -1,0 +1,10 @@
+node_modules
+docs/
+.env
+.DS_Store
+src/
+/lib/
+/indexers/
+.vscode
+yarn-error.log
+coverage
