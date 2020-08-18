@@ -8,3 +8,4 @@ src/
 .vscode
 yarn-error.log
 coverage
+.git
