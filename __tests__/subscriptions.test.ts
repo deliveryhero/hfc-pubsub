@@ -3,6 +3,7 @@ const exec = require('child_process').exec;
 import fs from 'fs';
 require('dotenv').config({ path: require('find-config')('.env') });
 import SubscriptionService from '../src/service/subscription';
+import { SubscriberTuple } from '../src/subscriber';
 
 const mockPubSub = jest.fn();
 
@@ -26,6 +27,13 @@ jest.mock('../src/service/pubsub', (): any => ({
     }
   },
 }));
+const subscriptions = SubscriptionService.getSubscribers();
+const findSubscriber = (name: string) => {
+  const [, subscription] = subscriptions.find(
+    ([, metadata]) => metadata.subscriptionName === name,
+  ) || [, {} as any];
+  return subscription;
+};
 
 function cli(args: any, cwd: string | null = null): any {
   return new Promise((resolve): any => {
@@ -63,6 +71,29 @@ describe('subscriptions cli', (): any => {
   });
   it('should list subscriptions', async (): Promise<any> => {
     const subscriptions = SubscriptionService.getSubscribers();
-    expect(subscriptions.length).toEqual(8);
+    expect(subscriptions.length).toEqual(9);
+  });
+  it('should use project level default options', async (): Promise<any> => {
+    const subscriber = findSubscriber(
+      'example.v3_overrideoptions.subscription',
+    );
+    expect(subscriber.options.deadLetterPolicy).toEqual({
+      deadletterTopic: 'global.deadletter',
+      maxRetryAttempts: 15,
+    });
+  });
+
+  it('should use subscriber level default options over project level options', async (): Promise<
+    any
+  > => {
+    const subscriber = findSubscriber(
+      'example.v3_overrideoptions-with-deadletter.subscription',
+    );
+
+    expect(subscriber.options.deadLetterPolicy).toEqual({
+      deadletterTopic:
+        'example.v3_overrideoptions-with-deadletter.subscription.deadletter',
+      maxRetryAttempts: 14,
+    });
   });
 });

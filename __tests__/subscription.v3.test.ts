@@ -40,35 +40,26 @@ describe('subscription v2 test', (): any => {
   });
 
   it('should have default options when not specified (v3)', () => {
-    const subscription = subscriptions.find((sub) => {
-      const [, {subscriptionName}] = sub;
-      return (subscriptionName === 'test.v3_3.topic.subscription');
+    const subscription = subscriptions.find(sub => {
+      const [, { subscriptionName }] = sub;
+      return subscriptionName === 'test.v3_3.topic.subscription';
     });
 
-    const subscriptionObj =  (subscription && subscription.length > 1) ? subscription[1] : {
-      options: {
-        ackDeadline: 1,
-        flowControl: {maxMessages: 10}
-      }
-    };
-    
-    expect(subscriptionObj?.options?.ackDeadline).toBe(30);
-    expect(subscriptionObj?.options?.flowControl?.maxMessages).toBe(5);
+    const subscriptionObj =
+      subscription && subscription.length > 1 ? subscription[1] : ({} as any);
+
+    expect(subscriptionObj?.options?.ackDeadline).toBe(145);
+    expect(subscriptionObj?.options?.flowControl?.maxMessages).toBe(134);
   });
 
   it('should allow the default values to be overridden (v3)', () => {
-    const subscription = subscriptions.find((sub) => {
-      const [, {subscriptionName}] = sub;
-      return (subscriptionName === 'example.v3_overrideoptions.subscription');
+    const subscription = subscriptions.find(sub => {
+      const [, { subscriptionName }] = sub;
+      return subscriptionName === 'example.v3_overrideoptions.subscription';
     });
 
-    const subscriptionObj =  (subscription && subscription.length > 1) ? subscription[1] : {
-      options: {
-        ackDeadline: 1,
-        flowControl: {maxMessages: 10}
-      }
-    };
-    
+    const subscriptionObj =
+      subscription && subscription.length > 1 ? subscription[1] : ({} as any);
     expect(subscriptionObj?.options?.ackDeadline).toBe(20);
     expect(subscriptionObj?.options?.flowControl?.maxMessages).toBe(40);
   });

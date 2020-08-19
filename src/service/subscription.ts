@@ -17,12 +17,9 @@ export default class SubscriptionService {
     | SubscriberObject
   )[] = [];
   private static _subscribers: Subscribers = [];
-  private static defaultSubscriberOptions: SubscriberOptions = {
-    ackDeadline: 30,
-    flowControl: {
-      maxMessages: 5,
-    },
-  };
+
+  public static defaultSubscriberOptions: SubscriberOptions;
+
   public static instance = new SubscriptionService();
 
   public constructor() {

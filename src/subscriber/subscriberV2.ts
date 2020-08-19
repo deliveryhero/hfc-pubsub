@@ -1,9 +1,16 @@
 import Subscriber from './subscriber';
 import Message from '../message';
 import { SubscriberOptions as GoogleCloudSubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber';
-import defaults from 'defaults';
 
 export type SubscriberVersion = 'v1' | 'v2' | 'v3';
+
+const defaultSubscriberOptions = {
+  ackDeadline: 30,
+  flowControl: {
+    maxMessages: 5,
+  },
+};
+
 export default class SubscriberV2 extends Subscriber {
   public metadata?: SubscriberMetadata;
 
@@ -28,7 +35,7 @@ export default class SubscriberV2 extends Subscriber {
   public static from(
     subscriber: SubscriberObject | typeof Subscriber,
     version: SubscriberVersion,
-    defaultOptions: SubscriberOptions,
+    subscriptionServiceDefaultOptions: SubscriberOptions,
   ): typeof SubscriberV2 {
     switch (version) {
       case 'v1': {
@@ -43,12 +50,13 @@ export default class SubscriberV2 extends Subscriber {
               ackDeadline:
                 subscriber.ackDeadlineSeconds !== undefined
                   ? subscriber.ackDeadlineSeconds
-                  : defaultOptions.ackDeadline,
+                  : subscriptionServiceDefaultOptions.ackDeadline,
               flowControl: {
                 maxMessages:
                   subscriber.maxMessages !== undefined
                     ? subscriber.maxMessages
-                    : defaultOptions.flowControl?.maxMessages,
+                    : subscriptionServiceDefaultOptions.flowControl
+                        ?.maxMessages,
               },
             },
           };
@@ -57,7 +65,11 @@ export default class SubscriberV2 extends Subscriber {
             subscriberClass: SubscriberObject | typeof Subscriber,
             version: SubscriberVersion,
           ): typeof SubscriberV2 {
-            return SubscriberV2.from(subscriberClass, version, defaultOptions);
+            return SubscriberV2.from(
+              subscriberClass,
+              version,
+              subscriptionServiceDefaultOptions,
+            );
           }
 
           public static getSubscriberVersion(
@@ -66,6 +78,7 @@ export default class SubscriberV2 extends Subscriber {
             return SubscriberV2.getSubscriberVersion(subscriberClass);
           }
         };
+        return class SubscriberClassV2 extends SubscriberV2 {};
       }
       case 'v2':
         const subscriberClass = (subscriber as unknown) as typeof SubscriberV2;
@@ -73,21 +86,24 @@ export default class SubscriberV2 extends Subscriber {
         if (!subscriberObj.metadata) {
           throw new Error('A subscriber must contain a metadata property');
         }
-        if (!subscriberObj.metadata.options) {
-          subscriberObj.metadata.options = {};
-        }
 
-        defaults(subscriberObj.metadata.options, defaultOptions);
+        subscriberObj.metadata.options = {
+          ...defaultSubscriberOptions,
+          ...subscriptionServiceDefaultOptions,
+          ...subscriberObj.metadata.options,
+        };
+
         return class extends subscriberClass {
           metadata = subscriberObj.metadata;
         };
 
       case 'v3':
         const subscriberObject = (subscriber as unknown) as SubscriberObject;
-        if (!subscriberObject.options) {
-          subscriberObject.options = {};
-        }
-        defaults(subscriberObject.options, defaultOptions);
+        subscriberObject.options = {
+          ...defaultSubscriberOptions,
+          ...subscriptionServiceDefaultOptions,
+          ...subscriberObject.options,
+        };
         return class extends SubscriberV2 {
           constructor() {
             super(subscriberObject);

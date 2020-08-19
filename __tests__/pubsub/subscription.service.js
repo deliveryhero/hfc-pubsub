@@ -31,4 +31,20 @@ SubscriptionService.subscribers = [
   ExampleSubscriptionV3Override,
 ];
 
+SubscriptionService.defaultSubscriberOptions = {
+  ackDeadline: 145,
+  flowControl: {
+    maxMessages: 134,
+  },
+  deadLetterPolicy: {
+    deadletterTopic: 'global.deadletter',
+    maxRetryAttempts: 15,
+  },
+  retryPolicy: {
+    minimumBackoff: {
+      seconds: 40,
+    },
+  },
+};
+
 exports.default = SubscriptionService;
