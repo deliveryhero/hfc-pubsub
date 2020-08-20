@@ -46,16 +46,9 @@ describe.only('subscription v2 test', (): any => {
     });
 
     const subscriptionObj =
-      subscription && subscription.length > 1
-        ? subscription[1]
-        : {
-            options: {
-              ackDeadline: 1,
-              flowControl: { maxMessages: 10 },
-            },
-          };
-    expect(subscriptionObj?.options?.ackDeadline).toBe(30);
-    expect(subscriptionObj?.options?.flowControl?.maxMessages).toBe(5);
+      subscription && subscription.length > 1 ? subscription[1] : ({} as any);
+    expect(subscriptionObj?.options?.ackDeadline).toBe(145);
+    expect(subscriptionObj?.options?.flowControl?.maxMessages).toBe(134);
   });
   it('test retry config is present', () => {
     const subscription = subscriptions.find(sub => {
@@ -78,14 +71,7 @@ describe.only('subscription v2 test', (): any => {
     });
 
     const subscriptionObj =
-      subscription && subscription.length > 1
-        ? subscription[1]
-        : {
-            options: {
-              ackDeadline: 1,
-              flowControl: { maxMessages: 10 },
-            },
-          };
+      subscription && subscription.length > 1 ? subscription[1] : ({} as any);
     expect(subscriptionObj?.options?.ackDeadline).toBe(20);
     expect(subscriptionObj?.options?.flowControl?.maxMessages).toBe(40);
   });

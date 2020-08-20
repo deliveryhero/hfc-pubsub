@@ -1,0 +1,14 @@
+node_modules
+docs/
+.env
+.DS_Store
+src/
+/lib/
+/indexers/
+.vscode
+yarn-error.log
+coverage
+.git
+examples
+demo.gif
+__tests__
