@@ -6,7 +6,9 @@
   "scripts": {
     "watch": "nodemon --watch 'src/**/*' -e ts --exec yarn run build",
     "test": "jest --coverage",
-    "prepare": "./node_modules/.bin/tsc --declaration",
+    "clean": "./node_modules/.bin/rimraf dist",
+    "prepare": "npm run clean && ./node_modules/.bin/tsc --declaration",
+    "docs": "./node_modules/.bin/typedoc --out documentation/ src/index.ts",
     "lint": "tslint -p tsconfig.json",
     "subscriptions": "ts-node src/cli/subscriptions.ts",
     "postinstall": "node postinstall.js"
@@ -16,19 +18,22 @@
     "pubsub",
     "publish/subscribe",
     "subscriptions",
-    "pubsub framework"
+    "pubsub framework",
+    "event driven microservices",
+    "microservices",
+    "google pub/sub"
   ],
   "types": "dist/index.d.ts",
   "dependencies": {
     "@google-cloud/pubsub": "^2.3.0",
     "chalk": "^2.4.2",
     "cli-ux": "^5.4.9",
+    "dot-prop": ">=5.1.1",
     "dotenv": "^8.2.0",
     "find-config": "^1.0.0",
     "fs": "0.0.1-security",
     "wrap-ansi": "^6.2.0",
-    "yargs": "^14.2.3",
-    "dot-prop": ">=5.1.1"
+    "yargs": "^14.2.3"
   },
   "devDependencies": {
     "@types/jest": "^24.9.1",
@@ -38,6 +43,7 @@
     "@typescript-eslint/eslint-plugin": "2.17.0",
     "@typescript-eslint/parser": "2.17.0",
     "@typescript-eslint/typescript-estree": "2.17.0",
+    "rimraf": "^3.0.2",
     "eslint": "5.16.0",
     "eslint-config-prettier": "6.9.0",
     "eslint-plugin-prettier": "3.1.2",

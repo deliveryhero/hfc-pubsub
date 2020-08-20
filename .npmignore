@@ -9,3 +9,6 @@ src/
 yarn-error.log
 coverage
 .git
+examples
+demo.gif
+__tests__

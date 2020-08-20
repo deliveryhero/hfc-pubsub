@@ -2,13 +2,16 @@
 
 This package contains a lightweight framework and subscription server for [Google Pub/Sub](https://cloud.google.com/pubsub). It was created to speed up development time and it provides a common foundation for building event driven applications. It lets developers define topics and subscriptions simply and declaratively, while additionally offering a simple subscription server to run all of a project's subscription handlers.
 
+![](demo.gif)
+
 ## Table of Contents
 
 - [Google Pub/Sub Node.js Framework](#google-pubsub-nodejs-framework)
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
   - [Getting started](#getting-started)
-  - [Running subscription server](#running-subscription-server)
+  - [Required Environment Variables](#required-environment-variables)
+  - [CLI commands - starting and listing subscriptions](#cli-commands---starting-and-listing-subscriptions)
   - [Topics](#topics)
     - [Publishing a message (simple example)](#publishing-a-message-simple-example)
       - [Typescript example](#typescript-example)
@@ -18,9 +21,12 @@ This package contains a lightweight framework and subscription server for [Googl
     - [Typescript subscription example](#typescript-subscription-example)
     - [Javascript subscription example](#javascript-subscription-example)
     - [Subscription example with subscriber options](#subscription-example-with-subscriber-options)
-    - [Subscription with a Deadletter Policy](#subscription-with-a-deadletter-policy)
+    - [Subscription with a Dead-letter Policy](#subscription-with-a-dead-letter-policy)
     - [Subscription with Retry Policy](#subscription-with-retry-policy)
   - [Subscriber Options](#subscriber-options)
+  - [Subscription Service](#subscription-service)
+    - [Typescript example](#typescript-example-1)
+    - [Javascript Example](#javascript-example-1)
   - [Connecting to a database](#connecting-to-a-database)
   - [Enabling Synchronous Driver](#enabling-synchronous-driver)
 
@@ -42,7 +48,14 @@ The framework expects that you've created a pubsub directory in your project wit
 |   | - topics/
 ```
 
-add the following to your `.env`
+1. Once the directory structure has been defined, [environment variables should be set](#required-environment-variables).
+2. Then you can create [subscriptions](#subscriptions) and [topics](#topics)
+3. After a subscription has been created, use the [CLI](#cli-commands---starting-and-listing-subscriptions) to start the  subscriptions server.
+4. Initialize your database connection, define project-level subscription defaults, and register subscriptions in the [Subscription Service](#subscription-service).
+
+## Required Environment Variables
+
+The framework expects the following environment variables. They can be added the `.env` file.
 
 ```ini
 GOOGLE_APPLICATION_CREDENTIALS=/path/to/gcp-project-83d5537a8388-key.json
@@ -50,20 +63,22 @@ GOOGLE_CLOUD_PUB_SUB_PROJECT_ID=gcp-project-id
 PUBSUB_ROOT_DIR=/path/to/your/pubsub/directory # this can be a relative path
 ```
 
-`PUBSUB_ROOT_DIR` must be the path to your project's pubsub directory. This module only works with compiled JS, so if you are writing your code in typescript, you must set this variable to the pubsub root in your project's build directory.
+| Variable                          | Description                                                                                                                                                                                                                      |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PUBSUB_ROOT_DIR`                 | must be the path to your project's pubsub directory. This module only works with .js files, so if you are writing your code in typescript, you must set this variable to the pubsub directory in your project's build directory. |
+| `GOOGLE_APPLICATION_CREDENTIALS`  | see https://cloud.google.com/docs/authentication/getting-started#creating_a_service_account to generate this                                                                                                                     |
+| `GOOGLE_CLOUD_PUB_SUB_PROJECT_ID` | name of the project in Google Cloud Platform                                                                                                                                                                                     |
 
-`GOOGLE_APPLICATION_CREDENTIALS` see https://cloud.google.com/docs/authentication/getting-started#creating_a_service_account to generate this
+## CLI commands - starting and listing subscriptions
 
-`GOOGLE_CLOUD_PUB_SUB_PROJECT_ID` name of the project in Google Cloud Platform
+Prerequisites: Install npx if you don't have it installed yet: `npm i -g npx`
 
-## Running subscription server
+| Command                   | Description                  |
+| ------------------------- | ---------------------------- |
+| `npx subscriptions start` | starts project subscriptions |
+| `npx subscriptions list`  | lists project subscriptions  |
 
-Install npx if you don't have it installed yet: `npm i -g npx`
-
-1. Run subscriptions `npx subscriptions start`
-2. List subscriptions `npx subscriptions list`
-
-Note: If the subscription doesn't exist in google pub/sub it will be created when you run `npx subscriptions start`
+> Alternatively the CLI can be found at `./node_modules/.bin/subscriptions`
 
 ## Topics
 
@@ -133,7 +148,7 @@ Create a `Subscriber` to define a message handler for messages that are publishe
 
 Subscribers are contained in `PUBSUB_ROOT_DIR/subscriptions`.
 
-> Files ending in `.pub.js` in `PUBSUB_ROOT_DIR/subscriptions` will be autoloaded by the subscription server.
+> Files ending in `.sub.js` in `PUBSUB_ROOT_DIR/subscriptions` will be autoloaded by the subscription server.
 
 ### Typescript subscription example
 
@@ -193,9 +208,9 @@ exports.default = {
 };
 ```
 
-### Subscription with a Deadletter Policy
+### Subscription with a Dead-letter Policy
 
-It is possible to define a deadltter policy for a subscription. If the dead letter topic does not exist, it will be created automatically by the framework.
+It is possible to define a dead-letter policy for a subscription. If the dead letter topic does not exist, it will be created automatically by the framework.
 
 ```javascript
 // PUBSUB_ROOT_DIR/subscriptions/simple.topic.sub.js
@@ -221,7 +236,7 @@ exports.default = {
 It is possible to define a retry configuration for a subscription:
 
 ```javascript
-// path/to/your/pubsub/subscriptions/simple.topic.name.subscription.sub.js
+// PUBSUB_ROOT_DIR/subscriptions/simple.topic.name.subscription.sub.js
 exports.default = {
   topicName: 'test.topic',
   subscriptionName: 'test.topic.sub',
@@ -266,38 +281,90 @@ interface SubscriberOptions {
     deadLetterTopic: string;
     maxDeliveryAttempts: number;
   };
-  retryPolicy: {
-    minimumBackoff: { seconds?: number; nanos?: number }; // "10s"-"599s"
-    maximumBackoff: { seconds?: number; nanos?: number }; // "11s"-"600s"
+  retryPolicy?: {
+    minimumBackoff: { seconds: number; nanos?: number }; // "10s"-"599s"
+    maximumBackoff: { seconds: number; nanos?: number }; // "11s"-"600s"
   };
 }
 ```
 
-## Connecting to a database
+## Subscription Service
 
-If you have several subscribers that require a database connection, it is recommended to connect to a database in the `subscription.service` file in your `PUBSUB_ROOT_DIR`. Insert your database connection logic in the `init` method.
+Extend and customize the behavior of the subscription server in the subscription service file. Initialize a database connection, register subscribers, and define default subscriber options in the subscription service file.
 
-```typescript
-// PUBSUB_ROOT_DIR/subscription.service.ts
+### Typescript example
 
-import { connect } from "mongoose";
-import { SubscriptionService as BaseSubscriptionService } from "@honestfoodcompany/pubsub";
+```javascript
+// PUBSUB_ROOT_DIR/subscription.service.js
+import * as PubSub from '@honestfoodcompany/pubsub';
+import { SubscriberOptions } from '@honestfoodcompany/pubsub';
 
-export default class SubscriptionService extends BaseSubscriptionService {
-  /**
-   * connect to mongoose
-   */
+export default class SubscriptionService extends PubSub.SubscriptionService {
+
+  static subscribers = [
+    /**
+     * if your subscribers don't have the .sub.js suffix
+     * they won't be auto-loaded,  so you can include their default
+     * export in  this array
+     */
+  ];
+
+  static defaultSubscriberOptions: SubscriberOptions = {
+    /**
+     * Define project level default subscriber options here. 
+     * These options can be overridden by options defined in subscribers
+     */
+  };
+
   static async init(): Promise<void> {
-    console.log('Connecting to MongoDB');
-    const mongoURI = process.env.MONGODB_URI ? process.env.MONGODB_URI : '';
-    await connect(mongoURI, {
-      useNewUrlParser: true,
-      useFindAndModify: false,
-    });
-    console.log(`Connected to MongoDB at ${mongoURI}`));
+    /**
+    * This function is called when the subscription server starts.
+    * This is a good place to initialize a database connection
+    */
   }
 }
 ```
+
+### Javascript Example
+
+```javascript
+// PUBSUB_ROOT_DIR/subscription.service.js
+const PubSub = require('@honestfoodcompany/pubsub');
+
+class SubscriptionService extends PubSub.SubscriptionService {}
+
+SubscriptionService.subscribers = [
+  /**
+   * if your subscribers don't have the .sub.js suffix
+   * they won't be auto-loaded,  so you can include their default
+   * export in  this array
+   */
+];
+
+SubscriptionService.defaultSubscriberOptions = {
+  /**
+   * Define project-level default subscriber options here.
+   * These options can be overridden by options defined in subscribers
+   */
+};
+
+SubscriptionService.init = () => {
+  /**
+  * This function is called when the subscription server starts.
+  * This is a good place to initialize a database connection
+  */
+}
+
+
+exports.default = SubscriptionService
+```
+
+## Connecting to a database
+
+It is recommended to initialize a database connection in the `subscription.service` file in your `PUBSUB_ROOT_DIR`. Insert your database connection logic in the `init` method.
+
+see: [Subscription Service](#subscription-service) for more details
+
 
 ## Enabling Synchronous Driver
 
