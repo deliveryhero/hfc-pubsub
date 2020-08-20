@@ -12,3 +12,8 @@ coverage
 examples
 demo.gif
 __tests__
+tsconfig.json
+.eslintrc.js
+.prettierignore
+.prettierrc.js
+jest.config.js
