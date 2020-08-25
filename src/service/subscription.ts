@@ -4,11 +4,11 @@ import {
   SubscriberV2,
   SubscriberObject,
   SubscriberTuple,
+  SubscriberOptions,
 } from '../subscriber';
 import { resolve } from 'path';
 import SubscriberLoader from './subscriberLoader';
 import { ResourceResolver } from './resourceResolver';
-import { SubscriberOptions } from '../subscriber/subscriberV2';
 
 export default class SubscriptionService {
   public static subscribers: (

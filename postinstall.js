@@ -9,9 +9,9 @@ const getTemplateEnv = () => {
   const envFile = resolve(
     cwd,
     'node_modules',
-    '@honest-food-company',
+    '@honestfoodcompany',
     'pubsub',
-    '.env.example',
+    'env-example.txt',
   );
   return envFile;
 };
