@@ -11,6 +11,7 @@ import {
 import { SubscriberOptions } from '../subscriber/subscriberV2';
 import { SubscriberTuple } from 'subscriber';
 import Message from '../message';
+import grpc from 'grpc';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -29,6 +30,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     if (!GooglePubSubAdapter.instance) {
       GooglePubSubAdapter.instance = new GooglePubSubAdapter(
         new GooglePubSub({
+          grpc: grpc as any,
           projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID,
         }),
       );
