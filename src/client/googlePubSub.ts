@@ -30,7 +30,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     if (!GooglePubSubAdapter.instance) {
       GooglePubSubAdapter.instance = new GooglePubSubAdapter(
         new GooglePubSub({
-          grpc: grpc as any,
+          grpc:
+            process.env.PUBSUB_USE_GRPC === 'true' ? (grpc as any) : undefined,
           projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID,
         }),
       );
