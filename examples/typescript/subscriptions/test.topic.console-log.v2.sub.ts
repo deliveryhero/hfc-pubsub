@@ -19,6 +19,7 @@ export default: SubscriberObject {
         minimumBackoff: { seconds: 102, nanos: 32 },
         maximumBackoff: { seconds: 500 },
       },
+      enableMessageOrdering: true
     },
   },
   handleMessage: function(message: Message): void {

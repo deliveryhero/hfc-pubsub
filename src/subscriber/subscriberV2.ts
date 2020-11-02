@@ -153,6 +153,13 @@ export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
       nanos?: number;
     };
   };
+  /**
+   *   If true, messages published with the same `ordering_key` in `PubsubMessage`
+   *   will be delivered to the subscribers in the order in which they
+   *   are received by the Pub/Sub system. Otherwise, they may be delivered in
+   *   any order.
+   */
+  enableMessageOrdering?: boolean;
 }
 
 export interface SubscriberMetadata {

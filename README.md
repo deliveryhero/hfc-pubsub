@@ -23,6 +23,7 @@ This package contains a lightweight framework and subscription server for [Googl
     - [Subscription example with subscriber options](#subscription-example-with-subscriber-options)
     - [Subscription with a Dead-letter Policy](#subscription-with-a-dead-letter-policy)
     - [Subscription with Retry Policy](#subscription-with-retry-policy)
+    - [Subscription with Message Ordering](#subscription-with-message-ordering)
   - [Subscriber Options](#subscriber-options)
   - [Subscription Service](#subscription-service)
     - [Typescript example](#typescript-example-1)
@@ -50,7 +51,7 @@ The framework expects that you've created a pubsub directory in your project wit
 
 1. Once the directory structure has been defined, [environment variables should be set](#required-environment-variables).
 2. Then you can create [subscriptions](#subscriptions) and [topics](#topics)
-3. After a subscription has been created, use the [CLI](#cli-commands---starting-and-listing-subscriptions) to start the  subscriptions server.
+3. After a subscription has been created, use the [CLI](#cli-commands---starting-and-listing-subscriptions) to start the subscriptions server.
 4. Initialize your database connection, define project-level subscription defaults, and register subscriptions in the [Subscription Service](#subscription-service).
 
 ## Required Environment Variables
@@ -254,6 +255,26 @@ exports.default = {
 };
 ```
 
+### Subscription with Message Ordering
+
+Messages published with the same `ordering_key` in `PubsubMessage` will be delivered to the subscribers in the order in which they are received by the Pub/Sub system.
+
+```javascript
+// PUBSUB_ROOT_DIR/subscriptions/simple.topic.name.subscription.sub.js
+exports.default = {
+  topicName: 'test.topic',
+  subscriptionName: 'test.topic.sub',
+  description: 'Will console log messages published on test.topic',
+  options: {
+    enableMessageOrdering: true
+  },
+  handleMessage: function(message) {
+    console.log(`received a message on ${this.subscriptionName}`);
+    console.log(message.data.toString());
+  },
+};
+```
+
 ## Subscriber Options
 
 [Usage Example](#subscription-example-with-subscriber-options)
@@ -285,6 +306,7 @@ interface SubscriberOptions {
     minimumBackoff: { seconds: number; nanos?: number }; // "10s"-"599s"
     maximumBackoff: { seconds: number; nanos?: number }; // "11s"-"600s"
   };
+  enableMessageOrdering?: boolean;
 }
 ```
 
@@ -300,7 +322,6 @@ import * as PubSub from '@honestfoodcompany/pubsub';
 import { SubscriberOptions } from '@honestfoodcompany/pubsub';
 
 export default class SubscriptionService extends PubSub.SubscriptionService {
-
   static subscribers = [
     /**
      * if your subscribers don't have the .sub.js suffix
@@ -311,16 +332,16 @@ export default class SubscriptionService extends PubSub.SubscriptionService {
 
   static defaultSubscriberOptions: SubscriberOptions = {
     /**
-     * Define project level default subscriber options here. 
+     * Define project level default subscriber options here.
      * These options can be overridden by options defined in subscribers
      */
   };
 
   static async init(): Promise<void> {
     /**
-    * This function is called when the subscription server starts.
-    * This is a good place to initialize a database connection
-    */
+     * This function is called when the subscription server starts.
+     * This is a good place to initialize a database connection
+     */
   }
 }
 ```
@@ -350,13 +371,12 @@ SubscriptionService.defaultSubscriberOptions = {
 
 SubscriptionService.init = () => {
   /**
-  * This function is called when the subscription server starts.
-  * This is a good place to initialize a database connection
-  */
-}
+   * This function is called when the subscription server starts.
+   * This is a good place to initialize a database connection
+   */
+};
 
-
-exports.default = SubscriptionService
+exports.default = SubscriptionService;
 ```
 
 ## Connecting to a database
@@ -364,7 +384,6 @@ exports.default = SubscriptionService
 It is recommended to initialize a database connection in the `subscription.service` file in your `PUBSUB_ROOT_DIR`. Insert your database connection logic in the `init` method.
 
 see: [Subscription Service](#subscription-service) for more details
-
 
 ## Enabling Synchronous Driver
 
