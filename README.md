@@ -30,6 +30,7 @@ This package contains a lightweight framework and subscription server for [Googl
     - [Javascript Example](#javascript-example-1)
   - [Connecting to a database](#connecting-to-a-database)
   - [Enabling Synchronous Driver](#enabling-synchronous-driver)
+  - [Enabling gRPC C++ bindings](#enabling-grpc-c-bindings)
 
 ## Features
 
@@ -306,6 +307,22 @@ interface SubscriberOptions {
     minimumBackoff: { seconds: number; nanos?: number }; // "10s"-"599s"
     maximumBackoff: { seconds: number; nanos?: number }; // "11s"-"600s"
   };
+
+  /**
+   *   An expression written in the Pub/Sub [filter
+   *   language](https://cloud.google.com/pubsub/docs/filtering). If non-empty,
+   *   then only `PubsubMessage`s whose `attributes` field matches the filter are
+   *   delivered on this subscription. If empty, then no messages are filtered
+   *   out.
+   * */
+  filter?: string;
+
+  /**
+   *   If true, messages published with the same `ordering_key` in `PubsubMessage`
+   *   will be delivered to the subscribers in the order in which they
+   *   are received by the Pub/Sub system. Otherwise, they may be delivered in
+   *   any order.
+   */
   enableMessageOrdering?: boolean;
 }
 ```
@@ -390,3 +407,11 @@ see: [Subscription Service](#subscription-service) for more details
 If you would like to bypass Google PubSub and run your subscriptions synchronously (for development purposes) set the following environment variable:
 
 `PUBSUB_DRIVER=synchronous`
+
+## Enabling gRPC C++ bindings
+
+For some workflows and environments it might make sense to use the C++ gRPC implementation, instead of the default one. To configure the module to use an alternative grpc transport use the following environment variable:
+
+```shell
+PUBSUB_USE_GRPC=true
+```
