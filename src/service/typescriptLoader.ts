@@ -6,7 +6,6 @@ import { ResourceResolver } from './resourceResolver';
 
 export default class TypescriptLoader {
   public static tsCompiler: Compiler = new Compiler({
-    logger: console,
     flags: [
       '--module commonjs',
       '--esModuleInterop',
@@ -36,13 +35,10 @@ export default class TypescriptLoader {
 
     try {
       spinner.start();
-
       const result = await TypescriptLoader.tsCompiler.compile(
         subscriptionService,
       );
-
       spinner.clear();
-
       return result.default;
     } catch (error) {
       console.log('error in requireFile', error);
@@ -65,28 +61,28 @@ export default class TypescriptLoader {
   public static cleanCache = () =>
     new Promise(async resolve => {
       rmdir(
-        TypescriptLoader.tsCompiler.options.cacheDir,
+        join(TypescriptLoader.tsCompiler.options.cacheDir, '/**'),
         { recursive: true },
         async () => {
           resolve();
         },
       );
     });
-  public static generateTemporaryConfig = async (
+
+  public static generateTemporaryConfigFile = async (
     tsConfigPath: string,
     subscriptionService: string,
   ): Promise<string> => {
     return new Promise(resolve => {
-      const cacheFolder = join(__dirname, '../..', 'cache');
-      const tempConfigPath = join(cacheFolder, 'tempConfig.json');
-
-      console.log('=========>>>>cacheFolder');
-      console.log(cacheFolder);
+      const tempConfigPath = join(
+        TypescriptLoader.tsCompiler.options.cacheDir,
+        'tempConfig.json',
+      );
 
       const defaultConfig = {
         extends: tsConfigPath,
         compilerOptions: {
-          outDir: cacheFolder,
+          outDir: TypescriptLoader.tsCompiler.options.cacheDir,
           rootDir: '/',
           esModuleInterop: true,
           allowJs: true,
@@ -101,28 +97,29 @@ export default class TypescriptLoader {
         },
         include: [subscriptionService],
       };
-      console.log(defaultConfig);
 
-      writeFile(tempConfigPath, defaultConfig, () => resolve(tempConfigPath));
+      writeFile(tempConfigPath, JSON.stringify(defaultConfig), () =>
+        resolve(tempConfigPath),
+      );
     });
   };
+
   public static compileTs = async (tsConfigPath: string) => {
     const subscriptionService = ResourceResolver.getSubscriptionService();
 
-    let tsCompiler = TypescriptLoader.tsCompiler;
     if (tsConfigPath) {
-      let tempConfigPath = await TypescriptLoader.generateTemporaryConfig(
+      let tempConfigPath = await TypescriptLoader.generateTemporaryConfigFile(
         tsConfigPath,
         subscriptionService,
       );
-      tsCompiler = new Compiler({
+      TypescriptLoader.tsCompiler = new Compiler({
         absoluteTsConfigPath: tempConfigPath,
       });
     }
 
     try {
       const spinner = ora('Compiling TS files').start();
-      await tsCompiler.buildCache(subscriptionService);
+      await TypescriptLoader.tsCompiler.buildCache(subscriptionService);
       spinner.clear();
     } catch (error) {
       console.log('error in compileTs', error);
