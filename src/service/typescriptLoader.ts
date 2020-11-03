@@ -2,21 +2,32 @@ import { Compiler } from 'ts-import';
 import { rmdir } from 'fs';
 import ora from 'ora';
 import { resolve } from 'path';
+import { ResourceResolver } from './resourceResolver';
 
 export default class TypescriptLoader {
   public static tsCompiler: Compiler = new Compiler({
+    logger: console,
     flags: [
       '--module commonjs',
       '--esModuleInterop',
       '--allowJs',
       '--experimentalDecorators',
-      '--target es6',
+      '--target es2019',
       '--emitDecoratorMetadata',
       '--moduleResolution node',
+      '--strict',
+      '--skipLibCheck',
     ],
   });
+
+  public static isTsIncluded = (): boolean => {
+    const subscriptionService = ResourceResolver.getSubscriptionService();
+    const fileType = subscriptionService.split('.').pop();
+    return fileType === 'ts';
+  };
+
   public static async requireFile<T>(subscriptionService: string): Promise<T> {
-    const spinner = ora('Compiling TS files');
+    const spinner = ora('require TS files');
     const fileType = subscriptionService.split('.').pop();
 
     if (fileType === 'js') {
@@ -61,4 +72,23 @@ export default class TypescriptLoader {
         },
       );
     });
+  public static compileTs = async (tsConfigPath: string) => {
+    const subscriptionService = ResourceResolver.getSubscriptionService();
+    
+    let tsCompiler = TypescriptLoader.tsCompiler;
+    if (tsConfigPath) {
+      tsCompiler = new Compiler({
+        absoluteTsConfigPath: tsConfigPath,
+      });
+    }
+    
+    try {
+      const spinner = ora('Compiling TS files').start();
+      await tsCompiler.compile(subscriptionService);
+      spinner.clear();
+
+    } catch (error) {
+      console.log('error in compileTs', error);
+    }
+  };
 }

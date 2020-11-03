@@ -34,7 +34,7 @@
     "fs": "0.0.1-security",
     "grpc": "^1.24.3",
     "ora": "^5.1.0",
-    "ts-import": "^2.0.8-0",
+    "ts-import": "git+https://github.com/Behnamgh/ts-import.git",
     "wrap-ansi": "^6.2.0",
     "yargs": "^14.2.3"
   },
