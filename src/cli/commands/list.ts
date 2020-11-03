@@ -17,8 +17,9 @@ export default {
       await TypescriptLoader.cleanCache();
       let tsconfigPath = await cli.prompt(
         'Enter your tsconfig file path or press enter for default',
-        );
-        await TypescriptLoader.compileTs(tsconfigPath);
+        { required: false },
+      );
+      await TypescriptLoader.compileTs(tsconfigPath);
     }
     if ((await PubSubService.getInstance().getSubscribers()).length == 0) {
       console.log(chalk.white.bold('\n No subscriptions found'));

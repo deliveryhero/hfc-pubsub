@@ -1,7 +1,7 @@
 import { Compiler } from 'ts-import';
-import { rmdir } from 'fs';
+import { rmdir, writeFile } from 'fs';
 import ora from 'ora';
-import { resolve } from 'path';
+import { join, resolve } from 'path';
 import { ResourceResolver } from './resourceResolver';
 
 export default class TypescriptLoader {
@@ -72,21 +72,58 @@ export default class TypescriptLoader {
         },
       );
     });
+  public static generateTemporaryConfig = async (
+    tsConfigPath: string,
+    subscriptionService: string,
+  ): Promise<string> => {
+    return new Promise(resolve => {
+      const cacheFolder = join(__dirname, '../..', 'cache');
+      const tempConfigPath = join(cacheFolder, 'tempConfig.json');
+
+      console.log('=========>>>>cacheFolder');
+      console.log(cacheFolder);
+
+      const defaultConfig = {
+        extends: tsConfigPath,
+        compilerOptions: {
+          outDir: cacheFolder,
+          rootDir: '/',
+          esModuleInterop: true,
+          allowJs: true,
+          experimentalDecorators: true,
+          target: 'es2019',
+          emitDecoratorMetadata: true,
+          moduleResolution: 'node',
+          module: 'commonjs',
+          skipLibCheck: true,
+          downlevelIteration: true,
+          strict: true,
+        },
+        include: [subscriptionService],
+      };
+      console.log(defaultConfig);
+
+      writeFile(tempConfigPath, defaultConfig, () => resolve(tempConfigPath));
+    });
+  };
   public static compileTs = async (tsConfigPath: string) => {
     const subscriptionService = ResourceResolver.getSubscriptionService();
-    
+
     let tsCompiler = TypescriptLoader.tsCompiler;
     if (tsConfigPath) {
+      let tempConfigPath = await TypescriptLoader.generateTemporaryConfig(
+        tsConfigPath,
+        subscriptionService,
+      );
       tsCompiler = new Compiler({
-        absoluteTsConfigPath: tsConfigPath,
+        absoluteTsConfigPath: tempConfigPath,
       });
     }
-    
+
     try {
       const spinner = ora('Compiling TS files').start();
-      await tsCompiler.compile(subscriptionService);
+      await tsCompiler.buildCache(subscriptionService);
       spinner.clear();
-
     } catch (error) {
       console.log('error in compileTs', error);
     }
