@@ -9,6 +9,7 @@ import {
 import { resolve } from 'path';
 import SubscriberLoader from './subscriberLoader';
 import { ResourceResolver } from './resourceResolver';
+import TypescriptLoader from './typescriptLoader';
 
 export default class SubscriptionService {
   public static subscribers: (
@@ -39,31 +40,31 @@ export default class SubscriptionService {
 
   public static async init(): Promise<void> {}
 
-  public static getSubscribers(): Subscribers {
+  public static async getSubscribers(): Promise<Subscribers> {
     if (SubscriptionService._subscribers.length > 0) {
       return SubscriptionService._subscribers as Subscribers;
     }
-    SubscriptionService.loadSubscribers();
+    await SubscriptionService.loadSubscribers();
 
     return SubscriptionService._subscribers as Subscribers;
   }
 
-  private static loadSubscribers(): Subscribers {
+  private static async loadSubscribers(): Promise<Subscribers> {
     const [
       subscriptionService,
       pubsubSubscriptionsDir,
     ] = ResourceResolver.getFiles();
 
-    const subscriptionServiceClass = SubscriptionService.loadSubscriptionService();
+    const subscriptionServiceClass = await SubscriptionService.loadSubscriptionService();
 
     const loader = new SubscriberLoader();
 
     SubscriptionService._subscribers = this.mergeSubscribers(
-      loader.loadSubscribersFromService(
+      await loader.loadSubscribersFromService(
         subscriptionService,
         subscriptionServiceClass.defaultSubscriberOptions,
       ),
-      loader.loadSubscribersFromDirectory(
+      await loader.loadSubscribersFromDirectory(
         pubsubSubscriptionsDir,
         subscriptionServiceClass.defaultSubscriberOptions,
       ),
@@ -89,10 +90,14 @@ export default class SubscriptionService {
     );
   }
 
-  public static loadSubscriptionService(): typeof SubscriptionService {
+  public static async loadSubscriptionService(): Promise<
+    typeof SubscriptionService
+  > {
     const [subscriptionService] = ResourceResolver.getFiles();
     try {
-      const service = require(resolve(subscriptionService)).default;
+      const service = await TypescriptLoader.requireFile<
+        typeof SubscriptionService
+      >(resolve(subscriptionService));
       return service;
     } catch (e) {
       return SubscriptionService;

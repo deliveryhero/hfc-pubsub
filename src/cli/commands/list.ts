@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { cli } from 'cli-ux';
 import wrapAnsi = require('wrap-ansi');
 import { SubscriberTuple } from 'subscriber';
+import TypescriptLoader from '../../service/typescriptLoader';
 
 export default {
   command: 'list',
@@ -12,11 +13,12 @@ export default {
       chalk.white.bgBlue.bold('\n Google Pub/Sub Subscriptions'),
       '\n',
     );
-    if (PubSubService.getInstance().getSubscribers().length == 0) {
+    await TypescriptLoader.cleanCache();
+    if ((await PubSubService.getInstance().getSubscribers()).length == 0) {
       console.log(chalk.white.bold('\n No subscriptions found'));
     } else {
       cli.table(
-        PubSubService.getInstance().getSubscribers(),
+        await PubSubService.getInstance().getSubscribers(),
         {
           'Topic Name': {
             get: (row: SubscriberTuple): string => row[1].topicName,

@@ -1,5 +1,6 @@
 import { PubSubService } from '../../index';
 import chalk from 'chalk';
+import TypescriptLoader from '../../service/typescriptLoader';
 
 export default {
   command: 'start',
@@ -10,6 +11,7 @@ export default {
     console.log(
       chalk.bold.blue('Starting Google Pub/Sub Subscriptions Server'),
     );
+    await TypescriptLoader.cleanCache();
     PubSubService.getInstance().startSubscriptions();
   },
 };

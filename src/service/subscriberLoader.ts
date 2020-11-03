@@ -7,31 +7,13 @@ import {
 import { resolve, join } from 'path';
 import fs = require('fs');
 import { SubscriptionServiceFile } from './resourceResolver';
+import TypescriptLoader from './typescriptLoader';
 import {
   SubscriberMetadata,
   SubscriberObject,
   SubscriberVersion,
   SubscriberOptions,
 } from 'subscriber/subscriberV2';
-
-const getSubscriberFiles = (
-  dir: string,
-  nestedDir = '',
-): { nestedDir: string; fileName: string }[] => {
-  return fs
-    .readdirSync(dir)
-    .reduce((acc: { nestedDir: string; fileName: string }[], cur: string) => {
-      if (
-        fs.existsSync(join(dir, cur)) &&
-        fs.lstatSync(join(dir, cur)).isDirectory()
-      ) {
-        acc.push(...getSubscriberFiles(join(dir, cur), `${nestedDir}/${cur}`));
-      } else if (cur.match(/\.sub\.(j|t)s$/)) {
-        acc.push({ nestedDir, fileName: cur });
-      }
-      return acc;
-    }, []);
-};
 
 /**
  * SubscriberLoader
@@ -44,16 +26,17 @@ const getSubscriberFiles = (
  * return a tuple with the subscriber class and the subscriber metadata
  */
 export default class SubscriberLoader {
-  public loadSubscribersFromDirectory(
+  public async loadSubscribersFromDirectory(
     dir: string,
     defaultOptions: SubscriberOptions,
-  ): Subscribers {
-    const subscriberFiles = getSubscriberFiles(dir);
+  ): Promise<Subscribers> {
+    const subscriberFiles = this.getSubscriberFiles(dir);
     const subscribers = [];
 
     for (const file of subscriberFiles) {
-      const subscriber = require(join(dir, file.nestedDir, file.fileName))
-        .default;
+      const subscriber = await TypescriptLoader.requireFile<
+        typeof SubscriberV2 | typeof SubscriberV1 | SubscriberObject
+      >(join(dir, file.nestedDir, file.fileName));
       subscribers.push(
         this.loadSubscriber(
           subscriber,
@@ -65,14 +48,16 @@ export default class SubscriberLoader {
     return subscribers;
   }
 
-  public loadSubscribersFromService(
+  public async loadSubscribersFromService(
     subscriptionService: SubscriptionServiceFile,
     defaultOptions: SubscriberOptions,
-  ): Subscribers {
+  ): Promise<Subscribers> {
     if (!fs.existsSync(subscriptionService)) return [];
 
     const subscribers = [];
-    const service = require(resolve(subscriptionService)).default;
+    const service = await TypescriptLoader.requireFile<{
+      subscribers: [typeof SubscriberV1 | SubscriberObject];
+    }>(resolve(subscriptionService));
     for (const subscriber of service.subscribers) {
       subscribers.push(
         this.loadSubscriber(
@@ -86,7 +71,7 @@ export default class SubscriberLoader {
   }
 
   private loadSubscriber(
-    subscriber: typeof SubscriberV1 | SubscriberObject,
+    subscriber: typeof SubscriberV2 | typeof SubscriberV1 | SubscriberObject,
     version: SubscriberVersion,
     defaultOptions: SubscriberOptions,
   ): SubscriberTuple {
@@ -98,4 +83,25 @@ export default class SubscriberLoader {
     const instance = new v2SubscriberClass();
     return [v2SubscriberClass, instance.metadata as SubscriberMetadata];
   }
+
+  private getSubscriberFiles = (
+    dir: string,
+    nestedDir = '',
+  ): { nestedDir: string; fileName: string }[] => {
+    return fs
+      .readdirSync(dir)
+      .reduce((acc: { nestedDir: string; fileName: string }[], cur: string) => {
+        if (
+          fs.existsSync(join(dir, cur)) &&
+          fs.lstatSync(join(dir, cur)).isDirectory()
+        ) {
+          acc.push(
+            ...this.getSubscriberFiles(join(dir, cur), `${nestedDir}/${cur}`),
+          );
+        } else if (cur.match(/\.sub\.(j|t)s$/)) {
+          acc.push({ nestedDir, fileName: cur });
+        }
+        return acc;
+      }, []);
+  };
 }

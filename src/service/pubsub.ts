@@ -77,18 +77,18 @@ export default class PubSubService {
     return PubSubService.client;
   }
 
-  public getSubscribers(): Subscribers {
+  public getSubscribers(): Promise<Subscribers> {
     return SubscriptionService.getSubscribers();
   }
 
   public async startSubscriptions(): Promise<void> {
     if (PubSubService.status === 'ready') return;
 
-    const subscriptionServiceClass = SubscriptionService.loadSubscriptionService();
+    const subscriptionServiceClass = await SubscriptionService.loadSubscriptionService();
 
     subscriptionServiceClass.init();
 
-    const subscribers = subscriptionServiceClass.getSubscribers();
+    const subscribers = await subscriptionServiceClass.getSubscribers();
     for (const subscription of subscribers) {
       await this.subscribe(subscription);
     }
