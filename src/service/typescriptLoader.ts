@@ -104,6 +104,7 @@ export default class TypescriptLoader {
 
   public static compileTs = async (tsConfigPath: string) => {
     if (!existsSync(tsConfigPath)) {
+      ora("tsConfig File doesn't exist.").fail();
       throw new Error("tsConfig File doesn't exist.");
     }
     const subscriptionService = ResourceResolver.getSubscriptionService();

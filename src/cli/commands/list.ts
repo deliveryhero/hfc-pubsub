@@ -4,6 +4,7 @@ import { cli } from 'cli-ux';
 import wrapAnsi = require('wrap-ansi');
 import { SubscriberTuple } from 'subscriber';
 import TypescriptLoader from '../../service/typescriptLoader';
+import { resolve } from 'path';
 
 export default {
   command: 'list',
@@ -19,7 +20,7 @@ export default {
         'Enter your tsconfig file absolute path or press enter for default configuration',
         { required: false, default: process.env.PUBSUB_TSCONFIG_PATH },
       );
-      await TypescriptLoader.compileTs(tsconfigPath);
+      await TypescriptLoader.compileTs(resolve(tsconfigPath));
     }
     if ((await PubSubService.getInstance().getSubscribers()).length == 0) {
       console.log(chalk.white.bold('\n No subscriptions found'));

@@ -2,6 +2,7 @@ import { PubSubService } from '../../index';
 import chalk from 'chalk';
 import { cli } from 'cli-ux';
 import TypescriptLoader from '../../service/typescriptLoader';
+import { resolve } from 'path';
 
 export default {
   command: 'start',
@@ -15,10 +16,10 @@ export default {
     if (TypescriptLoader.isTsIncluded()) {
       await TypescriptLoader.cleanCache();
       let tsconfigPath = await cli.prompt(
-        'Enter your tsconfig file path or press enter for default',
-        { required: false },
+        'Enter your tsconfig file absolute path or press enter for default configuration',
+        { required: false, default: process.env.PUBSUB_TSCONFIG_PATH },
       );
-      await TypescriptLoader.compileTs(tsconfigPath);
+      await TypescriptLoader.compileTs(resolve(tsconfigPath));
     }
     await PubSubService.getInstance().startSubscriptions();
   },
