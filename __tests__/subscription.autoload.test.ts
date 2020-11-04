@@ -31,8 +31,8 @@ jest.mock('../src/service/pubsub', (): any => ({
 
 describe('subscription v2 test', (): any => {
   let subscriptions: Subscribers;
-  beforeAll(() => {
-    subscriptions = SubscriptionService.getSubscribers();
+  beforeAll(async () => {
+    subscriptions = await SubscriptionService.getSubscribers();
   });
 
   it('should find autoload subscription', async (): Promise<any> => {

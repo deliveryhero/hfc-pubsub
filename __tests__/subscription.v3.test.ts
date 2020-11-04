@@ -30,8 +30,8 @@ jest.mock('../src/service/pubsub', (): any => ({
 
 describe('subscription v2 test', (): any => {
   let subscriptions: Subscribers;
-  beforeAll(() => {
-    subscriptions = SubscriptionService.getSubscribers();
+  beforeAll(async () => {
+    subscriptions = await SubscriptionService.getSubscribers();
   });
   it('should find v3 subscription', async (): Promise<any> => {
     expect(JSON.stringify(subscriptions)).toContain(

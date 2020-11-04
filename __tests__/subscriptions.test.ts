@@ -27,8 +27,8 @@ jest.mock('../src/service/pubsub', (): any => ({
     }
   },
 }));
-const subscriptions = SubscriptionService.getSubscribers();
-const findSubscriber = (name: string) => {
+const findSubscriber = async (name: string) => {
+  const subscriptions = await SubscriptionService.getSubscribers();
   const [, subscription] = subscriptions.find(
     ([, metadata]) => metadata.subscriptionName === name,
   ) || [, {} as any];
@@ -70,11 +70,11 @@ describe('subscriptions cli', (): any => {
     expect(JSON.stringify(result)).toContain('v2-subscription');
   });
   it('should list subscriptions', async (): Promise<any> => {
-    const subscriptions = SubscriptionService.getSubscribers();
+    const subscriptions = await SubscriptionService.getSubscribers();
     expect(subscriptions.length).toEqual(9);
   });
   it('should use project level default options', async (): Promise<any> => {
-    const subscriber = findSubscriber(
+    const subscriber = await findSubscriber(
       'example.v3_overrideoptions.subscription',
     );
     expect(subscriber.options.deadLetterPolicy).toEqual({
@@ -86,7 +86,7 @@ describe('subscriptions cli', (): any => {
   it('should use subscriber level default options over project level options', async (): Promise<
     any
   > => {
-    const subscriber = findSubscriber(
+    const subscriber = await findSubscriber(
       'example.v3_overrideoptions-with-deadletter.subscription',
     );
 

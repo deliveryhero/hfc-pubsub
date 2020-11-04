@@ -63,11 +63,13 @@ The framework expects the following environment variables. They can be added the
 GOOGLE_APPLICATION_CREDENTIALS=/path/to/gcp-project-83d5537a8388-key.json
 GOOGLE_CLOUD_PUB_SUB_PROJECT_ID=gcp-project-id
 PUBSUB_ROOT_DIR=/path/to/your/pubsub/directory # this can be a relative path
+PUBSUB_TSCONFIG_PATH=/path/to/your/tsconfig/file # this can be a relative path [optional]
 ```
 
 | Variable                          | Description                                                                                                                                                                                                                      |
 | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `PUBSUB_ROOT_DIR`                 | must be the path to your project's pubsub directory. This module only works with .js files, so if you are writing your code in typescript, you must set this variable to the pubsub directory in your project's build directory. |
+| `PUBSUB_TSCONFIG_PATH`                 | must be the path to your tsconfig preference file. its an optional variable and PUBSUB_TSCONFIG_PATH could be entered by cli when `npx subscriptions start` or `npx subscriptions list` command is executed |
 | `GOOGLE_APPLICATION_CREDENTIALS`  | see https://cloud.google.com/docs/authentication/getting-started#creating_a_service_account to generate this                                                                                                                     |
 | `GOOGLE_CLOUD_PUB_SUB_PROJECT_ID` | name of the project in Google Cloud Platform                                                                                                                                                                                     |
 

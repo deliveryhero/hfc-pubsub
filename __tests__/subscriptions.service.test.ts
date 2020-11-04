@@ -61,7 +61,7 @@ function cli(args: any, cwd: string | null = null): any {
 }
 describe('subscriptions cli', (): any => {
   it('should load subscription service', async (): Promise<any> => {
-    const service = SubscriptionService.loadSubscriptionService();
+    const service = await SubscriptionService.loadSubscriptionService();
     expect(typeof service).toBe('function');
   });
 });
