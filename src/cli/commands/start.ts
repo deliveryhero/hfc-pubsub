@@ -19,7 +19,7 @@ export default {
         'Enter your tsconfig file absolute path or press enter for default configuration',
         { required: false, default: process.env.PUBSUB_TSCONFIG_PATH },
       );
-      await TypescriptLoader.compileTs(resolve(tsconfigPath));
+      await TypescriptLoader.compileTs(tsconfigPath);
     }
     await PubSubService.getInstance().startSubscriptions();
   },

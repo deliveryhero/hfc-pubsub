@@ -102,16 +102,17 @@ export default class TypescriptLoader {
     });
   };
 
-  public static compileTs = async (tsConfigPath: string) => {
-    if (!existsSync(tsConfigPath)) {
+  public static compileTs = async (tsConfigPath?: string) => {
+    const absoluteTsConfigPath = tsConfigPath && resolve(tsConfigPath)
+    if (absoluteTsConfigPath && !existsSync(absoluteTsConfigPath)) {
       ora("tsConfig File doesn't exist.").fail();
       throw new Error("tsConfig File doesn't exist.");
     }
     const subscriptionService = ResourceResolver.getSubscriptionService();
 
-    if (tsConfigPath) {
+    if (absoluteTsConfigPath) {
       let tempConfigPath = await TypescriptLoader.generateTemporaryConfigFile(
-        tsConfigPath,
+        absoluteTsConfigPath,
         subscriptionService,
       );
       TypescriptLoader.tsCompiler = new Compiler({

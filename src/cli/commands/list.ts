@@ -20,7 +20,7 @@ export default {
         'Enter your tsconfig file absolute path or press enter for default configuration',
         { required: false, default: process.env.PUBSUB_TSCONFIG_PATH },
       );
-      await TypescriptLoader.compileTs(resolve(tsconfigPath));
+      await TypescriptLoader.compileTs(tsconfigPath);
     }
     if ((await PubSubService.getInstance().getSubscribers()).length == 0) {
       console.log(chalk.white.bold('\n No subscriptions found'));
