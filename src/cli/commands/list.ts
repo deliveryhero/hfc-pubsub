@@ -16,8 +16,8 @@ export default {
     if (TypescriptLoader.isTsIncluded()) {
       await TypescriptLoader.cleanCache();
       let tsconfigPath = await cli.prompt(
-        'Enter your tsconfig file path or press enter for default',
-        { required: false },
+        'Enter your tsconfig file absolute path or press enter for default configuration',
+        { required: false, default: process.env.PUBSUB_TSCONFIG_PATH },
       );
       await TypescriptLoader.compileTs(tsconfigPath);
     }
