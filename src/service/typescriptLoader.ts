@@ -1,5 +1,5 @@
 import { Compiler } from 'ts-import';
-import { rmdir, writeFile } from 'fs';
+import { existsSync, rmdir, writeFile } from 'fs';
 import ora from 'ora';
 import { join, resolve } from 'path';
 import { ResourceResolver } from './resourceResolver';
@@ -26,26 +26,24 @@ export default class TypescriptLoader {
   };
 
   public static async requireFile<T>(subscriptionService: string): Promise<T> {
-    const spinner = ora('require TS files');
     const fileType = subscriptionService.split('.').pop();
 
     if (fileType === 'js') {
       return require(subscriptionService).default;
     }
 
+    const spinner = ora('reading TS file content').start();
     try {
-      spinner.start();
       const result = await TypescriptLoader.tsCompiler.compile(
         subscriptionService,
       );
-      spinner.clear();
+      spinner.succeed('TS file loaded');
       return result.default;
     } catch (error) {
+      spinner.fail('Error while reading TS file: ' + subscriptionService);
       console.log('error in requireFile', error);
-
       const service = require(resolve(
         TypescriptLoader.tsCompiler.options.cacheDir,
-
         subscriptionService.replace(/\.[^/.]+$/, '.js'),
       )).default;
 
@@ -105,6 +103,9 @@ export default class TypescriptLoader {
   };
 
   public static compileTs = async (tsConfigPath: string) => {
+    if (!existsSync(tsConfigPath)) {
+      throw new Error("File doesn't exist.");
+    }
     const subscriptionService = ResourceResolver.getSubscriptionService();
 
     if (tsConfigPath) {
@@ -117,11 +118,12 @@ export default class TypescriptLoader {
       });
     }
 
+    const spinner = ora('Compiling TS files').start();
     try {
-      const spinner = ora('Compiling TS files').start();
       await TypescriptLoader.tsCompiler.buildCache(subscriptionService);
-      spinner.clear();
+      spinner.succeed('TS files Compiled successfully');
     } catch (error) {
+      spinner.fail('compilation failed');
       console.log('error in compileTs', error);
     }
   };
