@@ -9,18 +9,14 @@ import { resolve } from 'path';
 export default {
   command: 'list',
   desc: 'Lists all subscriptions',
-  handler: async (): Promise<void> => {
+  handler: async (args: { [key: string]: any }): Promise<void> => {
     console.log(
       chalk.white.bgBlue.bold('\n Google Pub/Sub Subscriptions'),
       '\n',
     );
     if (TypescriptLoader.isTsIncluded()) {
       await TypescriptLoader.cleanCache();
-      let tsconfigPath = await cli.prompt(
-        'Enter your tsconfig file absolute path or press enter for default configuration',
-        { required: false, default: process.env.PUBSUB_TSCONFIG_PATH },
-      );
-      await TypescriptLoader.compileTs(tsconfigPath);
+      await TypescriptLoader.compileTs(args.tsConfig);
     }
     if ((await PubSubService.getInstance().getSubscribers()).length == 0) {
       console.log(chalk.white.bold('\n No subscriptions found'));
