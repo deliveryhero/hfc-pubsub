@@ -9,14 +9,14 @@ import { resolve } from 'path';
 export default {
   command: 'list',
   desc: 'Lists all subscriptions',
-  handler: async (args: { [key: string]: any }): Promise<void> => {
+  handler: async (argv: { [key: string]: any }): Promise<void> => {
     console.log(
       chalk.white.bgBlue.bold('\n Google Pub/Sub Subscriptions'),
       '\n',
     );
     if (TypescriptLoader.isTsIncluded()) {
       await TypescriptLoader.cleanCache();
-      await TypescriptLoader.compileTs(args.tsConfig);
+      await TypescriptLoader.compileTs(argv.tsConfig);
     }
     if ((await PubSubService.getInstance().getSubscribers()).length == 0) {
       console.log(chalk.white.bold('\n No subscriptions found'));
