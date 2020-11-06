@@ -15,11 +15,7 @@ export default {
     );
     if (TypescriptLoader.isTsIncluded()) {
       await TypescriptLoader.cleanCache();
-      let tsconfigPath = await cli.prompt(
-        'Enter your tsconfig file absolute path or press enter for default configuration',
-        { required: false, default: process.env.PUBSUB_TSCONFIG_PATH },
-      );
-      await TypescriptLoader.compileTs(tsconfigPath);
+      await TypescriptLoader.compileTs(argv.tsConfig);
     }
     await PubSubService.getInstance().startSubscriptions();
   },

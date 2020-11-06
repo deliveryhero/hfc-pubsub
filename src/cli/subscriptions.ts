@@ -8,5 +8,9 @@ yargs
   .command(commands.start)
   .command(commands.list)
   .options({
-    tsConfig: { type: 'string', default: process.env.PUBSUB_TSCONFIG_PATH },
+    tsConfig: {
+      type: 'string',
+      description: 'path to your tsConfig file',
+      default: process.env.PUBSUB_TSCONFIG_PATH,
+    },
   }).argv;
