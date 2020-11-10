@@ -1,5 +1,5 @@
 import { Compiler } from 'ts-import';
-import { existsSync, rmdir, writeFile } from 'fs';
+import { existsSync, mkdir, rmdir, writeFile } from 'fs';
 import ora from 'ora';
 import { join, resolve } from 'path';
 import { ResourceResolver } from './resourceResolver';
@@ -57,11 +57,20 @@ export default class TypescriptLoader {
    * @returns Promise
    */
   public static cleanCache = () =>
-    new Promise(async resolve => {
+    new Promise(async (resolve, reject) => {
+      if (!existsSync(TypescriptLoader.tsCompiler.options.cacheDir)) {
+        mkdir(TypescriptLoader.tsCompiler.options.cacheDir, error => {
+          error;
+          resolve();
+        });
+      }
       rmdir(
         join(TypescriptLoader.tsCompiler.options.cacheDir, '/**'),
         { recursive: true },
-        async () => {
+        error => {
+          if (error) {
+            reject(error);
+          }
           resolve();
         },
       );
@@ -103,7 +112,7 @@ export default class TypescriptLoader {
   };
 
   public static compileTs = async (tsConfigPath?: string) => {
-    const absoluteTsConfigPath = tsConfigPath && resolve(tsConfigPath)
+    const absoluteTsConfigPath = tsConfigPath && resolve(tsConfigPath);
     if (absoluteTsConfigPath && !existsSync(absoluteTsConfigPath)) {
       ora("tsConfig File doesn't exist.").fail();
       throw new Error("tsConfig File doesn't exist.");
