@@ -13,12 +13,8 @@ export default {
       chalk.bold.blue('Starting Google Pub/Sub Subscriptions Server'),
     );
     if (TypescriptLoader.isTsIncluded()) {
-      try {
-        await TypescriptLoader.cleanCache();
-        await TypescriptLoader.compileTs(argv.tsConfig);
-      } catch (error) {
-        throw error
-      }
+      await TypescriptLoader.cleanCache();
+      await TypescriptLoader.compileTs(argv.tsConfig);
     }
     await PubSubService.getInstance().startSubscriptions();
   },

@@ -15,12 +15,8 @@ export default {
       '\n',
     );
     if (TypescriptLoader.isTsIncluded()) {
-      try {
-        await TypescriptLoader.cleanCache();
-        await TypescriptLoader.compileTs(argv.tsConfig);
-      } catch (error) {
-        throw error
-      }
+      await TypescriptLoader.cleanCache();
+      await TypescriptLoader.compileTs(argv.tsConfig);
     }
     if ((await PubSubService.getInstance().getSubscribers()).length == 0) {
       console.log(chalk.white.bold('\n No subscriptions found'));
