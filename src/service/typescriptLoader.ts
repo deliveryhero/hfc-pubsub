@@ -58,14 +58,8 @@ export default class TypescriptLoader {
    */
   public static cleanCache = () =>
     new Promise(async (resolve, reject) => {
-      if (!existsSync(TypescriptLoader.tsCompiler.options.cacheDir)) {
-        mkdir(TypescriptLoader.tsCompiler.options.cacheDir, error => {
-          error;
-          resolve();
-        });
-      }
       rmdir(
-        join(TypescriptLoader.tsCompiler.options.cacheDir, '/**'),
+        join(TypescriptLoader.tsCompiler.options.cacheDir),
         { recursive: true },
         error => {
           if (error) {
