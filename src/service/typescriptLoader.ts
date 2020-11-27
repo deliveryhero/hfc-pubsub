@@ -6,6 +6,7 @@ import { ResourceResolver } from './resourceResolver';
 
 export default class TypescriptLoader {
   public static tsCompiler: Compiler = new Compiler({
+    cacheDir: ResourceResolver.findCacheFolder(),
     flags: [
       '--module commonjs',
       '--esModuleInterop',
@@ -120,6 +121,7 @@ export default class TypescriptLoader {
       );
       TypescriptLoader.tsCompiler = new Compiler({
         absoluteTsConfigPath: tempConfigPath,
+        cacheDir: ResourceResolver.findCacheFolder(),
       });
     }
 
