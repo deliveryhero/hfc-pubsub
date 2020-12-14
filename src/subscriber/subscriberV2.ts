@@ -177,6 +177,10 @@ export interface SubscriberMetadata {
   subscriptionName: string;
   description?: string;
   options?: SubscriberOptions;
+  project?: {
+    gcpProjectId: string;
+    gcpProjectCredentials: string;
+  };
 }
 
 export interface MessageHandler {
