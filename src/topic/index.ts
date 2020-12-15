@@ -17,11 +17,15 @@ export interface Payload {
   _timestamp?: string;
 }
 
-interface NamedTopic {
+export interface NamedTopic {
   readonly name: string;
 }
 
-export default class Topic implements NamedTopic {
+export interface TopicWithCustomProject {
+  project?: GooglePubSubProject,
+}
+
+export default class Topic implements NamedTopic, TopicWithCustomProject {
   public readonly name: string = '';
   public project?: GooglePubSubProject;
 

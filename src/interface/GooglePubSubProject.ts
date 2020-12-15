@@ -4,3 +4,5 @@ export interface GooglePubSubProject {
   id: string;
   credentials: CredentialBody;
 }
+
+export default GooglePubSubProject;

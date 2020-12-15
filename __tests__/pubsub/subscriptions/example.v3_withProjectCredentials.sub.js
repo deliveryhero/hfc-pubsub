@@ -6,12 +6,12 @@ exports.default = {
     project: {
       id: 'google-pubsub-project-id',
       credentials: {
-          client_email: 'client email goes here',
-          private_key: 'private key goes here'
+        client_email: 'client email goes here',
+        private_key: 'private key goes here',
       },
-    }
+    },
   },
-  handleMessage: function (message) {
+  handleMessage: function(message) {
     console.log(this.topicName);
     console.log(this.subscriptionName);
     console.log(message.data.toString());

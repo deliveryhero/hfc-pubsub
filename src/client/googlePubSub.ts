@@ -54,9 +54,13 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     return GooglePubSubAdapter.instance;
   }
 
-  public static createClient(projectId: string, options?: CreateClientOptions) {
+  public static createClient(
+    projectId: string,
+    options?: CreateClientOptions,
+  ): GooglePubSub {
     return new GooglePubSub({
-      grpc: options?.grpc ? (grpc as any) : undefined,
+      //@ts-expect-error
+      grpc: options?.grpc ? grpc : undefined,
       projectId: projectId,
       credentials: options?.credentials,
     });
