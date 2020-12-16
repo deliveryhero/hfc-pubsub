@@ -42,6 +42,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     this.createOrGetSubscription = this.createOrGetSubscription.bind(this);
   }
 
+  public getProjects(): Projects {
+    return this.projects;
+  }
+
   public static getInstance(): GooglePubSubAdapter {
     if (!GooglePubSubAdapter.instance) {
       GooglePubSubAdapter.instance = new GooglePubSubAdapter(

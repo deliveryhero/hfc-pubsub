@@ -1,52 +1,97 @@
+/* eslint-disable @typescript-eslint/camelcase */
 require('dotenv').config({ path: require('find-config')('.env') });
 import exampleTopicWithProjectCredentials from './pubsub/topics/example.topic_withProjectCredentials';
 import GooglePubSubAdapter from '../src/client/googlePubSub';
 import PubSubService from '../src/service/pubsub';
+import { PubSub as GooglePubSub } from '@google-cloud/pubsub';
 
-jest.mock('@google-cloud/pubsub');
+process.env.PUBSUB_DRIVER = 'google';
+
+const mockPublish = jest.fn();
+const mockGet = jest.fn(() => {
+  return new Promise(resolve => {
+    resolve([
+      {
+        publish: mockPublish,
+      },
+    ]);
+  });
+});
+
+const mockConstructor = jest.fn();
+jest.mock('@google-cloud/pubsub', () => {
+  return {
+    __esModule: true,
+    PubSub: jest.fn().mockImplementation(config => {
+      mockConstructor(config);
+      return {
+        subscription: jest.fn(() => ({
+          exists: jest.fn(() => true),
+        })),
+        subscribe: jest.fn(),
+        topic: jest.fn(() => ({
+          get: mockGet,
+        })),
+      };
+    }),
+  };
+});
+
+jest.mock('grpc', () => {
+  return {
+    __esModule: true,
+    default: jest.fn(),
+  };
+});
 jest.mock('google-gax');
 
-jest.createMockFromModule('../src/client/googlePubSub');
-
-//@ts-expect-error
-const mockPubSubAdapter = new GooglePubSubAdapter();
-
-GooglePubSubAdapter.getInstance = jest.fn(() => mockPubSubAdapter);
-
-jest.createMockFromModule('../src/service/pubsub');
-
-//@ts-expect-error
-const mockPubSubService = new PubSubService();
-
-PubSubService.getInstance = jest.fn(() => mockPubSubService);
-
-//@ts-expect-error
-PubSubService.client = mockPubSubAdapter;
-
-describe('Topic and PubSubService', (): void => {
+describe('PubSubService', (): void => {
   beforeEach(() => {
     // jest.clearMocks();
   });
-  it('should call PubSubService publish method ', async (): Promise<void> => {
+
+  it('should call publish', async (): Promise<void> => {
     const spy = jest.spyOn(PubSubService.prototype, 'publish');
     const topic = new exampleTopicWithProjectCredentials();
     await topic.publish<any>({ data: 'test' });
+    expect(spy).toBeCalled();
+  });
+});
 
-    expect(PubSubService.getInstance).toBeCalled();
-    expect(spy).toBeCalled();
-  });
-  it('should get GooglePubSubAdapter', async (): Promise<void> => {
-    const spy = jest.spyOn(mockPubSubService, 'getClient');
+describe('GooglePubSubAdapter', () => {
+  it('should call publish method', async (): Promise<void> => {
+    const spy = jest.spyOn(GooglePubSubAdapter.prototype, 'publish');
     const topic = new exampleTopicWithProjectCredentials();
     await topic.publish<any>({ data: 'test' });
-    expect(PubSubService.getInstance).toBeCalled();
     expect(spy).toBeCalled();
   });
-  it('should call  GooglePubSubAdapter', async (): Promise<void> => {
-    const spy = jest.spyOn(mockPubSubAdapter, 'publish');
+
+  it('should call GooglePubSub publish method', async (): Promise<void> => {
     const topic = new exampleTopicWithProjectCredentials();
     await topic.publish<any>({ data: 'test' });
-    expect(PubSubService.getInstance).toBeCalled();
-    expect(spy).toBeCalled();
+    expect(mockPublish).toBeCalled();
+  });
+
+  it('should have the project defined in projects ', async () => {
+    const topic = new exampleTopicWithProjectCredentials();
+    await topic.publish<any>({ data: 'test' });
+    expect(
+      GooglePubSubAdapter.getInstance().getProjects()['custom-project-id'],
+    ).toBeDefined();
+  });
+
+  it('Google PubSub Client should be called with correct credentials', async () => {
+    const topic = new exampleTopicWithProjectCredentials();
+    await topic.publish<any>({ data: 'test' });
+    expect(mockConstructor.mock.calls[1]).toEqual([
+      {
+        credentials: {
+          client_email: 'client@google-auth.google.com',
+          private_key: 'private_key_goes_here',
+        },
+        grpc: undefined,
+        projectId: 'custom-project-id',
+      },
+    ]);
   });
 });
