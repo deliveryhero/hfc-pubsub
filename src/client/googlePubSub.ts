@@ -208,7 +208,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     return subscriptionExists;
   }
 
-  protected getProject(options?: { project?: GooglePubSubProject }): Project {
+  public getProject(options?: { project?: GooglePubSubProject }): Project {
     if (!options) {
       return this.projects['default'];
     }

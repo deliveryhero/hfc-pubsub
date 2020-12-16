@@ -3,7 +3,6 @@ require('dotenv').config({ path: require('find-config')('.env') });
 import exampleTopicWithProjectCredentials from './pubsub/topics/example.topic_withProjectCredentials';
 import GooglePubSubAdapter from '../src/client/googlePubSub';
 import PubSubService from '../src/service/pubsub';
-import { PubSub as GooglePubSub } from '@google-cloud/pubsub';
 
 process.env.PUBSUB_DRIVER = 'google';
 
@@ -25,6 +24,7 @@ jest.mock('@google-cloud/pubsub', () => {
     PubSub: jest.fn().mockImplementation(config => {
       mockConstructor(config);
       return {
+        config: config,
         subscription: jest.fn(() => ({
           exists: jest.fn(() => true),
         })),
@@ -80,7 +80,17 @@ describe('GooglePubSubAdapter', () => {
     ).toBeDefined();
   });
 
-  it('Google PubSub Client should be called with correct credentials', async () => {
+  it('should retrieve the correct project when publishing the message ', async () => {
+    const topic = new exampleTopicWithProjectCredentials();
+    await topic.publish<any>({ data: 'test' });
+    expect(
+      GooglePubSubAdapter.getInstance().getProjects()['custom-project-id'],
+    ).toBeDefined();
+  });
+});
+
+describe('Google PubSub Client', () => {
+  it('should be called with correct credentials', async () => {
     const topic = new exampleTopicWithProjectCredentials();
     await topic.publish<any>({ data: 'test' });
     expect(mockConstructor.mock.calls[1]).toEqual([
