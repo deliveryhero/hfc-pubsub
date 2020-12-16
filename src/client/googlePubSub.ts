@@ -21,6 +21,8 @@ import Bluebird from 'bluebird';
 export interface Project {
   client: GooglePubSub;
   topics: Map<GoogleCloudTopic['name'], GoogleCloudTopic>;
+  projectId: string;
+  credentials?: CredentialBody;
 }
 export interface Projects {
   [key: string]: Project;
@@ -38,6 +40,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     this.projects['default'] = {
       client,
       topics: new Map(),
+      projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID || '',
     };
     this.createOrGetSubscription = this.createOrGetSubscription.bind(this);
   }
@@ -64,7 +67,11 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   ): GooglePubSub {
     return new GooglePubSub({
       //@ts-expect-error
-      grpc: options?.grpc ? grpc : undefined,
+      grpc: options?.grpc
+        ? grpc
+        : process.env.PUBSUB_USE_GRPC === 'true'
+        ? grpc
+        : undefined,
       projectId: projectId,
       credentials: options?.credentials,
     });
@@ -124,7 +131,11 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     subscriber: SubscriberTuple,
   ): Promise<GoogleCloudSubscription> {
     const [, metadata] = subscriber;
-    const client = this.getProject(metadata.options).client;
+    const project = this.getProject(metadata.options);
+    const client = GooglePubSubAdapter.createClient(project.projectId, {
+      credentials: metadata.options?.project?.credentials,
+    });
+
     if (await this.subscriptionExists(metadata.subscriptionName, client)) {
       console.log(
         chalk.gray(`   ✔️      ${metadata.subscriptionName} already exists.`),
@@ -232,6 +243,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     return {
       client: GooglePubSubAdapter.createClient(projectId, options),
       topics: new Map(),
+      projectId,
     };
   }
 

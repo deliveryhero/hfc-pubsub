@@ -61,8 +61,28 @@ describe('Google Pub Sub', (): void => {
 
     const subscribe = jest.spyOn(GooglePubSubAdapter.prototype, 'subscribe');
     const getProject = jest.spyOn(GooglePubSubAdapter.prototype, 'getProject');
+    const createClient = jest.spyOn(GooglePubSubAdapter, 'createClient');
     PubSubService.getInstance().subscribe(subscription);
     expect(subscribe).toBeCalled();
     expect(getProject).toBeCalledWith(subscription[1].options);
+    expect(createClient.mock.calls[2]).toEqual([
+      'google-pubsub-project-id',
+      {
+        credentials: {
+          client_email: 'client email goes here',
+          private_key: 'private key goes here',
+        },
+      },
+    ]);
+    expect(mockConstructor.mock.calls[2]).toEqual([
+      {
+        credentials: {
+          client_email: 'client email goes here',
+          private_key: 'private key goes here',
+        },
+        grpc: undefined,
+        projectId: 'google-pubsub-project-id',
+      },
+    ]);
   });
 });
