@@ -1,6 +1,6 @@
 {
-  "name": "@honestfoodcompany/pubsub",
-  "version": "1.7.9",
+  "name": "@deliveryhero/pubsub",
+  "version": "1.7.10",
   "description": "pubsub framework for managing topics and subscriptions",
   "main": "dist/index.js",
   "scripts": {
@@ -69,11 +69,14 @@
   "author": "Delivery Hero HF Kitchens GmbH",
   "repository": {
     "type": "git",
-    "url": "https://github.com/honest-food-company/pubsub.git"
+    "url": "git@github.com:deliveryhero/hfc-pubsub.git"
   },
   "license": "MIT",
   "bin": {
     "subscriptions": "./dist/cli/subscriptions.js"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   },
   "husky": {
     "hooks": {
