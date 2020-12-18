@@ -153,6 +153,23 @@ export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
       nanos?: number;
     };
   };
+
+  /**
+   *   An expression written in the Pub/Sub [filter
+   *   language](https://cloud.google.com/pubsub/docs/filtering). If non-empty,
+   *   then only `PubsubMessage`s whose `attributes` field matches the filter are
+   *   delivered on this subscription. If empty, then no messages are filtered
+   *   out.
+   * */
+  filter?: string;
+
+  /**
+   *   If true, messages published with the same `ordering_key` in `PubsubMessage`
+   *   will be delivered to the subscribers in the order in which they
+   *   are received by the Pub/Sub system. Otherwise, they may be delivered in
+   *   any order.
+   */
+  enableMessageOrdering?: boolean;
 }
 
 export interface SubscriberMetadata {
@@ -160,6 +177,10 @@ export interface SubscriberMetadata {
   subscriptionName: string;
   description?: string;
   options?: SubscriberOptions;
+  project?: {
+    gcpProjectId: string;
+    gcpProjectCredentials: string;
+  };
 }
 
 export interface MessageHandler {

@@ -4,7 +4,7 @@ import {
   SubscriberTuple,
   SubscriberV1,
 } from '../subscriber';
-import { resolve } from 'path';
+import { resolve, join } from 'path';
 import fs = require('fs');
 import { SubscriptionServiceFile } from './resourceResolver';
 import {
@@ -13,6 +13,25 @@ import {
   SubscriberVersion,
   SubscriberOptions,
 } from 'subscriber/subscriberV2';
+
+const getSubscriberFiles = (
+  dir: string,
+  nestedDir = '',
+): { nestedDir: string; fileName: string }[] => {
+  return fs
+    .readdirSync(dir)
+    .reduce((acc: { nestedDir: string; fileName: string }[], cur: string) => {
+      if (
+        fs.existsSync(join(dir, cur)) &&
+        fs.lstatSync(join(dir, cur)).isDirectory()
+      ) {
+        acc.push(...getSubscriberFiles(join(dir, cur), `${nestedDir}/${cur}`));
+      } else if (cur.match(/\.sub\.(j|t)s$/)) {
+        acc.push({ nestedDir, fileName: cur });
+      }
+      return acc;
+    }, []);
+};
 
 /**
  * SubscriberLoader
@@ -29,15 +48,12 @@ export default class SubscriberLoader {
     dir: string,
     defaultOptions: SubscriberOptions,
   ): Subscribers {
-    const subscriberFiles = fs
-      .readdirSync(dir)
-      .filter((file): RegExpMatchArray | null => {
-        return file.match(/\.sub\.js$/);
-      });
+    const subscriberFiles = getSubscriberFiles(dir);
     const subscribers = [];
 
     for (const file of subscriberFiles) {
-      const subscriber = require(resolve(dir, file)).default;
+      const subscriber = require(join(dir, file.nestedDir, file.fileName))
+        .default;
       subscribers.push(
         this.loadSubscriber(
           subscriber,

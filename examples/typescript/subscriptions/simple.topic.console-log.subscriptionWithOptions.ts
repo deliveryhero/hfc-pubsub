@@ -17,7 +17,8 @@ export default: SubscriberObject {
     retryPolicy: {
       minimumBackoff: { seconds: 102 },
       maximumBackoff: { seconds: 500 },
-    }
+    },
+    enableMessageOrdering: true
   },
 
   handleMessage: function(message: Message) {
