@@ -89,9 +89,13 @@ export default class PubSubService {
     subscriptionServiceClass.init();
 
     const subscribers = subscriptionServiceClass.getSubscribers();
-    for (const subscription of subscribers) {
-      await this.subscribe(subscription);
-    }
+    const subMap = subscribers.map(subscription =>
+      this.subscribe(subscription),
+    );
+    // for (const subscription of subscribers) {
+    //   await this.subscribe(subscription);
+    // }
+    await Promise.all(subMap);
 
     PubSubService.status = 'ready';
   }
