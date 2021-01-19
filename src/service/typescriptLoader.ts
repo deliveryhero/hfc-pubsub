@@ -6,7 +6,22 @@ import { ResourceResolver } from './resourceResolver';
 
 export default class TypescriptLoader {
   public static cacheDir = ResourceResolver.findCacheFolder();
-  public static tsCompiler: Compiler = new Compiler({});
+  private static defaultCompilerOptions: Record<string, boolean | string> = {
+    module: 'commonjs',
+    target: 'es2019',
+    moduleResolution: 'node',
+    esModuleInterop: true,
+    allowJs: true,
+    experimentalDecorators: true,
+    emitDecoratorMetadata: true,
+    strict: true,
+    skipLibCheck: true,
+    noEmit: false,
+    outDir: TypescriptLoader.cacheDir,
+  };
+  public static tsCompiler: Compiler = new Compiler({
+    compilerOptions: TypescriptLoader.defaultCompilerOptions,
+  });
 
   public static isTsIncluded = (): boolean => {
     const subscriptionService = ResourceResolver.getSubscriptionService();
