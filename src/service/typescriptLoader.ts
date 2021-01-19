@@ -5,20 +5,8 @@ import { join, resolve } from 'path';
 import { ResourceResolver } from './resourceResolver';
 
 export default class TypescriptLoader {
-  public static tsCompiler: Compiler = new Compiler({
-    cacheDir: ResourceResolver.findCacheFolder(),
-    flags: [
-      '--module commonjs',
-      '--esModuleInterop',
-      '--allowJs',
-      '--experimentalDecorators',
-      '--target es2019',
-      '--emitDecoratorMetadata',
-      '--moduleResolution node',
-      '--strict',
-      '--skipLibCheck',
-    ],
-  });
+  public static cacheDir = ResourceResolver.findCacheFolder();
+  public static tsCompiler: Compiler = new Compiler({});
 
   public static isTsIncluded = (): boolean => {
     const subscriptionService = ResourceResolver.getSubscriptionService();
@@ -44,7 +32,7 @@ export default class TypescriptLoader {
       spinner.fail('Error while reading TS file: ' + subscriptionService);
       console.log('error in requireFile', error);
       const service = require(resolve(
-        TypescriptLoader.tsCompiler.options.cacheDir,
+        TypescriptLoader.cacheDir,
         subscriptionService.replace(/\.[^/.]+$/, '.js'),
       )).default;
 
@@ -57,54 +45,15 @@ export default class TypescriptLoader {
    * without clearing, other event files (beside subscription.service.ts) don't compile again and it doesn't detect changes in them correctly
    * @returns Promise
    */
-  public static cleanCache = () =>
+  public static cleanCache = (): Promise<void> =>
     new Promise(async (resolve, reject) => {
-      rmdir(
-        join(TypescriptLoader.tsCompiler.options.cacheDir),
-        { recursive: true },
-        error => {
-          if (error) {
-            reject(error);
-          }
-          resolve();
-        },
-      );
+      rmdir(join(TypescriptLoader.cacheDir), { recursive: true }, error => {
+        if (error) {
+          reject(error);
+        }
+        resolve();
+      });
     });
-
-  public static generateTemporaryConfigFile = async (
-    tsConfigPath: string,
-    subscriptionService: string,
-  ): Promise<string> => {
-    return new Promise(resolve => {
-      const tempConfigPath = join(
-        TypescriptLoader.tsCompiler.options.cacheDir,
-        'tempConfig.json',
-      );
-
-      const defaultConfig = {
-        extends: tsConfigPath,
-        compilerOptions: {
-          outDir: TypescriptLoader.tsCompiler.options.cacheDir,
-          rootDir: '/',
-          esModuleInterop: true,
-          allowJs: true,
-          experimentalDecorators: true,
-          target: 'es2019',
-          emitDecoratorMetadata: true,
-          moduleResolution: 'node',
-          module: 'commonjs',
-          skipLibCheck: true,
-          downlevelIteration: true,
-          strict: true,
-        },
-        include: [subscriptionService],
-      };
-
-      writeFile(tempConfigPath, JSON.stringify(defaultConfig), () =>
-        resolve(tempConfigPath),
-      );
-    });
-  };
 
   public static compileTs = async (tsConfigPath?: string) => {
     const absoluteTsConfigPath = tsConfigPath && resolve(tsConfigPath);
@@ -115,19 +64,18 @@ export default class TypescriptLoader {
     const subscriptionService = ResourceResolver.getSubscriptionService();
 
     if (absoluteTsConfigPath) {
-      let tempConfigPath = await TypescriptLoader.generateTemporaryConfigFile(
-        absoluteTsConfigPath,
-        subscriptionService,
-      );
+      const yourTsConfigJson = await import(absoluteTsConfigPath);
       TypescriptLoader.tsCompiler = new Compiler({
-        absoluteTsConfigPath: tempConfigPath,
-        cacheDir: ResourceResolver.findCacheFolder(),
+        compilerOptions: {
+          ...yourTsConfigJson.compilerOptions,
+          noEmit: false,
+          outDir: TypescriptLoader.cacheDir,
+        },
       });
     }
-
     const spinner = ora('Compiling TS files').start();
     try {
-      await TypescriptLoader.tsCompiler.buildCache(subscriptionService);
+      await TypescriptLoader.tsCompiler.compile(subscriptionService);
       spinner.succeed('TS files Compiled successfully');
     } catch (error) {
       spinner.fail('compilation failed');

@@ -26,6 +26,7 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "@google-cloud/pubsub": "^2.3.0",
+    "@radrat-node/logger": "0.0.40",
     "chalk": "^2.4.2",
     "cli-ux": "^5.4.9",
     "dot-prop": ">=5.1.1",
@@ -34,7 +35,7 @@
     "fs": "0.0.1-security",
     "grpc": "^1.24.3",
     "ora": "^5.1.0",
-    "ts-import": "git+https://github.com/Behnamgh/ts-import.git",
+    "ts-import": "^2.0.24",
     "wrap-ansi": "^6.2.0",
     "yargs": "^14.2.3"
   },
