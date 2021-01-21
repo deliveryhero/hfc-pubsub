@@ -1,5 +1,6 @@
 import PubSubService from '../service/pubsub';
 import { RecursivePartial, RetryConfig } from '../interface/retryConfig';
+import { GooglePubSubProject } from 'interface/GooglePubSubProject';
 
 /**
  * extend this interface to define your own payload
@@ -16,12 +17,18 @@ export interface Payload {
   _timestamp?: string;
 }
 
-interface NamedTopic {
+export interface NamedTopic {
   readonly name: string;
 }
 
-export default class Topic implements NamedTopic {
+export interface TopicWithCustomProject {
+  project?: GooglePubSubProject,
+}
+
+export default class Topic implements NamedTopic, TopicWithCustomProject {
   public readonly name: string = '';
+  public project?: GooglePubSubProject;
+
   public retryConfig: RetryConfig = {
     retryCodes: [10, 1, 4, 13, 8, 14, 2],
     backoffSettings: {

@@ -17,6 +17,7 @@ This package contains a lightweight framework and subscription server for [Googl
       - [Typescript example](#typescript-example)
       - [Javascript example](#javascript-example)
     - [Publishing a message with retry settings](#publishing-a-message-with-retry-settings)
+    - [Publishing on a different GCP project](#publishing-on-a-different-gcp-project)
   - [Subscriptions](#subscriptions)
     - [Typescript subscription example](#typescript-subscription-example)
     - [Javascript subscription example](#javascript-subscription-example)
@@ -126,7 +127,7 @@ new SimpleTopic().publish({ id: 1, data: 'My first message' });
 
 ### Publishing a message with retry settings
 
-see [Sample Topic with Retry Settings](examples/typescript/test.topic.withRetrySettings.ts) for defining a default retry policy
+see [Sample Topic with Retry Settings](https://github.com/honest-food-company/pubsub/tree/master/examples/typescript/test.topic.withRetrySettings.ts) for defining a default retry policy
 
 ```typescript
 // client.example.ts
@@ -144,6 +145,9 @@ topic.publish<Payload>(
 );
 ```
 
+### Publishing on a different GCP project
+
+see [Sample Topic using its own GCP Project](https://github.com/honest-food-company/pubsub/tree/master/__tests__/pubsub/topics/example.topic_withProjectCredentials.ts)
 ## Subscriptions
 
 Create a `Subscriber` to define a message handler for messages that are published on the corresponding topic.
@@ -282,7 +286,25 @@ exports.default = {
 
 ```typescript
 interface SubscriberOptions {
+
+  /**
+   * override the default project settings from the environment variable
+   * and use the project defined here instead for the subscription
+   **/
+  project?: {
+    id: string;
+    credentials: {
+      client_email?: string;
+      private_key?: string;
+    }
+  },
+
+  /**
+   * in seconds
+   **/
   ackDeadline?: number;
+
+
   batching?: {
     callOptions?: CallOptions; // see https://github.com/googleapis/gax-nodejs/blob/77f16fd2ac2f1bd90cc6abfcccafa94a20582017/src/gax.ts#L114
     maxMessages?: number;

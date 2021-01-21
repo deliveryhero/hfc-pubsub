@@ -1,6 +1,7 @@
 import Subscriber from './subscriber';
 import Message from '../message';
 import { SubscriberOptions as GoogleCloudSubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber';
+import { GooglePubSubProject } from 'interface/GooglePubSubProject';
 
 export type SubscriberVersion = 'v1' | 'v2' | 'v3';
 
@@ -139,6 +140,7 @@ export default class SubscriberV2 extends Subscriber {
 }
 
 export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
+  project?: GooglePubSubProject;
   deadLetterPolicy?: {
     deadLetterTopic: string;
     maxDeliveryAttempts: number;
