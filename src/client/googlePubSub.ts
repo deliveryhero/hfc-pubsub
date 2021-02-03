@@ -52,6 +52,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   public async subscribe(subscriber: SubscriberTuple): Promise<void> {
     const [, metadata] = subscriber;
     const subscription = await this.createOrGetSubscription(subscriber);
+    await this.bindPoliciesForDeadLetter(subscriber);
     this.addHandler(subscriber, subscription);
     this.log(
       `   📭     ${metadata.subscriptionName} is ready to receive messages at a controlled volume of ${metadata.options?.flowControl?.maxMessages} messages.`,
@@ -149,6 +150,68 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   ): Promise<string> {
     const topic = await this.createOrGetTopic(policy.deadLetterTopic);
     return topic.name;
+  }
+
+
+  private async bindPoliciesForDeadLetter(subscriber: SubscriberTuple) {
+    const [, metadata] = subscriber;
+    const options = this.getSubscriberOptions(subscriber);
+    if (options?.deadLetterPolicy) {
+      await this.bindPolicyToSubscriber(
+        metadata.topicName,
+        metadata.subscriptionName,
+      );
+      await this.bindPolicyToDeadLetterTopic(
+        options.deadLetterPolicy.deadLetterTopic,
+      );
+    }
+  }
+
+  private async bindPolicyToSubscriber(
+    subscriptionTopicName: string,
+    subscriptionName: string,
+  ) {
+    if (process.env.PROJECT_NUMBER) {
+      try {
+        const pubSubTopic = this.getClient().topic(subscriptionTopicName);
+        const myPolicy = {
+          bindings: [
+            {
+              role: 'roles/pubsub.subscriber',
+              members: [
+                `serviceAccount:service-${process.env.PROJECT_NUMBER}@gcp-sa-pubsub.iam.gserviceaccount.com`,
+              ],
+            },
+          ],
+        };
+        await pubSubTopic
+          .subscription(subscriptionName)
+          .iam.setPolicy(myPolicy);
+      } catch (e) {
+        console.error('Error while binding policy.', e);
+      }
+    }
+  }
+
+  private async bindPolicyToDeadLetterTopic(deadLetterTopicName: string) {
+    if (process.env.PROJECT_NUMBER) {
+      try {
+        const pubSubTopic = this.getClient().topic(deadLetterTopicName);
+        const myPolicy = {
+          bindings: [
+            {
+              role: 'roles/pubsub.publisher',
+              members: [
+                `serviceAccount:service-${process.env.PROJECT_NUMBER}@gcp-sa-pubsub.iam.gserviceaccount.com`,
+              ],
+            },
+          ],
+        };
+        await pubSubTopic.iam.setPolicy(myPolicy);
+      } catch (e) {
+        console.error('Error while binding policy.', e);
+      }
+    }
   }
 
   private getSubscription(
