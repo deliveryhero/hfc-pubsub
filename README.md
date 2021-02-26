@@ -7,6 +7,7 @@ This package contains a lightweight framework and subscription server for [Googl
 ## Table of Contents
 
 - [Google Pub/Sub Node.js Framework](#google-pubsub-nodejs-framework)
+
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
   - [Getting started](#getting-started)
@@ -18,11 +19,14 @@ This package contains a lightweight framework and subscription server for [Googl
       - [Javascript example](#javascript-example)
     - [Publishing a message with retry settings](#publishing-a-message-with-retry-settings)
   - [Subscriptions](#subscriptions)
+
     - [Typescript subscription example](#typescript-subscription-example)
     - [Javascript subscription example](#javascript-subscription-example)
     - [Subscription example with subscriber options](#subscription-example-with-subscriber-options)
     - [Subscription with a Dead-letter Policy](#subscription-with-a-dead-letter-policy)
+      - [Binding Subscriber and Publisher role to Dead Letter](#binding-subscriber-and-publisher-role)
     - [Subscription with Retry Policy](#subscription-with-retry-policy)
+
   - [Subscriber Options](#subscriber-options)
   - [Subscription Service](#subscription-service)
     - [Typescript example](#typescript-example-1)
@@ -50,7 +54,7 @@ The framework expects that you've created a pubsub directory in your project wit
 
 1. Once the directory structure has been defined, [environment variables should be set](#required-environment-variables).
 2. Then you can create [subscriptions](#subscriptions) and [topics](#topics)
-3. After a subscription has been created, use the [CLI](#cli-commands---starting-and-listing-subscriptions) to start the  subscriptions server.
+3. After a subscription has been created, use the [CLI](#cli-commands---starting-and-listing-subscriptions) to start the subscriptions server.
 4. Initialize your database connection, define project-level subscription defaults, and register subscriptions in the [Subscription Service](#subscription-service).
 
 ## Required Environment Variables
@@ -179,7 +183,7 @@ exports.default = {
   subscriptionName: 'test.topic.sub',
   description: 'Will console log messages published on test.topic',
 
-  handleMessage: function(message) {
+  handleMessage: function (message) {
     console.log(this.subscriptionName, 'received message');
     console.log(message.data.toString());
     message.ack();
@@ -200,7 +204,7 @@ exports.default = {
       maxMessages: 500, // max messages in progress
     },
   },
-  handleMessage: function(message) {
+  handleMessage: function (message) {
     console.log(`received a message on ${this.subscriptionName}`);
     console.log(message.data.toString());
     message.ack();
@@ -224,12 +228,17 @@ exports.default = {
       maxDeliveryAttempts: 15,
     },
   },
-  handleMessage: function(message) {
+  handleMessage: function (message) {
     console.log(`received a message on ${this.subscriptionName}`);
     console.log(message.data.toString());
   },
 };
 ```
+
+### Binding Subscriber and Publisher role
+
+To automatically have a Publisher,Subscriber role attached to your dead letters you need to add `PROJECT_NUMBER` in the env list. If this `PROJECT_NUMBER` isn't available in env then it'll not assign the above roles.
+Binding the above policies don't require current subscriptions to be deleted. Just specifying `PROJECT_NUMBER` will bind the roles to dead letter.
 
 ### Subscription with Retry Policy
 
@@ -247,7 +256,7 @@ exports.default = {
       maximumBackoff: { seconds: 400, nanos: 2 },
     },
   },
-  handleMessage: function(message) {
+  handleMessage: function (message) {
     console.log(`received a message on ${this.subscriptionName}`);
     console.log(message.data.toString());
   },
@@ -300,7 +309,6 @@ import * as PubSub from '@honestfoodcompany/pubsub';
 import { SubscriberOptions } from '@honestfoodcompany/pubsub';
 
 export default class SubscriptionService extends PubSub.SubscriptionService {
-
   static subscribers = [
     /**
      * if your subscribers don't have the .sub.js suffix
@@ -311,16 +319,16 @@ export default class SubscriptionService extends PubSub.SubscriptionService {
 
   static defaultSubscriberOptions: SubscriberOptions = {
     /**
-     * Define project level default subscriber options here. 
+     * Define project level default subscriber options here.
      * These options can be overridden by options defined in subscribers
      */
   };
 
   static async init(): Promise<void> {
     /**
-    * This function is called when the subscription server starts.
-    * This is a good place to initialize a database connection
-    */
+     * This function is called when the subscription server starts.
+     * This is a good place to initialize a database connection
+     */
   }
 }
 ```
@@ -350,13 +358,12 @@ SubscriptionService.defaultSubscriberOptions = {
 
 SubscriptionService.init = () => {
   /**
-  * This function is called when the subscription server starts.
-  * This is a good place to initialize a database connection
-  */
-}
+   * This function is called when the subscription server starts.
+   * This is a good place to initialize a database connection
+   */
+};
 
-
-exports.default = SubscriptionService
+exports.default = SubscriptionService;
 ```
 
 ## Connecting to a database
@@ -364,7 +371,6 @@ exports.default = SubscriptionService
 It is recommended to initialize a database connection in the `subscription.service` file in your `PUBSUB_ROOT_DIR`. Insert your database connection logic in the `init` method.
 
 see: [Subscription Service](#subscription-service) for more details
-
 
 ## Enabling Synchronous Driver
 
