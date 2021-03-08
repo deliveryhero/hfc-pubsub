@@ -214,7 +214,7 @@ exports.default = {
 
 ### Subscription with a Dead-letter Policy
 
-It is possible to define a dead-letter policy for a subscription. If the dead letter topic does not exist, it will be created automatically by the framework.
+It is possible to define a dead-letter policy for a subscription. If the dead letter topic does not exist, it will be created automatically by the framework. There needs to be a `PROJECT_NUMBER` defined for dead letter to pick up publisher, subscriber role. Check [Binding Subscriber and Publisher](#binding-subscriber-and-publisher-role) for more details
 
 ```javascript
 // PUBSUB_ROOT_DIR/subscriptions/simple.topic.sub.js
@@ -239,6 +239,11 @@ exports.default = {
 
 To automatically have a Publisher,Subscriber role attached to your dead letters you need to add `PROJECT_NUMBER` in the env list. If this `PROJECT_NUMBER` isn't available in env then it'll not assign the above roles.
 Binding the above policies don't require current subscriptions to be deleted. Just specifying `PROJECT_NUMBER` will bind the roles to dead letter.
+
+To find out project number through CLI use the command below:
+
+- `PROJECT=$(gcloud config get-value project)`
+- `gcloud projects list --filter="$PROJECT" --format="value(PROJECT_NUMBER)"`
 
 ### Subscription with Retry Policy
 
