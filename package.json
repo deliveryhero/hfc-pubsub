@@ -8,7 +8,7 @@
     "test": "jest --coverage",
     "clean": "./node_modules/.bin/rimraf dist",
     "prepare": "npm run clean && ./node_modules/.bin/tsc --declaration",
-    "docs": "./node_modules/.bin/typedoc --out documentation/ src/index.ts",
+    "docs": "typedoc --out docs/ src/index.ts --tsconfig tsconfig.json",
     "lint": "tslint -p tsconfig.json",
     "subscriptions": "ts-node src/cli/subscriptions.ts",
     "postinstall": "node postinstall.js"
@@ -59,7 +59,7 @@
     "ts-jest": "^24.3.0",
     "ts-node": "8.1.0",
     "tslint": "5.16.0",
-    "typedoc": "^0.17.8",
+    "typedoc": "^0.20.33",
     "typescript": "^4.1.3"
   },
   "lint-staged": {
