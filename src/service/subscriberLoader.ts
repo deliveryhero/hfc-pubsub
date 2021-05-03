@@ -32,7 +32,7 @@ export default class SubscriberLoader {
     const subscriberFiles = fs
       .readdirSync(dir)
       .filter((file): RegExpMatchArray | null => {
-        return file.match(/\.sub\.js$/);
+        return file.match(/\.sub\.(js|ts)$/);
       });
     const subscribers = [];
 
