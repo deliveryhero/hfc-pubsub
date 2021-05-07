@@ -7,6 +7,7 @@ This package contains a lightweight framework and subscription server for [Googl
 ## Table of Contents
 
 - [Google Pub/Sub Node.js Framework](#google-pubsub-nodejs-framework)
+
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
   - [Getting started](#getting-started)
@@ -23,6 +24,7 @@ This package contains a lightweight framework and subscription server for [Googl
     - [Javascript subscription example](#javascript-subscription-example)
     - [Subscription example with subscriber options](#subscription-example-with-subscriber-options)
     - [Subscription with a Dead-letter Policy](#subscription-with-a-dead-letter-policy)
+      - [Binding Subscriber and Publisher role to Dead Letter](#binding-subscriber-and-publisher-role)
     - [Subscription with Retry Policy](#subscription-with-retry-policy)
     - [Subscription with Message Ordering](#subscription-with-message-ordering)
   - [Subscriber Options](#subscriber-options)
@@ -185,7 +187,7 @@ exports.default = {
   subscriptionName: 'test.topic.sub',
   description: 'Will console log messages published on test.topic',
 
-  handleMessage: function(message) {
+  handleMessage: function (message) {
     console.log(this.subscriptionName, 'received message');
     console.log(message.data.toString());
     message.ack();
@@ -206,7 +208,7 @@ exports.default = {
       maxMessages: 500, // max messages in progress
     },
   },
-  handleMessage: function(message) {
+  handleMessage: function (message) {
     console.log(`received a message on ${this.subscriptionName}`);
     console.log(message.data.toString());
     message.ack();
@@ -216,7 +218,7 @@ exports.default = {
 
 ### Subscription with a Dead-letter Policy
 
-It is possible to define a dead-letter policy for a subscription. If the dead letter topic does not exist, it will be created automatically by the framework.
+It is possible to define a dead-letter policy for a subscription. If the dead letter topic does not exist, it will be created automatically by the framework. There needs to be a `PROJECT_NUMBER` defined for dead letter to pick up publisher, subscriber role. Check [Binding Subscriber and Publisher role](#binding-subscriber-and-publisher-role) for more details
 
 ```javascript
 // PUBSUB_ROOT_DIR/subscriptions/simple.topic.sub.js
@@ -230,12 +232,22 @@ exports.default = {
       maxDeliveryAttempts: 15,
     },
   },
-  handleMessage: function(message) {
+  handleMessage: function (message) {
     console.log(`received a message on ${this.subscriptionName}`);
     console.log(message.data.toString());
   },
 };
 ```
+
+### Binding Subscriber and Publisher role
+
+To automatically have a Publisher,Subscriber role attached to your dead letters you need to add `PROJECT_NUMBER` in the env list. If this `PROJECT_NUMBER` isn't available in env then it'll not assign the above roles.
+Binding the above policies don't require current subscriptions to be deleted. Just specifying `PROJECT_NUMBER` will bind the roles to dead letter.
+
+To find out project number through CLI use the commands below:
+
+- `PROJECT=$(gcloud config get-value project)`
+- `gcloud projects list --filter="$PROJECT" --format="value(PROJECT_NUMBER)"`
 
 ### Subscription with Retry Policy
 
@@ -253,7 +265,7 @@ exports.default = {
       maximumBackoff: { seconds: 400, nanos: 2 },
     },
   },
-  handleMessage: function(message) {
+  handleMessage: function (message) {
     console.log(`received a message on ${this.subscriptionName}`);
     console.log(message.data.toString());
   },
