@@ -94,12 +94,38 @@ And instead of using `npx subscriptions start` you can invoke the bin script wit
 npx ts-node ./node_modules/.bin/subscriptions start
 ```
 
+If you have a separate `tsconfig` for your server code then you should pass it to `ts-node`:
+
+```sh
+npx ts-node --project tsconfig.server.json ./node_modules/.bin/subscriptions start
+```
+
 To make this easier you can add a script in your `package.json`:
 
 ```json
 {
   "scripts": {
-    "pubsub-dev": "ts-node ./node_modules/.bin/subscriptions start"
+    "pubsub": "ts-node ./node_modules/.bin/subscriptions start"
+  }
+}
+```
+
+#### Use Debugger with Typescript
+
+`ts-node` doesn't have an `--inspect` option unlike the `node` cli. But we can still pass it to the node process by way of the `NODE_OPTIONS` env var.
+
+```sh
+NODE_OPTIONS='--inspect' ts-node --project tsconfig.server.json  ./node_modules/.bin/subscriptions start
+```
+
+#### Watch Mode with Typescript
+
+You can use `nodemon` in combination with `ts-node` to develop in watch mode:
+
+```json
+{
+  "scripts": {
+    "pubsub": "nodemon --exec \"NODE_OPTIONS='--inspect' ts-node --project tsconfig.server.json ./node_modules/.bin/subscriptions start\""
   }
 }
 ```
