@@ -18,21 +18,22 @@ This package contains a lightweight framework and subscription server for [Googl
       - [Typescript example](#typescript-example)
       - [Javascript example](#javascript-example)
     - [Publishing a message with retry settings](#publishing-a-message-with-retry-settings)
+    - [Publishing on a different GCP project](#publishing-on-a-different-gcp-project)
   - [Subscriptions](#subscriptions)
-
     - [Typescript subscription example](#typescript-subscription-example)
     - [Javascript subscription example](#javascript-subscription-example)
     - [Subscription example with subscriber options](#subscription-example-with-subscriber-options)
     - [Subscription with a Dead-letter Policy](#subscription-with-a-dead-letter-policy)
       - [Binding Subscriber and Publisher role to Dead Letter](#binding-subscriber-and-publisher-role)
     - [Subscription with Retry Policy](#subscription-with-retry-policy)
-
+    - [Subscription with Message Ordering](#subscription-with-message-ordering)
   - [Subscriber Options](#subscriber-options)
   - [Subscription Service](#subscription-service)
     - [Typescript example](#typescript-example-1)
     - [Javascript Example](#javascript-example-1)
   - [Connecting to a database](#connecting-to-a-database)
   - [Enabling Synchronous Driver](#enabling-synchronous-driver)
+  - [Enabling gRPC C++ bindings](#enabling-grpc-c-bindings)
 
 ## Features
 
@@ -174,7 +175,7 @@ new SimpleTopic().publish({ id: 1, data: 'My first message' });
 
 ### Publishing a message with retry settings
 
-see [Sample Topic with Retry Settings](examples/typescript/test.topic.withRetrySettings.ts) for defining a default retry policy
+see [Sample Topic with Retry Settings](https://github.com/honest-food-company/pubsub/tree/master/examples/typescript/test.topic.withRetrySettings.ts) for defining a default retry policy
 
 ```typescript
 // client.example.ts
@@ -192,6 +193,9 @@ topic.publish<Payload>(
 );
 ```
 
+### Publishing on a different GCP project
+
+see [Sample Topic using its own GCP Project](https://github.com/honest-food-company/pubsub/tree/master/__tests__/pubsub/topics/example.topic_withProjectCredentials.ts)
 ## Subscriptions
 
 Create a `Subscriber` to define a message handler for messages that are published on the corresponding topic.
@@ -314,13 +318,51 @@ exports.default = {
 };
 ```
 
+### Subscription with Message Ordering
+
+Messages published with the same `ordering_key` in `PubsubMessage` will be delivered to the subscribers in the order in which they are received by the Pub/Sub system.
+
+```javascript
+// PUBSUB_ROOT_DIR/subscriptions/simple.topic.name.subscription.sub.js
+exports.default = {
+  topicName: 'test.topic',
+  subscriptionName: 'test.topic.sub',
+  description: 'Will console log messages published on test.topic',
+  options: {
+    enableMessageOrdering: true
+  },
+  handleMessage: function(message) {
+    console.log(`received a message on ${this.subscriptionName}`);
+    console.log(message.data.toString());
+  },
+};
+```
+
 ## Subscriber Options
 
 [Usage Example](#subscription-example-with-subscriber-options)
 
 ```typescript
 interface SubscriberOptions {
+
+  /**
+   * override the default project settings from the environment variable
+   * and use the project defined here instead for the subscription
+   **/
+  project?: {
+    id: string;
+    credentials: {
+      client_email?: string;
+      private_key?: string;
+    }
+  },
+
+  /**
+   * in seconds
+   **/
   ackDeadline?: number;
+
+
   batching?: {
     callOptions?: CallOptions; // see https://github.com/googleapis/gax-nodejs/blob/77f16fd2ac2f1bd90cc6abfcccafa94a20582017/src/gax.ts#L114
     maxMessages?: number;
@@ -345,6 +387,23 @@ interface SubscriberOptions {
     minimumBackoff: { seconds: number; nanos?: number }; // "10s"-"599s"
     maximumBackoff: { seconds: number; nanos?: number }; // "11s"-"600s"
   };
+
+  /**
+   *   An expression written in the Pub/Sub [filter
+   *   language](https://cloud.google.com/pubsub/docs/filtering). If non-empty,
+   *   then only `PubsubMessage`s whose `attributes` field matches the filter are
+   *   delivered on this subscription. If empty, then no messages are filtered
+   *   out.
+   * */
+  filter?: string;
+
+  /**
+   *   If true, messages published with the same `ordering_key` in `PubsubMessage`
+   *   will be delivered to the subscribers in the order in which they
+   *   are received by the Pub/Sub system. Otherwise, they may be delivered in
+   *   any order.
+   */
+  enableMessageOrdering?: boolean;
 }
 ```
 
@@ -428,3 +487,11 @@ see: [Subscription Service](#subscription-service) for more details
 If you would like to bypass Google PubSub and run your subscriptions synchronously (for development purposes) set the following environment variable:
 
 `PUBSUB_DRIVER=synchronous`
+
+## Enabling gRPC C++ bindings
+
+For some workflows and environments it might make sense to use the C++ gRPC implementation, instead of the default one. To configure the module to use an alternative grpc transport use the following environment variable:
+
+```shell
+PUBSUB_USE_GRPC=true
+```

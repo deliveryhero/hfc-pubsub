@@ -8,8 +8,10 @@ import Subscriber, {
 import SubscriptionService from './service/subscription';
 import PubSubService from './service/pubsub';
 import Message from './message';
+import * as Interfaces from "./interface";
 
 export {
+  Interfaces,
   Topic,
   Payload,
   Subscriber,
