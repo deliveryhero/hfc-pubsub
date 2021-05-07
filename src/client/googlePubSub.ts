@@ -12,37 +12,78 @@ import { SubscriberOptions } from '../subscriber/subscriberV2';
 import { SubscriberTuple } from 'subscriber';
 import Message from '../message';
 import grpc from 'grpc';
+import { GooglePubSubProject } from 'interface/GooglePubSubProject';
+import { CredentialBody } from 'google-auth-library';
+import Bluebird from 'bluebird';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+export interface Project {
+  client: GooglePubSub;
+  topics: Map<GoogleCloudTopic['name'], GoogleCloudTopic>;
+  projectId: string;
+  credentials?: CredentialBody;
+}
+export interface Projects {
+  [key: string]: Project;
+}
+
+export interface CreateClientOptions {
+  credentials?: CredentialBody;
+  grpc?: boolean;
+}
 export default class GooglePubSubAdapter implements PubSubClientV2 {
   protected static instance: GooglePubSubAdapter;
-  protected client: GooglePubSub;
-  protected topics: Map<GoogleCloudTopic['name'], GoogleCloudTopic>;
+  protected projects: Projects = {};
 
   public constructor(client: GooglePubSub) {
-    this.client = client;
-    this.topics = new Map();
+    this.projects['default'] = {
+      client,
+      topics: new Map(),
+      projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID || '',
+    };
     this.createOrGetSubscription = this.createOrGetSubscription.bind(this);
+  }
+
+  public getProjects(): Projects {
+    return this.projects;
   }
 
   public static getInstance(): GooglePubSubAdapter {
     if (!GooglePubSubAdapter.instance) {
       GooglePubSubAdapter.instance = new GooglePubSubAdapter(
-        new GooglePubSub({
-          grpc: grpc as any,
-          projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID,
-        }),
+        GooglePubSubAdapter.createClient(
+          process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID || '',
+          { grpc: process.env.PUBSUB_USE_GRPC === 'true' },
+        ),
       );
     }
     return GooglePubSubAdapter.instance;
+  }
+
+  public static createClient(
+    projectId: string,
+    options?: CreateClientOptions,
+  ): GooglePubSub {
+    return new GooglePubSub({
+      //@ts-expect-error
+      grpc: options?.grpc
+        ? grpc
+        : process.env.PUBSUB_USE_GRPC === 'true'
+        ? grpc
+        : undefined,
+      projectId: projectId,
+      credentials: options?.credentials,
+    });
   }
 
   public async publish<T extends Topic, P extends Payload>(
     topic: T,
     message: P,
   ): Promise<string> {
-    const pubSubTopic = await this.createOrGetTopic(topic.getName());
+    const pubSubTopic = await this.createOrGetTopic(topic.getName(), {
+      project: topic.project,
+    });
     const messageId = await pubSubTopic.publish(
       Buffer.from(JSON.stringify(message)),
     );
@@ -90,21 +131,26 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   private async createOrGetSubscription(
     subscriber: SubscriberTuple,
   ): Promise<GoogleCloudSubscription> {
-    const client = new GooglePubSub({
-      projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID,
-    });
     const [, metadata] = subscriber;
+    const project = this.getProject(metadata.options);
+    const client = GooglePubSubAdapter.createClient(project.projectId, {
+      credentials: metadata.options?.project?.credentials,
+    });
+
     if (await this.subscriptionExists(metadata.subscriptionName, client)) {
       console.log(
         chalk.gray(`   ✔️      ${metadata.subscriptionName} already exists.`),
       );
-      return this.getSubscription(subscriber, client);
+      return this.getSubscription(subscriber);
     }
 
-    const topic = await this.createOrGetTopic(metadata.topicName);
+    const topic = await this.createOrGetTopic(
+      metadata.topicName,
+      metadata.options,
+    );
     await this.createSubscription(topic, subscriber);
 
-    return this.getSubscription(subscriber, client);
+    return this.getSubscription(subscriber);
   }
 
   private async createSubscription(
@@ -138,6 +184,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
           ...options.deadLetterPolicy,
           deadLetterTopic: await this.createDeadLetterTopic(
             options.deadLetterPolicy,
+            options,
           ),
         },
       };
@@ -147,8 +194,9 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
   private async createDeadLetterTopic(
     policy: NonNullable<SubscriberOptions['deadLetterPolicy']>,
+    options?: SubscriberOptions,
   ): Promise<string> {
-    const topic = await this.createOrGetTopic(policy.deadLetterTopic);
+    const topic = await this.createOrGetTopic(policy.deadLetterTopic, options);
     return topic.name;
   }
 
@@ -216,10 +264,9 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
   private getSubscription(
     subscriber: SubscriberTuple,
-    client: GooglePubSub,
   ): GoogleCloudSubscription {
     const [, metadata] = subscriber;
-    return client.subscription(
+    return this.getProject(metadata.options).client.subscription(
       metadata.subscriptionName,
       this.getSubscriberOptions(subscriber),
     );
@@ -235,36 +282,66 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     return subscriptionExists;
   }
 
-  protected getClient(): GooglePubSub {
-    return this.client;
+  public getProject(options?: { project?: GooglePubSubProject }): Project {
+    if (!options) {
+      return this.projects['default'];
+    }
+    if (this.projects[options.project?.id || '']) {
+      return this.projects[options.project?.id || ''];
+    } else {
+      // init project with client
+      return (this.projects[
+        options.project?.id || ''
+      ] = GooglePubSubAdapter.initProject(options.project?.id || '', {
+        credentials: options?.project?.credentials,
+        grpc: process.env.PUBSUB_USE_GRPC === 'true',
+      }));
+    }
+  }
+
+  protected static initProject(
+    projectId: GooglePubSubProject['id'],
+    options?: CreateClientOptions,
+  ): Project {
+    return {
+      client: GooglePubSubAdapter.createClient(projectId, options),
+      topics: new Map(),
+      projectId,
+    };
   }
 
   protected async createOrGetTopic(
     topicName: string,
+    options?: { project?: GooglePubSubProject },
   ): Promise<GoogleCloudTopic> {
-    const cachedTopic = this.topics.get(topicName);
+    const project = this.getProject(options);
+    const cachedTopic = project.topics.get(topicName);
 
     if (cachedTopic) {
       return cachedTopic;
     }
 
-    const pubSubTopic = this.getClient().topic(topicName);
+    const pubSubTopic = project.client.topic(topicName);
     const [topic] = await pubSubTopic.get({ autoCreate: true });
-    this.topics.set(topicName, topic);
+    project.topics.set(topicName, topic);
     return topic;
   }
 
   public async getAllSubscriptions(): Promise<AllSubscriptions[]> {
-    const [subscriptionData] = await this.client.getSubscriptions();
-    const subscriptionList = subscriptionData.map(
-      (datum): AllSubscriptions => {
-        const { metadata } = datum;
-        return {
-          topicName: metadata?.topic || null,
-          subscriptionName: metadata?.name || datum.name,
-        };
+    const subscriptions = await Bluebird.map(
+      Object.keys(this.projects),
+      async project => {
+        const [subscriptions] = await this.projects[
+          project
+        ].client.getSubscriptions();
+        return subscriptions.map(({ metadata }) => {
+          return {
+            topicName: metadata?.topic,
+            subscriptionName: metadata?.name || '',
+          };
+        });
       },
     );
-    return subscriptionList;
+    return subscriptions.flat();
   }
 }

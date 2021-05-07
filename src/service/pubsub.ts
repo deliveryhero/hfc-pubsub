@@ -37,7 +37,7 @@ export default class PubSubService {
     return process.env.PUBSUB_DRIVER?.toLowerCase() == 'synchronous' || false;
   }
 
-  private initClient(): void {
+  public initClient(): void {
     if (PubSubService.driver === 'synchronous') {
       PubSubService.client = EventBus.getInstance();
     } else {

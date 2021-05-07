@@ -12,10 +12,10 @@
     "outDir": "./dist/",
     "removeComments": true,
     "strict": true,
-    "target": "es2017",
+    "target": "es2019",
     "baseUrl": "./src",
     "jsx": "react"
   },
-  "exclude": ["node_modules","src/__tests__/**/*"],
+  "exclude": ["node_modules", "src/__tests__/**/*"],
   "include": ["src/**/*"]
 }

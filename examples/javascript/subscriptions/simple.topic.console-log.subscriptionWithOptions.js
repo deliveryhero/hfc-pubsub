@@ -6,7 +6,8 @@ exports.default = {
     options: {
       flowControl: {
         maxMessages: 100,
-      }
+      },
+      enableMessageOrdering: true
     },
 
     handleMessage: function (message) {
