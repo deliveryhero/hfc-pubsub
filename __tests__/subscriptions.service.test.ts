@@ -31,10 +31,10 @@ jest.mock('./pubsub/subscriptions/example.subscription', (): any => ({
     getTopicName: (): any => {
       return 'test-topic';
     },
-    setMongooseConnection: function(): any {
+    setMongooseConnection: function (): any {
       return this;
     },
-    init: function(): any {
+    init: function (): any {
       return this;
     },
     start: jest.fn(),

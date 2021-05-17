@@ -250,9 +250,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   ): Promise<void> {
     if (process.env.PROJECT_NUMBER) {
       try {
-        const pubSubTopic = this.getProject(options).client.topic(
-          deadLetterTopicName,
-        );
+        const pubSubTopic =
+          this.getProject(options).client.topic(deadLetterTopicName);
         const myPolicy = {
           bindings: [
             {
@@ -298,12 +297,11 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       return this.projects[options.project?.id || ''];
     } else {
       // init project with client
-      return (this.projects[
-        options.project?.id || ''
-      ] = GooglePubSubAdapter.initProject(options.project?.id || '', {
-        credentials: options?.project?.credentials,
-        grpc: process.env.PUBSUB_USE_GRPC === 'true',
-      }));
+      return (this.projects[options.project?.id || ''] =
+        GooglePubSubAdapter.initProject(options.project?.id || '', {
+          credentials: options?.project?.credentials,
+          grpc: process.env.PUBSUB_USE_GRPC === 'true',
+        }));
     }
   }
 
@@ -338,7 +336,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   public async getAllSubscriptions(): Promise<AllSubscriptions[]> {
     const subscriptions = await Bluebird.map(
       Object.keys(this.projects),
-      async project => {
+      async (project) => {
         const [subscriptions] = await this.projects[
           project
         ].client.getSubscriptions();

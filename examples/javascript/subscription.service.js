@@ -1,8 +1,8 @@
 const {
   SubscriptionService: BaseSubscriptionService,
 } = require('@honestfoodcompany/pubsub');
-const ExampleSubscriber = require('./subscriptions/simple.topic.console-log.subscriptionWithOptions')
-  .default;
+const ExampleSubscriber =
+  require('./subscriptions/simple.topic.console-log.subscriptionWithOptions').default;
 
 class SubscriptionService extends BaseSubscriptionService {}
 

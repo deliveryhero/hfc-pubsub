@@ -6,7 +6,7 @@ exports.default = {
     ackDeadline: 20,
     flowControl: { maxMessages: 40 },
   },
-  handleMessage: function(message) {
+  handleMessage: function (message) {
     console.log(this.topicName);
     console.log(this.subscriptionName);
     console.log(message.data.toString());

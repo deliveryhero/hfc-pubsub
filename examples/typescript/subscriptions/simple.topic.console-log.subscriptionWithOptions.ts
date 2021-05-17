@@ -21,7 +21,7 @@ const subscriber: SubscriberObject = {
     enableMessageOrdering: true,
   },
 
-  handleMessage: function(message: Message) {
+  handleMessage: function (message: Message) {
     console.log(this.subscriptionName, 'received message');
     console.log(message.data.toString());
     message.ack();

@@ -5,7 +5,7 @@ exports.default = {
   subscriptionName: 'simple.topic.console-log.sub',
   description: 'Will console log messages published on test.topic',
 
-  handleMessage: function(message) {
+  handleMessage: function (message) {
     console.log(this.subscriptionName, 'received message');
     console.log(message.data.toString());
     message.ack();

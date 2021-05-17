@@ -39,7 +39,7 @@ describe('subscription v2 test', (): any => {
     );
     expect(
       subscriptions.find(
-        subscription =>
+        (subscription) =>
           subscription[1].subscriptionName === 'test.auto-load-subscription',
       ),
     ).toBeTruthy();
@@ -47,7 +47,7 @@ describe('subscription v2 test', (): any => {
 
   it('should find handle a message', async (): Promise<any> => {
     const subscriberTuple = subscriptions.find(
-      subscription =>
+      (subscription) =>
         subscription[1].subscriptionName === 'test.auto-load-subscription',
     );
     expect(subscriberTuple).toBeDefined();

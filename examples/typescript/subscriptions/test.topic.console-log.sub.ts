@@ -11,7 +11,7 @@ const subscriber: SubscriberObject = {
   subscriptionName: 'test.topic.console-log',
   description: 'Will console log messages published on test.topic',
 
-  handleMessage: function(message: Message): void {
+  handleMessage: function (message: Message): void {
     console.log(`received a message on ${this.subscriptionName}`);
     console.log(message.data.toString());
     message.ack();

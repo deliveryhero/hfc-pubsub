@@ -52,8 +52,11 @@ export default class SubscriberLoader {
     const subscribers = [];
 
     for (const file of subscriberFiles) {
-      const subscriber = require(join(dir, file.nestedDir, file.fileName))
-        .default;
+      const subscriber = require(join(
+        dir,
+        file.nestedDir,
+        file.fileName,
+      )).default;
       subscribers.push(
         this.loadSubscriber(
           subscriber,

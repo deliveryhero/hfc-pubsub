@@ -53,7 +53,7 @@ describe('pubsub.service', () => {
     await service.publish(topic, subscriber);
     expect(mockPublish.mock.calls.length).toBe(1);
   });
-  it('should return an array from getAllSubscriptions', async done => {
+  it('should return an array from getAllSubscriptions', async (done) => {
     const data = await service.getAllSubscriptions();
     expect(data).toBe(mockAllUsersList);
     done();

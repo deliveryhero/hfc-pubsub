@@ -7,7 +7,7 @@ class TestSubscription extends pubsub_1.Subscriber {}
 TestSubscription.topicName = 'test-topic';
 TestSubscription.subscriptionName = 'test-topic.subscription';
 TestSubscription.description = 'Just a test subscription';
-TestSubscription.handleMessage = message => {
+TestSubscription.handleMessage = (message) => {
   const payload = JSON.parse(message.data.toString());
   console.log(payload);
   message.ack();

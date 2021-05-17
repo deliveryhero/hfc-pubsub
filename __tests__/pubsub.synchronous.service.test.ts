@@ -59,7 +59,7 @@ describe('pubsub.service - synchronous driver', () => {
     await service.publish(topic, subscriber);
     expect(mockPublish.mock.calls.length).toBe(1);
   });
-  it('should throw if the synchronous driver is enabled for getAllSubscriptions', async done => {
+  it('should throw if the synchronous driver is enabled for getAllSubscriptions', async (done) => {
     try {
       await service.getAllSubscriptions();
     } catch (err) {

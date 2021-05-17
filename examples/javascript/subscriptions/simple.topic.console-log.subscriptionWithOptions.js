@@ -10,7 +10,7 @@ exports.default = {
     enableMessageOrdering: true,
   },
 
-  handleMessage: function(message) {
+  handleMessage: function (message) {
     console.log(this.subscriptionName, 'received message');
     console.log(message.data.toString());
     message.ack();
