@@ -478,13 +478,20 @@ SubscriptionService.init = () => {
 exports.default = SubscriptionService;
 ```
 
+### Connecting to a database
+
+It is recommended to initialize a database connection in the `subscription.service` file in your `PUBSUB_ROOT_DIR`. Insert your database connection logic in the `init` method.
+
+see: [Subscription Service](#subscription-service) for more details
+
 ### Graceful Shutdown
 
-When gracefully shutting down a process, it is a good idea to first close all open subscriptions. For this reason we have a `closeAll` method in the pubsub service that we pass on to the `SubscriptionService.init` method to do what you please with it. And example using it with process signal handlers:
+When gracefully shutting down a process, it is a good idea to first close all open subscriptions. For this reason we have a `closeAll` method in the pubsub service that we pass on to the `SubscriptionService.init` method to close all connections before shutting down. And example using it with process signal handlers:
 
 ```ts
 // PUBSUB_ROOT_DIR/subscription.service.js
 import * as PubSub from '@honestfoodcompany/pubsub';
+import mongoose from 'mongoose';
 import { SubscriberOptions } from '@honestfoodcompany/pubsub';
 
 export default class SubscriptionService extends PubSub.SubscriptionService {
@@ -504,9 +511,18 @@ export default class SubscriptionService extends PubSub.SubscriptionService {
      * This function is called when the subscription server starts.
      * This is a good place to initialize a database connection
      */
+    await mongoose.connect();
+
+    /**
+     * Also a good place to setup graceful shutdown
+     */
     process.on('SIGTERM', () => {
+      // First close all subscriptions
       closeAll().then(() => {
-        process.exit(0);
+        // Then the databse so no new handlers are triggered
+        mongoose.disconnect(() => {
+          process.exit(0);
+        });
       }).catch((err) => {
         console.error(err, 'Could not close subscriptions');
         process.exit(1); // Exit with error
@@ -516,12 +532,6 @@ export default class SubscriptionService extends PubSub.SubscriptionService {
   }
 }
 ```
-
-### Connecting to a database
-
-It is recommended to initialize a database connection in the `subscription.service` file in your `PUBSUB_ROOT_DIR`. Insert your database connection logic in the `init` method.
-
-see: [Subscription Service](#subscription-service) for more details
 
 ## Enabling Synchronous Driver
 
