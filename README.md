@@ -486,7 +486,7 @@ see: [Subscription Service](#subscription-service) for more details
 
 ### Graceful Shutdown
 
-When gracefully shutting down a process, it is a good idea to first close all open subscriptions. For this reason we have a `closeAll` method in the pubsub service that we pass on to the `SubscriptionService.init` method to close all connections before shutting down. And example using it with process signal handlers:
+When gracefully shutting down a process, it is a good idea to first close all open subscriptions. For this reason we have a `closeAll` method in the pubsub service that we pass on to the `SubscriptionService.init` method to close all connections before shutting down. An example using it with process signal handlers:
 
 ```ts
 // PUBSUB_ROOT_DIR/subscription.service.js
@@ -504,11 +504,12 @@ export default class SubscriptionService extends PubSub.SubscriptionService {
   ];
 
   /**
-   * @param closeAll Call this function from an exit handler to close all current * subscriptions
+   * This function is called when the subscription server starts.
+   *
+   * @param closeAll Call this function from an exit handler to close all current subscriptions
    */
   static async init(closeAll: () => Promise<void>): Promise<void> {
     /**
-     * This function is called when the subscription server starts.
      * This is a good place to initialize a database connection
      */
     await mongoose.connect();
