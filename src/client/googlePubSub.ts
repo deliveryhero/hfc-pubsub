@@ -8,7 +8,10 @@ import {
   Subscription as GoogleCloudSubscription,
   Topic as GoogleCloudTopic,
 } from '@google-cloud/pubsub';
-import { SubscriberOptions } from '../subscriber/subscriberV2';
+import {
+  SubscriberMetadata,
+  SubscriberOptions,
+} from '../subscriber/subscriberV2';
 import { SubscriberTuple } from 'subscriber';
 import Message from '../message';
 import grpc from 'grpc';
@@ -211,23 +214,27 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const [, metadata] = subscriber;
     const options = this.getSubscriberOptions(subscriber);
     if (options?.deadLetterPolicy) {
-      await this.bindPolicyToSubscriber(
-        metadata.topicName,
-        metadata.subscriptionName,
-      );
+      await this.bindPolicyToSubscriber(metadata);
       await this.bindPolicyToDeadLetterTopic(
         options.deadLetterPolicy.deadLetterTopic,
+        options,
       );
     }
   }
 
   private async bindPolicyToSubscriber(
-    subscriptionTopicName: string,
-    subscriptionName: string,
-  ) {
+    metadata: SubscriberMetadata,
+  ): Promise<void> {
+    const {
+      topicName: subscriptionTopicName,
+      subscriptionName,
+      options,
+    } = metadata;
     if (process.env.PROJECT_NUMBER) {
       try {
-        const pubSubTopic = this.getClient().topic(subscriptionTopicName);
+        const pubSubTopic = this.getProject(options).client.topic(
+          subscriptionTopicName,
+        );
         const myPolicy = {
           bindings: [
             {
@@ -247,10 +254,15 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     }
   }
 
-  private async bindPolicyToDeadLetterTopic(deadLetterTopicName: string) {
+  private async bindPolicyToDeadLetterTopic(
+    deadLetterTopicName: string,
+    options?: { project?: GooglePubSubProject },
+  ): Promise<void> {
     if (process.env.PROJECT_NUMBER) {
       try {
-        const pubSubTopic = this.getClient().topic(deadLetterTopicName);
+        const pubSubTopic = this.getProject(options).client.topic(
+          deadLetterTopicName,
+        );
         const myPolicy = {
           bindings: [
             {
