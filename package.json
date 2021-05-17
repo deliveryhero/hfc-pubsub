@@ -6,6 +6,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.build.json",
+    "check-types": "tsc",
     "docs": "typedoc --out docs/ src/index.ts --tsconfig tsconfig.build.json",
     "lint": "eslint src examples __tests__ --ignore-path .gitignore --ext .js,.ts",
     "lint-fix": "npm run lint -- --fix",

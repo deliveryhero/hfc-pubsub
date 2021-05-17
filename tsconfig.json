@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
+    "checkJs": true,
     "esModuleInterop": true,
     "module": "commonjs",
     "moduleResolution": "node",
@@ -13,7 +14,10 @@
     "removeComments": true,
     "strict": true,
     "target": "es2019",
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "paths": {
+      "@honestfoodcompany/pubsub": ["./index.ts"]
+    }
   },
   "exclude": ["node_modules", "dist/**/*"],
   "include": [
