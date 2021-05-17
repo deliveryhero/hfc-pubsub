@@ -82,9 +82,7 @@ export default class PubSubService {
   }
 
   public async closeAll(): Promise<void> {
-    const subscriptionServiceClass = SubscriptionService.loadSubscriptionService();
-
-    const subscribers = subscriptionServiceClass.getSubscribers();
+    const subscribers = this.getSubscribers();
     for (const subscription of subscribers) {
       await this.getClient().close(subscription);
     }

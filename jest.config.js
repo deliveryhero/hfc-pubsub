@@ -7,5 +7,7 @@ module.exports = {
     '^.+\\.tsx?$': 'babel-jest',
   },
   testRegex: TEST_REGEX,
+  // The paths to modules that run some code to configure or set up the testing environment before each test
+  setupFilesAfterEnv: ['./jest.setup.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };
