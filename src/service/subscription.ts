@@ -38,6 +38,10 @@ export default class SubscriptionService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  /**
+   *
+   * @param _closeAll Call this function from an exit handler to close all current subscriptions
+   */
   public static async init(_closeAll: () => Promise<void>): Promise<void> {
     //
   }

@@ -31,7 +31,8 @@ This package contains a lightweight framework and subscription server for [Googl
   - [Subscription Service](#subscription-service)
     - [Typescript example](#typescript-example-1)
     - [Javascript Example](#javascript-example-1)
-  - [Connecting to a database](#connecting-to-a-database)
+    - [Graceful Shutdown](#graceful-shutdown)
+    - [Connecting to a database](#connecting-to-a-database)
   - [Enabling Synchronous Driver](#enabling-synchronous-driver)
   - [Enabling gRPC C++ bindings](#enabling-grpc-c-bindings)
 
@@ -196,6 +197,7 @@ topic.publish<Payload>(
 ### Publishing on a different GCP project
 
 see [Sample Topic using its own GCP Project](https://github.com/honest-food-company/pubsub/tree/master/__tests__/pubsub/topics/example.topic_withProjectCredentials.ts)
+
 ## Subscriptions
 
 Create a `Subscriber` to define a message handler for messages that are published on the corresponding topic.
@@ -413,7 +415,7 @@ Extend and customize the behavior of the subscription server in the subscription
 
 ### Typescript example
 
-```javascript
+```ts
 // PUBSUB_ROOT_DIR/subscription.service.js
 import * as PubSub from '@honestfoodcompany/pubsub';
 import { SubscriberOptions } from '@honestfoodcompany/pubsub';
@@ -476,7 +478,46 @@ SubscriptionService.init = () => {
 exports.default = SubscriptionService;
 ```
 
-## Connecting to a database
+### Graceful Shutdown
+
+When gracefully shutting down a process, it is a good idea to first close all open subscriptions. For this reason we have a `closeAll` method in the pubsub service that we pass on to the `SubscriptionService.init` method to do what you please with it. And example using it with process signal handlers:
+
+```ts
+// PUBSUB_ROOT_DIR/subscription.service.js
+import * as PubSub from '@honestfoodcompany/pubsub';
+import { SubscriberOptions } from '@honestfoodcompany/pubsub';
+
+export default class SubscriptionService extends PubSub.SubscriptionService {
+  static subscribers = [
+    /**
+     * if your subscribers don't have the .sub.js suffix
+     * they won't be auto-loaded,  so you can include their default
+     * export in  this array
+     */
+  ];
+
+  /**
+   * @param closeAll Call this function from an exit handler to close all current * subscriptions
+   */
+  static async init(closeAll: () => Promise<void>): Promise<void> {
+    /**
+     * This function is called when the subscription server starts.
+     * This is a good place to initialize a database connection
+     */
+    process.on('SIGTERM', () => {
+      closeAll().then(() => {
+        process.exit(0);
+      }).catch((err) => {
+        console.error(err, 'Could not close subscriptions');
+        process.exit(1); // Exit with error
+      })
+    });
+
+  }
+}
+```
+
+### Connecting to a database
 
 It is recommended to initialize a database connection in the `subscription.service` file in your `PUBSUB_ROOT_DIR`. Insert your database connection logic in the `init` method.
 
