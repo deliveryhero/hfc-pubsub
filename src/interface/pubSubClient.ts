@@ -25,6 +25,7 @@ export interface PubSubClientV2 {
     retryConfig: RetryConfig,
   ): Promise<string>;
   subscribe(subscriber: SubscriberTuple): void;
+  close(subscriber: SubscriberTuple): void;
   getAllSubscriptions(): Promise<AllSubscriptions[]>;
   //@todo: getAllTopics(): Promise<string[]>;
 }

@@ -100,6 +100,13 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     );
   }
 
+  public async close(subscriber: SubscriberTuple): Promise<void> {
+    const { 1: metadata } = subscriber;
+    const subscription = await this.getSubscription(subscriber);
+    await subscription.close();
+    this.log(`   📪     ${metadata.subscriptionName} is closed now`);
+  }
+
   private addHandler(
     subscriber: SubscriberTuple,
     subscription: GoogleCloudSubscription,
@@ -199,7 +206,6 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const topic = await this.createOrGetTopic(policy.deadLetterTopic, options);
     return topic.name;
   }
-
 
   private async bindPoliciesForDeadLetter(subscriber: SubscriberTuple) {
     const [, metadata] = subscriber;
