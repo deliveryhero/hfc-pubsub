@@ -1,6 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Topic, { Payload } from '../topic';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SubscriberTuple, Subscribers } from '../subscriber';
 import EventBus from '../client/eventBus';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';

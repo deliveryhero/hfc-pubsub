@@ -6,6 +6,7 @@ export default class TestSubscription extends Subscriber {
   public static description = 'Just a test subscription';
   public async handleMessage(message: any): Promise<void> {
     const payload = JSON.parse(message.data.toString());
+    console.log(payload);
     message.ack();
   }
 }

@@ -1,6 +1,4 @@
 const path = require('path');
-const exec = require('child_process').exec;
-import fs from 'fs';
 require('dotenv').config({ path: require('find-config')('.env') });
 import SubscriptionService from '../src/service/subscription';
 
@@ -43,22 +41,6 @@ jest.mock('./pubsub/subscriptions/example.subscription', (): any => ({
   })),
 }));
 
-function cli(args: any, cwd: string | null = null): any {
-  return new Promise((resolve): any => {
-    exec(
-      `node ${path.resolve('./dist/cli/subscriptions')} ${args.join(' ')}`,
-      { cwd },
-      (error: any, stdout: any, stderr: any): any => {
-        resolve({
-          code: error && error.code ? error.code : 0,
-          error,
-          stdout,
-          stderr,
-        });
-      },
-    );
-  });
-}
 describe('subscriptions cli', (): any => {
   it('should load subscription service', async (): Promise<any> => {
     const service = SubscriptionService.loadSubscriptionService();

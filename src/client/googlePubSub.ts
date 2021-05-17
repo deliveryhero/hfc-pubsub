@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import chalk from 'chalk';
 import { Topic, Payload } from '../index';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
@@ -18,8 +17,6 @@ import grpc from 'grpc';
 import { GooglePubSubProject } from 'interface/GooglePubSubProject';
 import { CredentialBody } from 'google-auth-library';
 import Bluebird from 'bluebird';
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 export interface Project {
   client: GooglePubSub;
@@ -69,7 +66,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     options?: CreateClientOptions,
   ): GooglePubSub {
     return new GooglePubSub({
-      //@ts-expect-error
+      // @ts-expect-error different types
       grpc: options?.grpc
         ? grpc
         : process.env.PUBSUB_USE_GRPC === 'true'
@@ -202,7 +199,6 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const topic = await this.createOrGetTopic(policy.deadLetterTopic, options);
     return topic.name;
   }
-
 
   private async bindPoliciesForDeadLetter(subscriber: SubscriberTuple) {
     const [, metadata] = subscriber;

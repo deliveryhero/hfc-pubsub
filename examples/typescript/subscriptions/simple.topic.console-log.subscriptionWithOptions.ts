@@ -1,6 +1,6 @@
-import { SubscriberObject, Message } from "@honestfoodcompany/pubsub"; // this import is optional, it's provides the interfaces to use below
+import { SubscriberObject, Message } from '@honestfoodcompany/pubsub'; // this import is optional, it's provides the interfaces to use below
 
-export default: SubscriberObject {
+const subscriber: SubscriberObject = {
   topicName: 'simple.topic',
   subscriptionName: 'simple.topic.console-log.subscriptionWithOptions',
   description: 'Will console log messages published on test.topic',
@@ -18,7 +18,7 @@ export default: SubscriberObject {
       minimumBackoff: { seconds: 102 },
       maximumBackoff: { seconds: 500 },
     },
-    enableMessageOrdering: true
+    enableMessageOrdering: true,
   },
 
   handleMessage: function(message: Message) {
@@ -27,3 +27,5 @@ export default: SubscriberObject {
     message.ack();
   },
 };
+
+export default subscriber;

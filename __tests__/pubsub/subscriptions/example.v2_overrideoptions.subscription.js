@@ -16,6 +16,7 @@ class TestSubscriptionV2Override extends index.Subscriber {
   }
   async handleMessage(message) {
     const payload = JSON.parse(message.data.toString());
+    console.log(payload);
     message.ack();
   }
 }

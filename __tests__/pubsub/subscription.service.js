@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 const pubsub_1 = require('../../dist');

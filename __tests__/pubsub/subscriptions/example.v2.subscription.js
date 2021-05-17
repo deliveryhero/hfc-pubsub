@@ -12,6 +12,7 @@ class TestSubscriptionV2 extends index_1.Subscriber {
   }
   async handleMessage(message) {
     const payload = JSON.parse(message.data.toString());
+    console.log(payload);
     message.ack();
   }
 }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 require('dotenv').config({ path: require('find-config')('.env') });
 import exampleTopicWithProjectCredentials from './pubsub/topics/example.topic_withProjectCredentials';
 import GooglePubSubAdapter from '../src/client/googlePubSub';

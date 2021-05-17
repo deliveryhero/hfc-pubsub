@@ -1,6 +1,4 @@
 const path = require('path');
-const exec = require('child_process').exec;
-import fs from 'fs';
 require('dotenv').config({ path: require('find-config')('.env') });
 import SubscriptionService from '../src/service/subscription';
 import { Subscribers } from '../src/subscriber';

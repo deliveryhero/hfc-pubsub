@@ -14,6 +14,8 @@ export default function generateMockMessage(message: any): any {
     publishTime: new PreciseDate('2019-02-27T20:02:19.029534186Z'),
     received: 1551297743043,
     length: 13,
-    ack: () => {}, // we no-op this to fit the parameters of the expected function
+    ack: () => {
+      // we no-op this to fit the parameters of the expected function
+    },
   };
 }
