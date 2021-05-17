@@ -4,11 +4,12 @@
   "description": "pubsub framework for managing topics and subscriptions",
   "main": "dist/index.js",
   "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "tsc -p tsconfig.build.json",
     "watch": "nodemon --watch 'src/**/*' -e ts --exec yarn run build",
     "test": "jest --coverage",
-    "clean": "./node_modules/.bin/rimraf dist",
-    "prepare": "npm run clean && ./node_modules/.bin/tsc --declaration",
-    "docs": "typedoc --out docs/ src/index.ts --tsconfig tsconfig.json",
+    "prepare": "npm run build",
+    "docs": "typedoc --out docs/ src/index.ts --tsconfig tsconfig.build.json",
     "lint": "tslint -p tsconfig.json",
     "subscriptions": "ts-node src/cli/subscriptions.ts",
     "postinstall": "node postinstall.js"

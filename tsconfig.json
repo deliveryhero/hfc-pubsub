@@ -1,21 +1,20 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
     "allowJs": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedParameters": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
     "outDir": "./dist/",
     "removeComments": true,
     "strict": true,
     "target": "es2019",
-    "baseUrl": "./src",
-    "jsx": "react"
+    "baseUrl": "./src"
   },
-  "exclude": ["node_modules", "src/__tests__/**/*"],
-  "include": ["src/**/*"]
+  "exclude": ["node_modules", "dist/**/*"],
+  "include": ["src/**/*", "__tests__/**/*", "examples/**/*"]
 }
