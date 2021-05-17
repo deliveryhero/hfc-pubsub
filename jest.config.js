@@ -5,5 +5,6 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   testRegex: TEST_REGEX,
+  coverageReporters: ['html', 'text-summary', 'lcov'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };
