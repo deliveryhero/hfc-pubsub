@@ -81,12 +81,23 @@ export default class PubSubService {
     return SubscriptionService.getSubscribers();
   }
 
+  public async closeAll(): Promise<void> {
+    const subscriptionServiceClass = SubscriptionService.loadSubscriptionService();
+
+    const subscribers = subscriptionServiceClass.getSubscribers();
+    for (const subscription of subscribers) {
+      await this.getClient().close(subscription);
+    }
+  }
+
   public async startSubscriptions(): Promise<void> {
     if (PubSubService.status === 'ready') return;
 
     const subscriptionServiceClass = SubscriptionService.loadSubscriptionService();
 
-    subscriptionServiceClass.init();
+    await subscriptionServiceClass.init(async () => {
+      await this.closeAll();
+    });
 
     const subscribers = subscriptionServiceClass.getSubscribers();
     for (const subscription of subscribers) {

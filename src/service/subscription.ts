@@ -37,7 +37,10 @@ export default class SubscriptionService {
     }
   }
 
-  public static async init(): Promise<void> {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static async init(_closeAll: () => Promise<void>): Promise<void> {
+    //
+  }
 
   public static getSubscribers(): Subscribers {
     if (SubscriptionService._subscribers.length > 0) {
