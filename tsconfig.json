@@ -16,7 +16,8 @@
     "target": "es2019",
     "baseUrl": "./src",
     "paths": {
-      "@honestfoodcompany/pubsub": ["./index.ts"]
+      "@honestfoodcompany/pubsub": ["./index.ts"],
+      "@deliveryhero/pubsub": ["./index.ts"]
     }
   },
   "exclude": ["node_modules", "dist/**/*"],
