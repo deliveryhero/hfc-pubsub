@@ -17,14 +17,16 @@ jest.mock('./pubsub/subscription.service', (): any => ({
 }));
 
 describe('subscriptions init', () => {
+  let originalCloseAll: () => Promise<void>;
   beforeAll(async () => {
+    originalCloseAll = MockSubService.closeAll;
     await PubSub.getInstance().startSubscriptions();
   });
   it('should call init', () => {
     expect(MockSubService.init).toBeCalled();
   });
 
-  it('should call init with closeAll', () => {
-    expect(MockSubService.init).toBeCalledWith(expect.any(Function));
+  it('should override closeAll method', () => {
+    expect(MockSubService.closeAll).not.toEqual(originalCloseAll);
   });
 });

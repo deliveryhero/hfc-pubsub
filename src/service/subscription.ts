@@ -37,12 +37,17 @@ export default class SubscriptionService {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   /**
    *
-   * @param _closeAll Call this function from an exit handler to close all current subscriptions
    */
-  public static async init(_closeAll: () => Promise<void>): Promise<void> {
+  public static async init(): Promise<void> {
+    //
+  }
+
+  /**
+   * Call this function from a process exit handler to close all current subscriptions
+   */
+  public static async closeAll(): Promise<void> {
     //
   }
 
@@ -56,12 +61,11 @@ export default class SubscriptionService {
   }
 
   private static loadSubscribers(): Subscribers {
-    const [
-      subscriptionService,
-      pubsubSubscriptionsDir,
-    ] = ResourceResolver.getFiles();
+    const [subscriptionService, pubsubSubscriptionsDir] =
+      ResourceResolver.getFiles();
 
-    const subscriptionServiceClass = SubscriptionService.loadSubscriptionService();
+    const subscriptionServiceClass =
+      SubscriptionService.loadSubscriptionService();
 
     const loader = new SubscriberLoader();
 
