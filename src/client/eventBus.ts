@@ -41,7 +41,7 @@ export default class EventBus extends EventEmitter implements PubSubClientV2 {
   }
 
   public async close(subscriber: SubscriberTuple): Promise<void> {
-    const { 1: metadata } = subscriber;
+    const [, metadata] = subscriber;
     EventBus.getInstance().removeAllListeners(metadata.topicName);
   }
 
