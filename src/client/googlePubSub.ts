@@ -65,16 +65,16 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     projectId: string,
     options?: CreateClientOptions,
   ): GooglePubSub {
-    return new GooglePubSub({
-      // @ts-expect-error different types
-      grpc: options?.grpc
-        ? grpc
-        : process.env.PUBSUB_USE_GRPC === 'true'
-        ? grpc
-        : undefined,
-      projectId: projectId,
-      credentials: options?.credentials,
-    });
+    const useCppGrpc =
+      options?.grpc || process.env.PUBSUB_USE_GRPC === 'true' ? { grpc } : null;
+    return new GooglePubSub(
+      // @ts-expect-error C++ grpc and grpc-js types differ
+      {
+        ...useCppGrpc,
+        projectId: projectId,
+        credentials: options?.credentials,
+      },
+    );
   }
 
   public async publish<T extends Topic, P extends Payload>(
