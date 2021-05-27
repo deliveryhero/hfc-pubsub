@@ -1,9 +1,7 @@
 const path = require('path');
 const exec = require('child_process').exec;
-import fs from 'fs';
 require('dotenv').config({ path: require('find-config')('.env') });
 import SubscriptionService from '../src/service/subscription';
-import { SubscriberTuple } from '../src/subscriber';
 
 const mockPubSub = jest.fn();
 
@@ -83,9 +81,7 @@ describe('subscriptions cli', (): any => {
     });
   });
 
-  it('should use subscriber level default options over project level options', async (): Promise<
-    any
-  > => {
+  it('should use subscriber level default options over project level options', async (): Promise<any> => {
     const subscriber = findSubscriber(
       'example.v3_overrideoptions-with-deadletter.subscription',
     );

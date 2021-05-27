@@ -2,10 +2,9 @@ process.env.PUBSUB_ROOT_DIR = './__tests__/pubsub';
 const TEST_REGEX = '/__tests__/.*.test.(js|ts|tsx)?$';
 module.exports = {
   roots: ['<rootDir>'],
-  transform: {
-    '^.+\\.ts$': 'ts-jest',
-    '^.+\\.tsx?$': 'babel-jest',
-  },
+  preset: 'ts-jest',
+  testEnvironment: 'node',
   testRegex: TEST_REGEX,
+  coverageReporters: ['html', 'text-summary', 'lcov'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };

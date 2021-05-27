@@ -1,6 +1,4 @@
 const path = require('path');
-const exec = require('child_process').exec;
-import fs from 'fs';
 require('dotenv').config({ path: require('find-config')('.env') });
 import SubscriptionService from '../src/service/subscription';
 import { Subscribers } from '../src/subscriber';
@@ -40,7 +38,7 @@ describe.only('subscription v2 test', (): any => {
   });
 
   it('should have default options when not specified (v2)', () => {
-    const subscription = subscriptions.find(sub => {
+    const subscription = subscriptions.find((sub) => {
       const [, { subscriptionName }] = sub;
       return subscriptionName === 'test-topic.v2-subscription';
     });
@@ -51,7 +49,7 @@ describe.only('subscription v2 test', (): any => {
     expect(subscriptionObj?.options?.flowControl?.maxMessages).toBe(134);
   });
   it('test retry config is present', () => {
-    const subscription = subscriptions.find(sub => {
+    const subscription = subscriptions.find((sub) => {
       const [, { subscriptionName }] = sub;
       return subscriptionName === 'example.v2_retryConfig.options.subscription';
     });
@@ -65,7 +63,7 @@ describe.only('subscription v2 test', (): any => {
   });
 
   it('should allow the default values to be overridden (v2)', () => {
-    const subscription = subscriptions.find(sub => {
+    const subscription = subscriptions.find((sub) => {
       const [, { subscriptionName }] = sub;
       return subscriptionName === 'example.v2_override.options.subscription';
     });

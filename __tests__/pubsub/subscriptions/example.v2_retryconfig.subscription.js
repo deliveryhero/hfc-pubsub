@@ -24,6 +24,7 @@ class TestSubscriptionV2RetryConfig extends index.SubscriberV2 {
   }
   async handleMessage(message) {
     const payload = JSON.parse(message.data.toString());
+    console.log(payload);
     message.ack();
   }
 }

@@ -37,7 +37,9 @@ export default class SubscriptionService {
     }
   }
 
-  public static async init(): Promise<void> {}
+  public static async init(): Promise<void> {
+    //
+  }
 
   public static getSubscribers(): Subscribers {
     if (SubscriptionService._subscribers.length > 0) {
@@ -49,12 +51,11 @@ export default class SubscriptionService {
   }
 
   private static loadSubscribers(): Subscribers {
-    const [
-      subscriptionService,
-      pubsubSubscriptionsDir,
-    ] = ResourceResolver.getFiles();
+    const [subscriptionService, pubsubSubscriptionsDir] =
+      ResourceResolver.getFiles();
 
-    const subscriptionServiceClass = SubscriptionService.loadSubscriptionService();
+    const subscriptionServiceClass =
+      SubscriptionService.loadSubscriptionService();
 
     const loader = new SubscriberLoader();
 

@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Topic, Payload, Subscriber } from '../index';
 import { SubscriberTuple } from '../subscriber';
 import { RetryConfig } from './retryConfig';

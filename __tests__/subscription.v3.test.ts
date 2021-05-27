@@ -1,6 +1,4 @@
 const path = require('path');
-const exec = require('child_process').exec;
-import fs from 'fs';
 require('dotenv').config({ path: require('find-config')('.env') });
 import SubscriptionService from '../src/service/subscription';
 import { Subscribers } from '../src/subscriber';
@@ -40,7 +38,7 @@ describe('subscription v2 test', (): any => {
   });
 
   it('should have default options when not specified (v3)', () => {
-    const subscription = subscriptions.find(sub => {
+    const subscription = subscriptions.find((sub) => {
       const [, { subscriptionName }] = sub;
       return subscriptionName === 'test.v3_3.topic.subscription';
     });
@@ -53,7 +51,7 @@ describe('subscription v2 test', (): any => {
   });
 
   it('should allow the default values to be overridden (v3)', () => {
-    const subscription = subscriptions.find(sub => {
+    const subscription = subscriptions.find((sub) => {
       const [, { subscriptionName }] = sub;
       return subscriptionName === 'example.v3_overrideoptions.subscription';
     });

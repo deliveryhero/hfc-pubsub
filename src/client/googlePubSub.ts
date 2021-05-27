@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import chalk from 'chalk';
 import { Topic, Payload } from '../index';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
@@ -8,15 +7,16 @@ import {
   Subscription as GoogleCloudSubscription,
   Topic as GoogleCloudTopic,
 } from '@google-cloud/pubsub';
-import { SubscriberOptions } from '../subscriber/subscriberV2';
+import {
+  SubscriberMetadata,
+  SubscriberOptions,
+} from '../subscriber/subscriberV2';
 import { SubscriberTuple } from 'subscriber';
 import Message from '../message';
 import grpc from 'grpc';
 import { GooglePubSubProject } from 'interface/GooglePubSubProject';
 import { CredentialBody } from 'google-auth-library';
 import Bluebird from 'bluebird';
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 export interface Project {
   client: GooglePubSub;
@@ -65,16 +65,16 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     projectId: string,
     options?: CreateClientOptions,
   ): GooglePubSub {
-    return new GooglePubSub({
-      //@ts-expect-error
-      grpc: options?.grpc
-        ? grpc
-        : process.env.PUBSUB_USE_GRPC === 'true'
-        ? grpc
-        : undefined,
-      projectId: projectId,
-      credentials: options?.credentials,
-    });
+    const useCppGrpc =
+      options?.grpc || process.env.PUBSUB_USE_GRPC === 'true' ? { grpc } : null;
+    return new GooglePubSub(
+      // @ts-expect-error C++ grpc and grpc-js types differ
+      {
+        ...useCppGrpc,
+        projectId: projectId,
+        credentials: options?.credentials,
+      },
+    );
   }
 
   public async publish<T extends Topic, P extends Payload>(
@@ -200,28 +200,31 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     return topic.name;
   }
 
-
   private async bindPoliciesForDeadLetter(subscriber: SubscriberTuple) {
     const [, metadata] = subscriber;
     const options = this.getSubscriberOptions(subscriber);
     if (options?.deadLetterPolicy) {
-      await this.bindPolicyToSubscriber(
-        metadata.topicName,
-        metadata.subscriptionName,
-      );
+      await this.bindPolicyToSubscriber(metadata);
       await this.bindPolicyToDeadLetterTopic(
         options.deadLetterPolicy.deadLetterTopic,
+        options,
       );
     }
   }
 
   private async bindPolicyToSubscriber(
-    subscriptionTopicName: string,
-    subscriptionName: string,
-  ) {
+    metadata: SubscriberMetadata,
+  ): Promise<void> {
+    const {
+      topicName: subscriptionTopicName,
+      subscriptionName,
+      options,
+    } = metadata;
     if (process.env.PROJECT_NUMBER) {
       try {
-        const pubSubTopic = this.getClient().topic(subscriptionTopicName);
+        const pubSubTopic = this.getProject(options).client.topic(
+          subscriptionTopicName,
+        );
         const myPolicy = {
           bindings: [
             {
@@ -241,10 +244,14 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     }
   }
 
-  private async bindPolicyToDeadLetterTopic(deadLetterTopicName: string) {
+  private async bindPolicyToDeadLetterTopic(
+    deadLetterTopicName: string,
+    options?: { project?: GooglePubSubProject },
+  ): Promise<void> {
     if (process.env.PROJECT_NUMBER) {
       try {
-        const pubSubTopic = this.getClient().topic(deadLetterTopicName);
+        const pubSubTopic =
+          this.getProject(options).client.topic(deadLetterTopicName);
         const myPolicy = {
           bindings: [
             {
@@ -290,12 +297,11 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       return this.projects[options.project?.id || ''];
     } else {
       // init project with client
-      return (this.projects[
-        options.project?.id || ''
-      ] = GooglePubSubAdapter.initProject(options.project?.id || '', {
-        credentials: options?.project?.credentials,
-        grpc: process.env.PUBSUB_USE_GRPC === 'true',
-      }));
+      return (this.projects[options.project?.id || ''] =
+        GooglePubSubAdapter.initProject(options.project?.id || '', {
+          credentials: options?.project?.credentials,
+          grpc: process.env.PUBSUB_USE_GRPC === 'true',
+        }));
     }
   }
 
@@ -330,7 +336,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   public async getAllSubscriptions(): Promise<AllSubscriptions[]> {
     const subscriptions = await Bluebird.map(
       Object.keys(this.projects),
-      async project => {
+      async (project) => {
         const [subscriptions] = await this.projects[
           project
         ].client.getSubscriptions();
