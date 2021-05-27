@@ -11,7 +11,7 @@ exports.default = {
       },
     },
   },
-  handleMessage: function(message) {
+  handleMessage: function (message) {
     console.log(this.topicName);
     console.log(this.subscriptionName);
     console.log(message.data.toString());

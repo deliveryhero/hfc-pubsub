@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 require('dotenv').config({ path: require('find-config')('.env') });
 import PubSubService from '../src/service/pubsub';
 import { Subscribers, SubscriberTuple } from '../src/subscriber';
@@ -10,7 +9,7 @@ process.env.PUBSUB_DRIVER = 'google';
 const mockPublish = jest.fn();
 const mockSubscribe = jest.fn();
 const mockGet = jest.fn(() => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     resolve([
       {
         publish: mockPublish,
@@ -23,7 +22,7 @@ const mockConstructor = jest.fn();
 jest.mock('@google-cloud/pubsub', () => {
   return {
     __esModule: true,
-    PubSub: jest.fn().mockImplementation(config => {
+    PubSub: jest.fn().mockImplementation((config) => {
       mockConstructor(config);
       return {
         subscription: jest.fn(() => ({
@@ -53,7 +52,7 @@ describe('Google Pub Sub', (): void => {
   });
 
   it('should call subscribe to the right project', async (): Promise<void> => {
-    const subscription = subscriptions.find(sub => {
+    const subscription = subscriptions.find((sub) => {
       const [, { subscriptionName }] = sub;
       return subscriptionName === 'test.v3_withProjectCredentials';
     }) as SubscriberTuple;

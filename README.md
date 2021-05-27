@@ -46,12 +46,12 @@ This package contains a lightweight framework and subscription server for [Googl
 
 The framework expects that you've created a pubsub directory in your project with the following structure:
 
-```pre
+<pre>
 | .env        <-- this should be in your project root directory
 | - pubsub/    <-- this can be anywhere (defined in .env as PUBSUB_ROOT_DIR)
 |   | - subscriptions/
 |   | - topics/
-```
+</pre>
 
 1. Once the directory structure has been defined, [environment variables should be set](#required-environment-variables).
 2. Then you can create [subscriptions](#subscriptions) and [topics](#topics)
@@ -196,6 +196,7 @@ topic.publish<Payload>(
 ### Publishing on a different GCP project
 
 see [Sample Topic using its own GCP Project](https://github.com/honest-food-company/pubsub/tree/master/__tests__/pubsub/topics/example.topic_withProjectCredentials.ts)
+
 ## Subscriptions
 
 Create a `Subscriber` to define a message handler for messages that are published on the corresponding topic.

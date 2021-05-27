@@ -8,4 +8,3 @@ class SimpleTopic extends Topic {
 }
 
 exports.default = SimpleTopic;
-

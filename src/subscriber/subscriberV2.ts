@@ -79,10 +79,9 @@ export default class SubscriberV2 extends Subscriber {
             return SubscriberV2.getSubscriberVersion(subscriberClass);
           }
         };
-        return class SubscriberClassV2 extends SubscriberV2 {};
       }
       case 'v2':
-        const subscriberClass = (subscriber as unknown) as typeof SubscriberV2;
+        const subscriberClass = subscriber as unknown as typeof SubscriberV2;
         const subscriberObj = new subscriberClass();
         if (!subscriberObj.metadata) {
           throw new Error('A subscriber must contain a metadata property');
@@ -99,7 +98,7 @@ export default class SubscriberV2 extends Subscriber {
         };
 
       case 'v3':
-        const subscriberObject = (subscriber as unknown) as SubscriberObject;
+        const subscriberObject = subscriber as unknown as SubscriberObject;
         subscriberObject.options = {
           ...defaultSubscriberOptions,
           ...subscriptionServiceDefaultOptions,
@@ -111,7 +110,7 @@ export default class SubscriberV2 extends Subscriber {
           }
         };
       default:
-        return (subscriber as unknown) as typeof SubscriberV2;
+        return subscriber as unknown as typeof SubscriberV2;
     }
   }
 
