@@ -15,6 +15,7 @@ import grpc from 'grpc';
 import { GooglePubSubProject } from 'interface/GooglePubSubProject';
 import { CredentialBody } from 'google-auth-library';
 import Bluebird from 'bluebird';
+import { SubscriberMetadata } from '../subscriber/subscriberV2';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -208,6 +209,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       await this.bindPolicyToSubscriber(
         metadata.topicName,
         metadata.subscriptionName,
+        metadata.options,
       );
       await this.bindPolicyToDeadLetterTopic(
         options.deadLetterPolicy.deadLetterTopic,
@@ -218,10 +220,11 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   private async bindPolicyToSubscriber(
     subscriptionTopicName: string,
     subscriptionName: string,
+    options?: SubscriberMetadata['options'],
   ) {
     if (process.env.PROJECT_NUMBER) {
       try {
-        const pubSubTopic = this.getClient().topic(subscriptionTopicName);
+        const pubSubTopic = this.getProject(options).client.topic(subscriptionTopicName);
         const myPolicy = {
           bindings: [
             {
@@ -241,10 +244,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     }
   }
 
-  private async bindPolicyToDeadLetterTopic(deadLetterTopicName: string) {
+  private async bindPolicyToDeadLetterTopic(deadLetterTopicName: string, options?: SubscriberMetadata['options']) {
     if (process.env.PROJECT_NUMBER) {
       try {
-        const pubSubTopic = this.getClient().topic(deadLetterTopicName);
+        const pubSubTopic = this.getProject(options).client.topic(deadLetterTopicName);
         const myPolicy = {
           bindings: [
             {
