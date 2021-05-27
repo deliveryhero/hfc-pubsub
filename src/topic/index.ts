@@ -22,7 +22,7 @@ export interface NamedTopic {
 }
 
 export interface TopicWithCustomProject {
-  project?: GooglePubSubProject,
+  project?: GooglePubSubProject;
 }
 
 export default class Topic implements NamedTopic, TopicWithCustomProject {
@@ -50,10 +50,7 @@ export default class Topic implements NamedTopic, TopicWithCustomProject {
    * @todo implement message validation logic. tried to link Topic and Message using static name methods, but hit a wall with subclass static inheritance typescript issues
    * @param message Message
    */
-  public validateMessage(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    message: Payload,
-  ): void {
+  public validateMessage(message: Payload): void {
     message;
   }
 

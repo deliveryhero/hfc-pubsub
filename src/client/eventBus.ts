@@ -1,11 +1,6 @@
 import EventEmitter from 'events';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import PubSubClient, {
-  AllSubscriptions,
-  PubSubClientV2,
-} from '../interface/pubSubClient';
+import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
 import Message from '../message';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Topic, Payload } from '../index';
 import { SubscriberTuple } from 'subscriber';
 

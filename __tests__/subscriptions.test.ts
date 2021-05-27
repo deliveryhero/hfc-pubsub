@@ -78,9 +78,7 @@ describe('subscriptions cli', (): any => {
     });
   });
 
-  it('should use subscriber level default options over project level options', async (): Promise<
-    any
-  > => {
+  it('should use subscriber level default options over project level options', async (): Promise<any> => {
     const subscriber = findSubscriber(
       'example.v3_overrideoptions-with-deadletter.subscription',
     );

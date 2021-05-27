@@ -1,4 +1,4 @@
-import { CredentialBody } from "google-auth-library";
+import { CredentialBody } from 'google-auth-library';
 
 export interface GooglePubSubProject {
   id: string;

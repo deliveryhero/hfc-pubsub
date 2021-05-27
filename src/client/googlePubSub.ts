@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import chalk from 'chalk';
 import { Topic, Payload } from '../index';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
@@ -18,8 +17,6 @@ import grpc from 'grpc';
 import { GooglePubSubProject } from 'interface/GooglePubSubProject';
 import { CredentialBody } from 'google-auth-library';
 import Bluebird from 'bluebird';
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 export interface Project {
   client: GooglePubSub;
@@ -68,16 +65,16 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     projectId: string,
     options?: CreateClientOptions,
   ): GooglePubSub {
-    return new GooglePubSub({
-      //@ts-expect-error
-      grpc: options?.grpc
-        ? grpc
-        : process.env.PUBSUB_USE_GRPC === 'true'
-        ? grpc
-        : undefined,
-      projectId: projectId,
-      credentials: options?.credentials,
-    });
+    const useCppGrpc =
+      options?.grpc || process.env.PUBSUB_USE_GRPC === 'true' ? { grpc } : null;
+    return new GooglePubSub(
+      // @ts-expect-error C++ grpc and grpc-js types differ
+      {
+        ...useCppGrpc,
+        projectId: projectId,
+        credentials: options?.credentials,
+      },
+    );
   }
 
   public async publish<T extends Topic, P extends Payload>(

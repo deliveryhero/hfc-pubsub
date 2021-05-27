@@ -1,6 +1,4 @@
 const path = require('path');
-const exec = require('child_process').exec;
-import fs from 'fs';
 require('dotenv').config({ path: require('find-config')('.env') });
 import SubscriptionService from '../src/service/subscription';
 import { Subscribers } from '../src/subscriber';
@@ -41,7 +39,7 @@ describe('subscription v2 test', (): any => {
     );
     expect(
       subscriptions.find(
-        subscription =>
+        (subscription) =>
           subscription[1].subscriptionName === 'test.auto-load-subscription',
       ),
     ).toBeTruthy();
@@ -49,7 +47,7 @@ describe('subscription v2 test', (): any => {
 
   it('should find handle a message', async (): Promise<any> => {
     const subscriberTuple = subscriptions.find(
-      subscription =>
+      (subscription) =>
         subscription[1].subscriptionName === 'test.auto-load-subscription',
     );
     expect(subscriberTuple).toBeDefined();

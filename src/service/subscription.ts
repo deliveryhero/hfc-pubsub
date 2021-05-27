@@ -37,9 +37,6 @@ export default class SubscriptionService {
     }
   }
 
-  /**
-   *
-   */
   public static async init(): Promise<void> {
     //
   }

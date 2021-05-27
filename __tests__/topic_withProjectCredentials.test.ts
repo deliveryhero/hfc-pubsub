@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 require('dotenv').config({ path: require('find-config')('.env') });
 import exampleTopicWithProjectCredentials from './pubsub/topics/example.topic_withProjectCredentials';
 import GooglePubSubAdapter from '../src/client/googlePubSub';
@@ -8,7 +7,7 @@ process.env.PUBSUB_DRIVER = 'google';
 
 const mockPublish = jest.fn();
 const mockGet = jest.fn(() => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     resolve([
       {
         publish: mockPublish,
@@ -21,7 +20,7 @@ const mockConstructor = jest.fn();
 jest.mock('@google-cloud/pubsub', () => {
   return {
     __esModule: true,
-    PubSub: jest.fn().mockImplementation(config => {
+    PubSub: jest.fn().mockImplementation((config) => {
       mockConstructor(config);
       return {
         config: config,

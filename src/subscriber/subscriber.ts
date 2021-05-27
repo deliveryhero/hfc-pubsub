@@ -33,8 +33,11 @@ export default class Subscriber {
     this.handleMessage = this.handleMessage.bind(this);
   }
 
-  public async init(): Promise<void> {}
+  public async init(): Promise<void> {
+    //
+  }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async handleMessage(_message: Message): Promise<void> {}
+  public async handleMessage(_message: Message): Promise<void> {
+    //
+  }
 }

@@ -28,9 +28,7 @@ describe('topics', (): void => {
     expect(mockPublish).toBeCalledTimes(1);
   });
 
-  it('Expect publish to return a string with the messageId', async (): Promise<
-    void
-  > => {
+  it('Expect publish to return a string with the messageId', async (): Promise<void> => {
     const spy = jest.spyOn(PubSubService, 'getInstance');
     const topic = new exampleTopic();
     const data = await topic.publish<Payload>({ data: 'test' });
@@ -39,9 +37,7 @@ describe('topics', (): void => {
     expect(mockPublish).toBeCalledTimes(1);
   });
 
-  it('Should test retry config to be the default one', async (): Promise<
-    void
-  > => {
+  it('Should test retry config to be the default one', async (): Promise<void> => {
     const spy = jest.spyOn(PubSubService.prototype, 'publish');
     const topic = new exampleTopic();
     const data = await topic.publish<Payload>({ data: 'test' });
@@ -63,9 +59,7 @@ describe('topics', (): void => {
       }),
     );
   });
-  it('Should test retry config to be the updated retry config one', async (): Promise<
-    void
-  > => {
+  it('Should test retry config to be the updated retry config one', async (): Promise<void> => {
     const spy = jest.spyOn(PubSubService.prototype, 'publish');
     const topic = new exampleTopic();
     const data = await topic.publish<Payload>(
