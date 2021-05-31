@@ -416,7 +416,7 @@ Extend and customize the behavior of the subscription server in the subscription
 ### Typescript example
 
 ```ts
-// PUBSUB_ROOT_DIR/subscription.service.js
+// PUBSUB_ROOT_DIR/subscription.service.ts
 import * as PubSub from '@honestfoodcompany/pubsub';
 import { SubscriberOptions } from '@honestfoodcompany/pubsub';
 
