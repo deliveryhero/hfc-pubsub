@@ -4,6 +4,8 @@
 
 This package contains a lightweight framework and subscription server for [Google Pub/Sub](https://cloud.google.com/pubsub). It was created to speed up development time and it provides a common foundation for building event driven applications. It lets developers define topics and subscriptions simply and declaratively, while additionally offering a simple subscription server to run all of a project's subscription handlers.
 
+Docs: <https://deliveryhero.github.io/hfc-pubsub/>
+
 ![](demo.gif)
 
 ## Table of Contents
@@ -76,6 +78,7 @@ PUBSUB_ROOT_DIR=/path/to/your/pubsub/directory # this can be a relative path
 | `PUBSUB_ROOT_DIR`                 | must be the path to your project's pubsub directory. This module only works with .js files, so if you are writing your code in typescript, you must set this variable to the pubsub directory in your project's build directory. |
 | `GOOGLE_APPLICATION_CREDENTIALS`  | see <https://cloud.google.com/docs/authentication/getting-started#creating_a_service_account> to generate this                                                                                                                     |
 | `GOOGLE_CLOUD_PUB_SUB_PROJECT_ID` | name of the project in Google Cloud Platform                                                                                                                                                                                     |
+| `PROJECT_NUMBER` | Project for binding DLQ roles. Check [Binding Subscriber and Publisher role](#binding-subscriber-and-publisher-role) for more details.                                                                                                                                                                        |
 
 ## CLI commands - starting and listing subscriptions
 
