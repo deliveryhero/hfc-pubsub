@@ -31,7 +31,8 @@ This package contains a lightweight framework and subscription server for [Googl
   - [Subscription Service](#subscription-service)
     - [Typescript example](#typescript-example-1)
     - [Javascript Example](#javascript-example-1)
-  - [Connecting to a database](#connecting-to-a-database)
+    - [Graceful Shutdown](#graceful-shutdown)
+    - [Connecting to a database](#connecting-to-a-database)
   - [Enabling Synchronous Driver](#enabling-synchronous-driver)
   - [Enabling gRPC C++ bindings](#enabling-grpc-c-bindings)
 
@@ -414,8 +415,8 @@ Extend and customize the behavior of the subscription server in the subscription
 
 ### Typescript example
 
-```javascript
-// PUBSUB_ROOT_DIR/subscription.service.js
+```ts
+// PUBSUB_ROOT_DIR/subscription.service.ts
 import * as PubSub from '@honestfoodcompany/pubsub';
 import { SubscriberOptions } from '@honestfoodcompany/pubsub';
 
@@ -477,11 +478,59 @@ SubscriptionService.init = () => {
 exports.default = SubscriptionService;
 ```
 
-## Connecting to a database
+### Connecting to a database
 
 It is recommended to initialize a database connection in the `subscription.service` file in your `PUBSUB_ROOT_DIR`. Insert your database connection logic in the `init` method.
 
 see: [Subscription Service](#subscription-service) for more details
+
+### Graceful Shutdown
+
+When gracefully shutting down a process, it is a good idea to first close all open subscriptions. For this reason we have a static `closeAll` method in the `SubscriptionService` that can close all connections before shutting down. An example using it with process signal handlers:
+
+```ts
+// PUBSUB_ROOT_DIR/subscription.service.js
+import * as PubSub from '@honestfoodcompany/pubsub';
+import mongoose from 'mongoose';
+import { SubscriberOptions } from '@honestfoodcompany/pubsub';
+
+export default class SubscriptionService extends PubSub.SubscriptionService {
+  static subscribers = [
+    /**
+     * if your subscribers don't have the .sub.js suffix
+     * they won't be auto-loaded,  so you can include their default
+     * export in  this array
+     */
+  ];
+
+  /**
+   * This function is called when the subscription server starts.
+   */
+  static async init(): Promise<void> {
+    /**
+     * This is a good place to initialize a database connection
+     */
+    await mongoose.connect();
+  }
+}
+
+
+/**
+ * Example setting up graceful shutdown
+ */
+process.on('SIGTERM', () => {
+  // First close all subscriptions
+  SubscriptionService.closeAll().then(() => {
+    // Then the databse so no new handlers are triggered
+    mongoose.disconnect(() => {
+      process.exit(0);
+    });
+  }).catch((err) => {
+    console.error(err, 'Could not close subscriptions');
+    process.exit(1); // Exit with error
+  })
+});
+```
 
 ## Enabling Synchronous Driver
 

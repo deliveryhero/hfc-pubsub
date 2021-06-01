@@ -41,6 +41,13 @@ export default class SubscriptionService {
     //
   }
 
+  /**
+   * Call this function from a process exit handler to close all current subscriptions
+   */
+  public static async closeAll(): Promise<void> {
+    //
+  }
+
   public static getSubscribers(): Subscribers {
     if (SubscriptionService._subscribers.length > 0) {
       return SubscriptionService._subscribers as Subscribers;

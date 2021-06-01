@@ -1,11 +1,8 @@
-const path = require('path');
-const exec = require('child_process').exec;
-require('dotenv').config({ path: require('find-config')('.env') });
+import path from 'path';
+import { exec } from 'child_process';
 import SubscriptionService from '../src/service/subscription';
 
 const mockPubSub = jest.fn();
-
-process.env.PUBSUB_ROOT_DIR = path.resolve(__dirname, 'pubsub');
 
 jest.mock('@google-cloud/pubsub', () => ({
   __esModule: true,
@@ -33,7 +30,7 @@ const findSubscriber = (name: string) => {
   return subscription;
 };
 
-function cli(args: any, cwd: string | null = null): any {
+function cli(args: any, cwd: string | undefined = undefined): any {
   return new Promise((resolve): any => {
     exec(
       `node ${path.resolve('./dist/cli/subscriptions')} ${args.join(' ')}`,

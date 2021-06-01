@@ -35,6 +35,11 @@ export default class EventBus extends EventEmitter implements PubSubClientV2 {
     );
   }
 
+  public async close(subscriber: SubscriberTuple): Promise<void> {
+    const [, metadata] = subscriber;
+    EventBus.getInstance().removeAllListeners(metadata.topicName);
+  }
+
   public async getAllSubscriptions(): Promise<AllSubscriptions[]> {
     throw new Error(
       'This feature is not available with the synchronous driver',

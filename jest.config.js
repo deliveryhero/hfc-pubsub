@@ -5,6 +5,8 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   testRegex: TEST_REGEX,
+  // The paths to modules that run some code to configure or set up the testing environment before each test
+  setupFilesAfterEnv: ['./jest.setup.ts'],
   coverageReporters: ['html', 'text-summary', 'lcov'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };
