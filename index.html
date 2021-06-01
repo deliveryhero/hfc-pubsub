@@ -100,9 +100,10 @@
 							<li><a href="#subscription-service">Subscription Service</a><ul>
 									<li><a href="#typescript-example-1">Typescript example</a></li>
 									<li><a href="#javascript-example-1">Javascript Example</a></li>
+									<li><a href="#graceful-shutdown">Graceful Shutdown</a></li>
+									<li><a href="#connecting-to-a-database">Connecting to a database</a></li>
 								</ul>
 							</li>
-							<li><a href="#connecting-to-a-database">Connecting to a database</a></li>
 							<li><a href="#enabling-synchronous-driver">Enabling Synchronous Driver</a></li>
 							<li><a href="#enabling-grpc-c-bindings">Enabling gRPC C++ bindings</a></li>
 						</ul>
@@ -485,7 +486,7 @@
 				<a href="#typescript-example-1" id="typescript-example-1" style="color: inherit; text-decoration: none;">
 					<h3>Typescript example</h3>
 				</a>
-				<pre><code class="language-javascript"><span style="color: #008000">// PUBSUB_ROOT_DIR/subscription.service.js</span>
+				<pre><code class="language-ts"><span style="color: #008000">// PUBSUB_ROOT_DIR/subscription.service.ts</span>
 <span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #0000FF">*</span><span style="color: #000000"> </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #001080">PubSub</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@honestfoodcompany/pubsub&#039;</span><span style="color: #000000">;</span>
 <span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">SubscriberOptions</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@honestfoodcompany/pubsub&#039;</span><span style="color: #000000">;</span>
 
@@ -546,10 +547,56 @@
 <span style="color: #267F99">exports</span><span style="color: #000000">.</span><span style="color: #001080">default</span><span style="color: #000000"> = </span><span style="color: #001080">SubscriptionService</span><span style="color: #000000">;</span>
 </code></pre>
 				<a href="#connecting-to-a-database" id="connecting-to-a-database" style="color: inherit; text-decoration: none;">
-					<h2>Connecting to a database</h2>
+					<h3>Connecting to a database</h3>
 				</a>
 				<p>It is recommended to initialize a database connection in the <code>subscription.service</code> file in your <code>PUBSUB_ROOT_DIR</code>. Insert your database connection logic in the <code>init</code> method.</p>
 				<p>see: <a href="#subscription-service">Subscription Service</a> for more details</p>
+				<a href="#graceful-shutdown" id="graceful-shutdown" style="color: inherit; text-decoration: none;">
+					<h3>Graceful Shutdown</h3>
+				</a>
+				<p>When gracefully shutting down a process, it is a good idea to first close all open subscriptions. For this reason we have a static <code>closeAll</code> method in the <code>SubscriptionService</code> that can close all connections before shutting down. An example using it with process signal handlers:</p>
+				<pre><code class="language-ts"><span style="color: #008000">// PUBSUB_ROOT_DIR/subscription.service.js</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #0000FF">*</span><span style="color: #000000"> </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #001080">PubSub</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@honestfoodcompany/pubsub&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">mongoose</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;mongoose&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">SubscriberOptions</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@honestfoodcompany/pubsub&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">SubscriptionService</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">PubSub</span><span style="color: #000000">.</span><span style="color: #267F99">SubscriptionService</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">static</span><span style="color: #000000"> </span><span style="color: #001080">subscribers</span><span style="color: #000000"> = [</span>
+<span style="color: #000000">    </span><span style="color: #008000">/**</span>
+<span style="color: #008000">     * if your subscribers don&#039;t have the .sub.js suffix</span>
+<span style="color: #008000">     * they won&#039;t be auto-loaded,  so you can include their default</span>
+<span style="color: #008000">     * export in  this array</span>
+<span style="color: #008000">     */</span>
+<span style="color: #000000">  ];</span>
+
+<span style="color: #000000">  </span><span style="color: #008000">/**</span>
+<span style="color: #008000">   * This function is called when the subscription server starts.</span>
+<span style="color: #008000">   */</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">static</span><span style="color: #000000"> </span><span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #795E26">init</span><span style="color: #000000">(): </span><span style="color: #267F99">Promise</span><span style="color: #000000">&lt;</span><span style="color: #267F99">void</span><span style="color: #000000">&gt; {</span>
+<span style="color: #000000">    </span><span style="color: #008000">/**</span>
+<span style="color: #008000">     * This is a good place to initialize a database connection</span>
+<span style="color: #008000">     */</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">mongoose</span><span style="color: #000000">.</span><span style="color: #795E26">connect</span><span style="color: #000000">();</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">}</span>
+
+
+<span style="color: #008000">/**</span>
+<span style="color: #008000"> * Example setting up graceful shutdown</span>
+<span style="color: #008000"> */</span>
+<span style="color: #001080">process</span><span style="color: #000000">.</span><span style="color: #795E26">on</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;SIGTERM&#039;</span><span style="color: #000000">, () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #008000">// First close all subscriptions</span>
+<span style="color: #000000">  </span><span style="color: #001080">SubscriptionService</span><span style="color: #000000">.</span><span style="color: #795E26">closeAll</span><span style="color: #000000">().</span><span style="color: #795E26">then</span><span style="color: #000000">(() </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Then the databse so no new handlers are triggered</span>
+<span style="color: #000000">    </span><span style="color: #001080">mongoose</span><span style="color: #000000">.</span><span style="color: #795E26">disconnect</span><span style="color: #000000">(() </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">      </span><span style="color: #001080">process</span><span style="color: #000000">.</span><span style="color: #795E26">exit</span><span style="color: #000000">(</span><span style="color: #098658">0</span><span style="color: #000000">);</span>
+<span style="color: #000000">    });</span>
+<span style="color: #000000">  }).</span><span style="color: #795E26">catch</span><span style="color: #000000">((</span><span style="color: #001080">err</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">error</span><span style="color: #000000">(</span><span style="color: #001080">err</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;Could not close subscriptions&#039;</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #001080">process</span><span style="color: #000000">.</span><span style="color: #795E26">exit</span><span style="color: #000000">(</span><span style="color: #098658">1</span><span style="color: #000000">); </span><span style="color: #008000">// Exit with error</span>
+<span style="color: #000000">  })</span>
+<span style="color: #000000">});</span>
+</code></pre>
 				<a href="#enabling-synchronous-driver" id="enabling-synchronous-driver" style="color: inherit; text-decoration: none;">
 					<h2>Enabling Synchronous Driver</h2>
 				</a>
