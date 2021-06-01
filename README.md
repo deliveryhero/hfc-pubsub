@@ -1,5 +1,7 @@
 # Google Pub/Sub Node.js Framework
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/70fe253d1da34e8aa16bf37ae613d2fe)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=deliveryhero/hfc-pubsub&amp;utm_campaign=Badge_Grade)
+
 This package contains a lightweight framework and subscription server for [Google Pub/Sub](https://cloud.google.com/pubsub). It was created to speed up development time and it provides a common foundation for building event driven applications. It lets developers define topics and subscriptions simply and declaratively, while additionally offering a simple subscription server to run all of a project's subscription handlers.
 
 ![](demo.gif)
