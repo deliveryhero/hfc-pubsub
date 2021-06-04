@@ -61,7 +61,11 @@
 				<a href="#google-pubsub-nodejs-framework" id="google-pubsub-nodejs-framework" style="color: inherit; text-decoration: none;">
 					<h1>Google Pub/Sub Node.js Framework</h1>
 				</a>
+				<p><a href="https://www.npmjs.com/package/@honestfoodcompany/pubsub"><img src="https://img.shields.io/npm/v/@honestfoodcompany/pubsub" alt="npm"></a>
+					<a href="https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=deliveryhero/hfc-pubsub&amp;utm_campaign=Badge_Grade"><img src="https://app.codacy.com/project/badge/Grade/70fe253d1da34e8aa16bf37ae613d2fe" alt="Codacy Badge"></a>
+				<a href="https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=deliveryhero/hfc-pubsub&amp;utm_campaign=Badge_Coverage"><img src="https://app.codacy.com/project/badge/Coverage/70fe253d1da34e8aa16bf37ae613d2fe" alt="Codacy Badge"></a></p>
 				<p>This package contains a lightweight framework and subscription server for <a href="https://cloud.google.com/pubsub">Google Pub/Sub</a>. It was created to speed up development time and it provides a common foundation for building event driven applications. It lets developers define topics and subscriptions simply and declaratively, while additionally offering a simple subscription server to run all of a project&#39;s subscription handlers.</p>
+				<p>Docs: <a href="https://deliveryhero.github.io/hfc-pubsub/">https://deliveryhero.github.io/hfc-pubsub/</a></p>
 				<p><img src="demo.gif" alt=""></p>
 				<a href="#table-of-contents" id="table-of-contents" style="color: inherit; text-decoration: none;">
 					<h2>Table of Contents</h2>
@@ -160,6 +164,10 @@
 						<tr>
 							<td><code>GOOGLE_CLOUD_PUB_SUB_PROJECT_ID</code></td>
 							<td>name of the project in Google Cloud Platform</td>
+						</tr>
+						<tr>
+							<td><code>PROJECT_NUMBER</code></td>
+							<td>Project for binding DLQ roles. Check <a href="#binding-subscriber-and-publisher-role">Binding Subscriber and Publisher role</a> for more details.</td>
 						</tr>
 				</tbody></table>
 				<a href="#cli-commands---starting-and-listing-subscriptions" id="cli-commands---starting-and-listing-subscriptions" style="color: inherit; text-decoration: none;">
