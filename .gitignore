@@ -63,4 +63,5 @@ docs/
 
 # Mac
 .DS_Store
-.vscode
+.vscode/*
+!.vscode/settings.json
