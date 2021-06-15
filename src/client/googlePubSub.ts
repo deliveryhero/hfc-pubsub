@@ -131,6 +131,22 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const [, metadata] = subscriber;
     return metadata.options;
   }
+  private async updateMetaData(subscriber: SubscriberTuple) {
+    const [, metadata] = subscriber;
+    const { ackDeadline, retryPolicy, deadLetterPolicy } =
+      await this.getMergedSubscriptionOptions(subscriber);
+    const toUpdateOptions = {
+      ...(ackDeadline && { ackDeadlineSeconds: ackDeadline }),
+      retryPolicy,
+      deadLetterPolicy,
+    };
+    await this.getProject(metadata.options)
+      .client.subscription(
+        metadata.subscriptionName,
+        this.getSubscriberOptions(subscriber),
+      )
+      .setMetadata(toUpdateOptions);
+  }
 
   /**
    * Create subscription if it does not exist yet.
@@ -148,6 +164,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       console.log(
         chalk.gray(`   ✔️      ${metadata.subscriptionName} already exists.`),
       );
+      await this.updateMetaData(subscriber);
       return this.getSubscription(subscriber);
     }
 
@@ -159,6 +176,14 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
     return this.getSubscription(subscriber);
   }
+  private async getMergedSubscriptionOptions(subscriber: SubscriberTuple) {
+    return {
+      ...this.getSubscriberOptions(subscriber),
+      ...(await this.mergeDeadLetterPolicy(
+        this.getSubscriberOptions(subscriber),
+      )),
+    };
+  }
 
   private async createSubscription(
     topic: GoogleCloudTopic,
@@ -166,12 +191,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   ): Promise<void> {
     const [, metadata] = subscriber;
     try {
-      await topic.createSubscription(metadata.subscriptionName, {
-        ...this.getSubscriberOptions(subscriber),
-        ...(await this.mergeDeadLetterPolicy(
-          this.getSubscriberOptions(subscriber),
-        )),
-      });
+      await topic.createSubscription(
+        metadata.subscriptionName,
+        await this.getMergedSubscriptionOptions(subscriber),
+      );
       console.log(
         chalk.gray(`   ✔️      ${metadata.subscriptionName} created.`),
       );
