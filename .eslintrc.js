@@ -57,7 +57,10 @@ module.exports = {
       // For examples
       files: ['./examples/**/*.*'],
       rules: {
-        'import/no-unresolved': 'warn',
+        'import/no-unresolved': [
+          'error',
+          { ignore: ['@honestfoodcompany/pubsub', '@deliveryhero/pubsub'] },
+        ],
       },
     },
   ],
