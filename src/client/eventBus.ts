@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
 import Message from '../message';
 import { Topic, Payload } from '../index';
-import { SubscriberTuple } from 'subscriber';
+import { SubscriberTuple } from '../subscriber';
 
 export default class EventBus extends EventEmitter implements PubSubClientV2 {
   protected static instance: EventBus;

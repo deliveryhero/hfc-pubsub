@@ -6,13 +6,13 @@ import {
 } from '../subscriber';
 import { resolve, join } from 'path';
 import fs = require('fs');
-import { SubscriptionServiceFile } from './resourceResolver';
 import {
   SubscriberMetadata,
   SubscriberObject,
   SubscriberVersion,
   SubscriberOptions,
-} from 'subscriber/subscriberV2';
+} from '../subscriber/subscriberV2';
+import { SubscriptionServiceFile } from './resourceResolver';
 
 const getSubscriberFiles = (
   dir: string,

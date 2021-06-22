@@ -11,10 +11,10 @@ import {
   SubscriberMetadata,
   SubscriberOptions,
 } from '../subscriber/subscriberV2';
-import { SubscriberTuple } from 'subscriber';
+import { SubscriberTuple } from '../subscriber';
 import Message from '../message';
 import grpc from 'grpc';
-import { GooglePubSubProject } from 'interface/GooglePubSubProject';
+import { GooglePubSubProject } from '../interface/GooglePubSubProject';
 import { CredentialBody } from 'google-auth-library';
 import Bluebird from 'bluebird';
 
