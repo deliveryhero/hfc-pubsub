@@ -94,7 +94,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const [, metadata] = subscriber;
     const subscription = await this.createOrGetSubscription(subscriber);
     await this.bindPoliciesForDeadLetter(subscriber);
-    this.addHandler(subscriber, subscription);
+    await this.addHandler(subscriber, subscription);
     this.log(
       `   📭     ${metadata.subscriptionName} is ready to receive messages at a controlled volume of ${metadata.options?.flowControl?.maxMessages} messages.`,
     );
@@ -107,17 +107,19 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     this.log(`   📪     ${metadata.subscriptionName} is closed now`);
   }
 
-  private addHandler(
+  private async addHandler(
     subscriber: SubscriberTuple,
     subscription: GoogleCloudSubscription,
-  ): void {
+  ): Promise<void> {
     const [subscriberClass] = subscriber;
+    const subscriberInstance = new subscriberClass();
+    await subscriberInstance.init();
     subscription.on('message', (message: GoogleCloudMessage): void => {
-      const subscriber = new subscriberClass();
-      subscriber.init();
-      subscriber.handleMessage(Message.fromGCloud(message)).catch(() => {
-        message.nack();
-      });
+      subscriberInstance
+        .handleMessage(Message.fromGCloud(message))
+        .catch(() => {
+          message.nack();
+        });
     });
   }
 

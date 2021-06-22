@@ -61,7 +61,7 @@ describe('Google Pub Sub', (): void => {
     const subscribe = jest.spyOn(GooglePubSubAdapter.prototype, 'subscribe');
     const getProject = jest.spyOn(GooglePubSubAdapter.prototype, 'getProject');
     const createClient = jest.spyOn(GooglePubSubAdapter, 'createClient');
-    PubSubService.getInstance().subscribe(subscription);
+    await PubSubService.getInstance().subscribe(subscription);
     expect(subscribe).toBeCalled();
     expect(getProject).toBeCalledWith(subscription[1].options);
     expect(createClient.mock.calls[2]).toEqual([

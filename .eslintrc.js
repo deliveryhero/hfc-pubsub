@@ -27,6 +27,7 @@ module.exports = {
         ],
       },
     ],
+    '@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/no-var-requires': 'warn',
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
   },
