@@ -14,6 +14,19 @@ module.exports = {
     'prettier/prettier': 'error',
     'import/no-cycle': 'error',
     'import/no-unresolved': 'error',
+    'import/order': [
+      'error',
+      {
+        groups: [
+          'builtin',
+          'internal',
+          'external',
+          'parent',
+          'sibling',
+          'index',
+        ],
+      },
+    ],
     '@typescript-eslint/no-var-requires': 'warn',
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
   },
@@ -23,6 +36,8 @@ module.exports = {
         extensions: ['.js', '.ts'],
       },
     },
+    'import/internal-regex':
+      '^(@deliveryhero|@honestfoodcompany|react|next)(/.+)?$',
   },
   overrides: [
     {

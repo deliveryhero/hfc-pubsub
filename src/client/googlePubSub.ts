@@ -1,22 +1,22 @@
 import chalk from 'chalk';
-import { Topic, Payload } from '../index';
-import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
 import {
   PubSub as GooglePubSub,
   Message as GoogleCloudMessage,
   Subscription as GoogleCloudSubscription,
   Topic as GoogleCloudTopic,
 } from '@google-cloud/pubsub';
+import grpc from 'grpc';
+import { CredentialBody } from 'google-auth-library';
+import Bluebird from 'bluebird';
+import { Topic, Payload } from '../index';
+import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
 import {
   SubscriberMetadata,
   SubscriberOptions,
 } from '../subscriber/subscriberV2';
 import { SubscriberTuple } from '../subscriber';
 import Message from '../message';
-import grpc from 'grpc';
 import { GooglePubSubProject } from '../interface/GooglePubSubProject';
-import { CredentialBody } from 'google-auth-library';
-import Bluebird from 'bluebird';
 
 export interface Project {
   client: GooglePubSub;

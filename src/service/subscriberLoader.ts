@@ -1,11 +1,11 @@
+import { resolve, join } from 'path';
+import fs = require('fs');
 import {
   SubscriberV2,
   Subscribers,
   SubscriberTuple,
   SubscriberV1,
 } from '../subscriber';
-import { resolve, join } from 'path';
-import fs = require('fs');
 import {
   SubscriberMetadata,
   SubscriberObject,
