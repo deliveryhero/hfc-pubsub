@@ -1,8 +1,9 @@
 {
   "name": "@honestfoodcompany/pubsub",
-  "version": "1.7.11",
+  "version": "1.7.12",
   "description": "pubsub framework for managing topics and subscriptions",
   "main": "dist/index.js",
+  "homepage": "https://deliveryhero.github.io/hfc-pubsub/",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.build.json",
@@ -52,7 +53,7 @@
     "@typescript-eslint/parser": "^4.16.1",
     "eslint": "^7.23.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-prettier": "^3.4.0",
     "husky": "^3.1.0",
     "jest": "^26.6.3",

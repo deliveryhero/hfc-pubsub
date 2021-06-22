@@ -1,10 +1,6 @@
-const path = require('path');
-require('dotenv').config({ path: require('find-config')('.env') });
 import SubscriptionService from '../src/service/subscription';
 
 const mockPubSub = jest.fn();
-
-process.env.PUBSUB_ROOT_DIR = path.resolve(__dirname, 'pubsub');
 
 jest.mock('@google-cloud/pubsub', () => ({
   __esModule: true,

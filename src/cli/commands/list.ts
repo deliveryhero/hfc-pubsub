@@ -1,8 +1,8 @@
-import { PubSubService } from '../../index';
 import chalk from 'chalk';
 import { cli } from 'cli-ux';
 import wrapAnsi = require('wrap-ansi');
-import { SubscriberTuple } from 'subscriber';
+import { PubSubService } from '../../index';
+import { SubscriberTuple } from '../../subscriber';
 
 export default {
   command: 'list',

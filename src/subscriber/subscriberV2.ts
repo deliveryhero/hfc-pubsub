@@ -1,7 +1,7 @@
-import Subscriber from './subscriber';
-import Message from '../message';
 import { SubscriberOptions as GoogleCloudSubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber';
-import { GooglePubSubProject } from 'interface/GooglePubSubProject';
+import { GooglePubSubProject } from '../interface/GooglePubSubProject';
+import Message from '../message';
+import Subscriber from './subscriber';
 
 export type SubscriberVersion = 'v1' | 'v2' | 'v3';
 

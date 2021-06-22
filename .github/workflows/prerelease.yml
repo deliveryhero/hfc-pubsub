@@ -1,0 +1,28 @@
+# This workflow will run publish a package to NPM when a prerelease tag is created
+# For more information see: https://help.github.com/actions/language-and-framework-guides/publishing-nodejs-packages
+
+name: Node.js Package
+
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+-*
+
+jobs:
+  # Github Package Registry doesn't handle tags very well so only publishing prereleases to npm
+  publish-npm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🚀 Publish
+        run: npm publish --tag next
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_PUBLISH__HFC_BOT}}

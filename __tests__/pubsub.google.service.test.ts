@@ -1,7 +1,7 @@
 import PubSubService from '../src/service/pubsub';
+import { RetryConfig } from '../src/interface';
 import ExampleTopic from './pubsub/topics/example.topic';
 import ExampleSubscriber from './pubsub/subscriptions/example.subscription-ts';
-import { RetryConfig } from '../src/interface';
 
 process.env.PUBSUB_DRIVER = 'google';
 

@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import {
   Subscribers,
   SubscriberV1,
@@ -6,7 +7,6 @@ import {
   SubscriberTuple,
   SubscriberOptions,
 } from '../subscriber';
-import { resolve } from 'path';
 import SubscriberLoader from './subscriberLoader';
 import { ResourceResolver } from './resourceResolver';
 
