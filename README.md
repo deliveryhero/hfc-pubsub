@@ -1,6 +1,7 @@
 # Google Pub/Sub Node.js Framework
 
 [![npm](https://img.shields.io/npm/v/@honestfoodcompany/pubsub)](https://www.npmjs.com/package/@honestfoodcompany/pubsub)
+[![Node.js CI](https://github.com/deliveryhero/hfc-pubsub/actions/workflows/build.yml/badge.svg)](https://github.com/deliveryhero/hfc-pubsub/actions/workflows/build.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/70fe253d1da34e8aa16bf37ae613d2fe)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=deliveryhero/hfc-pubsub&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/70fe253d1da34e8aa16bf37ae613d2fe)](https://www.codacy.com?utm_source=github.com&utm_medium=referral&utm_content=deliveryhero/hfc-pubsub&utm_campaign=Badge_Coverage)
 
