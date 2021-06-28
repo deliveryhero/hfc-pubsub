@@ -105,7 +105,10 @@ export default class PubSubService {
         console.error(
           `   ❌      Error while initializing "${metadata.subscriptionName}" subscription.`,
         );
-        const error: any = new Error('Error while initializing subscription.');
+        const error: Error & {
+          originalError?: Error;
+          metadata?: typeof metadata;
+        } = new Error('Error while initializing subscription.');
         error.originalError = err;
         error.metadata = metadata;
         throw error;
