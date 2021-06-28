@@ -57,6 +57,9 @@ typings/
 # dotenv environment variables file
 .env
 
+# Dev GCP credentials
+creds/
+
 # Output
 dist/
 docs/
