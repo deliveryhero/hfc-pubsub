@@ -26,7 +26,8 @@ jest.mock('@google-cloud/pubsub', () => {
       mockConstructor(config);
       return {
         subscription: jest.fn(() => ({
-          exists: jest.fn(() => true),
+          exists: jest.fn(() => [true]),
+          on: jest.fn(),
         })),
         subscribe: mockSubscribe(config),
         topic: jest.fn(() => ({
