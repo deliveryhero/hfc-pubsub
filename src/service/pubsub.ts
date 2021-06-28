@@ -98,7 +98,18 @@ export default class PubSubService {
 
     const subscribers = subscriptionServiceClass.getSubscribers();
     for (const subscription of subscribers) {
-      await this.subscribe(subscription);
+      try {
+        await this.subscribe(subscription);
+      } catch (err) {
+        const [, metadata] = subscription;
+        console.error(
+          `   ❌      Error while initializing "${metadata.subscriptionName}" subscription.`,
+        );
+        const error: any = new Error('Error while initializing subscription.');
+        error.originalError = err;
+        error.metadata = metadata;
+        throw error;
+      }
     }
 
     PubSubService.status = 'ready';
