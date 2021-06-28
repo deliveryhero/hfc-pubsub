@@ -178,7 +178,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         chalk.gray(`   ✔️      ${metadata.subscriptionName} created.`),
       );
     } catch (e) {
-      console.error('There was an error creating a subscription.', e);
+      console.error(
+        `   ❌      There was an error creating "${metadata.subscriptionName}" subscription.`,
+        e,
+      );
     }
   }
 
@@ -248,7 +251,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
           .subscription(subscriptionName)
           .iam.setPolicy(myPolicy);
       } catch (e) {
-        console.error('Error while binding policy.', e);
+        console.error(
+          `   ❌      Error while binding policy for "${metadata.subscriptionName}" subscription.`,
+          e,
+        );
       }
     }
   }
@@ -273,7 +279,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         };
         await pubSubTopic.iam.setPolicy(myPolicy);
       } catch (e) {
-        console.error('Error while binding policy.', e);
+        console.error(
+          `   ❌      Error while binding policy for "${deadLetterTopicName}" DLQ topic.`,
+          e,
+        );
       }
     }
   }
