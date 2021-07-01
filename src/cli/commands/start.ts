@@ -1,5 +1,5 @@
-import { PubSubService } from '../../index';
 import chalk from 'chalk';
+import { PubSubService } from '../../index';
 
 export default {
   command: 'start',

@@ -1,6 +1,6 @@
 import PubSubService from '../service/pubsub';
 import { RecursivePartial, RetryConfig } from '../interface/retryConfig';
-import { GooglePubSubProject } from 'interface/GooglePubSubProject';
+import { GooglePubSubProject } from '../interface/GooglePubSubProject';
 
 /**
  * extend this interface to define your own payload

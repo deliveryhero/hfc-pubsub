@@ -3,8 +3,8 @@ import { SubscriberTuple, Subscribers } from '../subscriber';
 import EventBus from '../client/eventBus';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
 import GooglePubSubAdapter from '../client/googlePubSub';
-import SubscriptionService from './subscription';
 import { RetryConfig } from '../interface/retryConfig';
+import SubscriptionService from './subscription';
 
 export default class PubSubService {
   protected static client: PubSubClientV2;
