@@ -133,10 +133,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   }
   private async updateMetaData(subscriber: SubscriberTuple) {
     const [, metadata] = subscriber;
-    const { ackDeadline, retryPolicy, deadLetterPolicy } =
+    const { ackDeadlineSeconds, retryPolicy, deadLetterPolicy } =
       await this.getMergedSubscriptionOptions(subscriber);
     const toUpdateOptions = {
-      ...(ackDeadline && { ackDeadlineSeconds: ackDeadline }),
+      ackDeadlineSeconds,
       retryPolicy,
       deadLetterPolicy,
     };
@@ -177,8 +177,12 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     return this.getSubscription(subscriber);
   }
   private async getMergedSubscriptionOptions(subscriber: SubscriberTuple) {
+    const subscriberOptions = this.getSubscriberOptions(subscriber);
+    const ackDeadlineSeconds =
+      subscriberOptions?.ackDeadlineSeconds || subscriberOptions?.ackDeadline;
     return {
-      ...this.getSubscriberOptions(subscriber),
+      ...subscriberOptions,
+      ackDeadlineSeconds,
       ...(await this.mergeDeadLetterPolicy(
         this.getSubscriberOptions(subscriber),
       )),
