@@ -86,6 +86,7 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="subscriberoptions.html#ackdeadline" class="tsd-kind-icon">ack<wbr>Deadline</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="subscriberoptions.html#ackdeadlineseconds" class="tsd-kind-icon">ack<wbr>Deadline<wbr>Seconds</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="subscriberoptions.html#batching" class="tsd-kind-icon">batching</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="subscriberoptions.html#deadletterpolicy" class="tsd-kind-icon">dead<wbr>Letter<wbr>Policy</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="subscriberoptions.html#enablemessageordering" class="tsd-kind-icon">enable<wbr>Message<wbr>Ordering</a></li>
@@ -112,6 +113,16 @@
 						</ul>
 					</aside>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="ackdeadlineseconds" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> ack<wbr>Deadline<wbr>Seconds</h3>
+					<div class="tsd-signature tsd-kind-icon">ack<wbr>Deadline<wbr>Seconds<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/4d44ae6/src/subscriber/subscriberV2.ts#L142">src/subscriber/subscriberV2.ts:142</a></li>
+						</ul>
+					</aside>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
 					<a name="batching" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> batching</h3>
@@ -129,7 +140,7 @@
 					<div class="tsd-signature tsd-kind-icon">dead<wbr>Letter<wbr>Policy<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>deadLetterTopic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>maxDeliveryAttempts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/226c49a/src/subscriber/subscriberV2.ts#L143">src/subscriber/subscriberV2.ts:143</a></li>
+							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/4d44ae6/src/subscriber/subscriberV2.ts#L144">src/subscriber/subscriberV2.ts:144</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -150,7 +161,7 @@
 					<div class="tsd-signature tsd-kind-icon">enable<wbr>Message<wbr>Ordering<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/226c49a/src/subscriber/subscriberV2.ts#L173">src/subscriber/subscriberV2.ts:173</a></li>
+							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/4d44ae6/src/subscriber/subscriberV2.ts#L174">src/subscriber/subscriberV2.ts:174</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -168,7 +179,7 @@
 					<div class="tsd-signature tsd-kind-icon">filter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/226c49a/src/subscriber/subscriberV2.ts#L165">src/subscriber/subscriberV2.ts:165</a></li>
+							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/4d44ae6/src/subscriber/subscriberV2.ts#L166">src/subscriber/subscriberV2.ts:166</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -198,7 +209,7 @@
 					<div class="tsd-signature tsd-kind-icon">project<span class="tsd-signature-symbol">:</span> <a href="interfaces.googlepubsubproject.html" class="tsd-signature-type" data-tsd-kind="Interface">GooglePubSubProject</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/226c49a/src/subscriber/subscriberV2.ts#L142">src/subscriber/subscriberV2.ts:142</a></li>
+							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/4d44ae6/src/subscriber/subscriberV2.ts#L143">src/subscriber/subscriberV2.ts:143</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -208,7 +219,7 @@
 					<div class="tsd-signature tsd-kind-icon">retry<wbr>Policy<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>maximumBackoff<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>nanos<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>seconds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>minimumBackoff<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>nanos<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>seconds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/226c49a/src/subscriber/subscriberV2.ts#L147">src/subscriber/subscriberV2.ts:147</a></li>
+							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/4d44ae6/src/subscriber/subscriberV2.ts#L148">src/subscriber/subscriberV2.ts:148</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -287,6 +298,9 @@
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
 								<a href="subscriberoptions.html#ackdeadline" class="tsd-kind-icon">ack<wbr>Deadline</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="subscriberoptions.html#ackdeadlineseconds" class="tsd-kind-icon">ack<wbr>Deadline<wbr>Seconds</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
 								<a href="subscriberoptions.html#batching" class="tsd-kind-icon">batching</a>
