@@ -184,6 +184,8 @@ new SimpleTopic().publish({ id: 1, data: 'My first message' });
 
 ### Publishing a message with retry settings
 
+> NOTE: This may not work right now
+
 see [Sample Topic with Retry Settings](https://github.com/honest-food-company/pubsub/tree/master/examples/typescript/test.topic.withRetrySettings.ts) for defining a default retry policy
 
 ```typescript
@@ -205,6 +207,29 @@ topic.publish<Payload>(
 ### Publishing on a different GCP project
 
 see [Sample Topic using its own GCP Project](https://github.com/honest-food-company/pubsub/tree/master/__tests__/pubsub/topics/example.topic_withProjectCredentials.ts)
+
+### Publishing with Attributes
+
+See: <https://cloud.google.com/pubsub/docs/publisher#using_attributes>
+
+```typescript
+// client.example.ts
+import SimpleTopic, { Payload } from 'pubsub/topics/simple.topic.name';
+
+let topic = new SimpleTopic();
+topic.publish<Payload>(
+  { id: 1, data: 'My first message' },
+  {
+    attributes: {
+      filter: 'a',
+      company: 'b',
+      status: 'failed',
+    },
+  },
+);
+```
+
+These attributes can then be used to filter messages using the `filter` option in Subscription Options.
 
 ## Subscriptions
 
