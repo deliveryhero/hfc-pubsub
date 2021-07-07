@@ -3,7 +3,7 @@ import { SubscriberTuple, Subscribers } from '../subscriber';
 import EventBus from '../client/eventBus';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
 import GooglePubSubAdapter from '../client/googlePubSub';
-import { RetryConfig } from '../interface/retryConfig';
+import { PublishOptions } from '../interface/retryConfig';
 import SubscriptionService from './subscription';
 
 export default class PubSubService {
@@ -56,13 +56,13 @@ export default class PubSubService {
   public async publish<T extends Topic, P extends Payload>(
     topic: T,
     message: P,
-    retryConfig: RetryConfig,
+    options: PublishOptions,
   ): Promise<string> {
     this.validate(topic, message);
     if (this.shouldStartSynchronousSubscriptions()) {
       await this.startSubscriptions();
     }
-    return await this.getClient().publish(topic, message, retryConfig);
+    return await this.getClient().publish(topic, message, options);
   }
 
   private shouldStartSynchronousSubscriptions(): boolean {
