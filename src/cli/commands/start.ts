@@ -4,11 +4,10 @@ import { PubSubService } from '../../index';
 export default {
   command: 'start',
   desc: 'Will listen to Google Pub/Sub topics and initialize their event handlers',
-  handler: async (argv: any): Promise<void> => {
-    argv;
+  handler: async (_argv: unknown): Promise<void> => {
     console.log(
       chalk.bold.blue('Starting Google Pub/Sub Subscriptions Server'),
     );
-    PubSubService.getInstance().startSubscriptions();
+    return PubSubService.getInstance().startSubscriptions();
   },
 };

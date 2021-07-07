@@ -12,7 +12,7 @@ const subscriber: SubscriberObject = {
   description: 'Will console log messages published on test.topic',
   options: {
     deadLetterPolicy: {
-      topicName: 'example.test.deadletter',
+      deadLetterTopic: 'example.test.deadletter',
       maxDeliveryAttempts: 6,
     },
     retryPolicy: {

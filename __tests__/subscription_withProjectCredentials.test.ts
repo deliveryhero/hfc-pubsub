@@ -26,7 +26,9 @@ jest.mock('@google-cloud/pubsub', () => {
       mockConstructor(config);
       return {
         subscription: jest.fn(() => ({
-          exists: jest.fn(() => true),
+          exists: jest.fn(() => [true]),
+          on: jest.fn(),
+          setMetadata: jest.fn(),
         })),
         subscribe: mockSubscribe(config),
         topic: jest.fn(() => ({
@@ -61,7 +63,7 @@ describe('Google Pub Sub', (): void => {
     const subscribe = jest.spyOn(GooglePubSubAdapter.prototype, 'subscribe');
     const getProject = jest.spyOn(GooglePubSubAdapter.prototype, 'getProject');
     const createClient = jest.spyOn(GooglePubSubAdapter, 'createClient');
-    PubSubService.getInstance().subscribe(subscription);
+    await PubSubService.getInstance().subscribe(subscription);
     expect(subscribe).toBeCalled();
     expect(getProject).toBeCalledWith(subscription[1].options);
     expect(createClient.mock.calls[2]).toEqual([
