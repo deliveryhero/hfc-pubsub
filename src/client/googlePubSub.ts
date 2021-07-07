@@ -86,7 +86,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const pubSubTopic = await this.createOrGetTopic(topic.getName(), {
       project: topic.project,
     });
-    // FIXME: options.retrysettings not being considered, see https://github.com/googleapis/nodejs-pubsub/blob/master/samples/publishWithRetrySettings.js for how to use it
+    // FIXME: PUB-49 retryConfig not being considered, see https://github.com/googleapis/nodejs-pubsub/blob/master/samples/publishWithRetrySettings.js for how to use it
     const messageId = await pubSubTopic.publish(
       Buffer.from(JSON.stringify(message)),
       options.attributes,
