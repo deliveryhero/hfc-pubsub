@@ -28,6 +28,7 @@ jest.mock('@google-cloud/pubsub', () => {
         subscription: jest.fn(() => ({
           exists: jest.fn(() => [true]),
           on: jest.fn(),
+          setMetadata: jest.fn(),
         })),
         subscribe: mockSubscribe(config),
         topic: jest.fn(() => ({
