@@ -71,7 +71,7 @@ describe('GooglePubSubAdapter', () => {
     expect(mockPublish).toBeCalled();
   });
 
-  it('should have the project defined in projects ', async () => {
+  it('should have the project defined in projects', async () => {
     const topic = new exampleTopicWithProjectCredentials();
     await topic.publish<any>({ data: 'test' });
     expect(
@@ -79,7 +79,7 @@ describe('GooglePubSubAdapter', () => {
     ).toBeDefined();
   });
 
-  it('should retrieve the correct project when publishing the message ', async () => {
+  it('should retrieve the correct project when publishing the message', async () => {
     const topic = new exampleTopicWithProjectCredentials();
     await topic.publish<any>({ data: 'test' });
     expect(

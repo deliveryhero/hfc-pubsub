@@ -47,6 +47,7 @@ module.exports = {
       env: {
         jest: true,
       },
+      extends: ['plugin:jest/recommended'],
       rules: {
         'max-lines': 'off',
         // These are off since we require dynamically after mocks are set
@@ -62,6 +63,7 @@ module.exports = {
           'error',
           { ignore: ['@honestfoodcompany/pubsub', '@deliveryhero/pubsub'] },
         ],
+        '@typescript-eslint/no-floating-promises': 'warn',
       },
     },
   ],

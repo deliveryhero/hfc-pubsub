@@ -6,19 +6,16 @@ const mockMessage = jest.fn(() => new Message());
 
 describe('message', () => {
   const subscriber = new Subscriber();
-  it('should be a class', (done) => {
+  it('should be a class', () => {
     expect(subscriber).toBeInstanceOf(Subscriber);
-    done();
   });
 
-  it('should contain handleMessage', (done) => {
+  it('should contain handleMessage', () => {
     expect(subscriber).toHaveProperty('handleMessage');
-    done();
   });
 
-  it('should use handleMessage properly', async (done) => {
+  it('should use handleMessage properly', async () => {
     await subscriber.handleMessage(mockMessage());
     expect(mockMessage).toHaveBeenCalled();
-    done();
   });
 });
