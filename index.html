@@ -269,6 +269,9 @@
 				<a href="#publishing-a-message-with-retry-settings" id="publishing-a-message-with-retry-settings" style="color: inherit; text-decoration: none;">
 					<h3>Publishing a message with retry settings</h3>
 				</a>
+				<blockquote>
+					<p>NOTE: This may not work right now</p>
+				</blockquote>
 				<p>see <a href="https://github.com/honest-food-company/pubsub/tree/master/examples/typescript/test.topic.withRetrySettings.ts">Sample Topic with Retry Settings</a> for defining a default retry policy</p>
 				<pre><code class="language-typescript"><span style="color: #008000">// client.example.ts</span>
 <span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">SimpleTopic</span><span style="color: #000000">, { </span><span style="color: #001080">Payload</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;pubsub/topics/simple.topic.name&#039;</span><span style="color: #000000">;</span>
@@ -288,6 +291,26 @@
 					<h3>Publishing on a different GCP project</h3>
 				</a>
 				<p>see <a href="https://github.com/honest-food-company/pubsub/tree/master/__tests__/pubsub/topics/example.topic_withProjectCredentials.ts">Sample Topic using its own GCP Project</a></p>
+				<a href="#publishing-with-attributes" id="publishing-with-attributes" style="color: inherit; text-decoration: none;">
+					<h3>Publishing with Attributes</h3>
+				</a>
+				<p>See: <a href="https://cloud.google.com/pubsub/docs/publisher#using_attributes">https://cloud.google.com/pubsub/docs/publisher#using_attributes</a></p>
+				<pre><code class="language-typescript"><span style="color: #008000">// client.example.ts</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">SimpleTopic</span><span style="color: #000000">, { </span><span style="color: #001080">Payload</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;pubsub/topics/simple.topic.name&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">topic</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">SimpleTopic</span><span style="color: #000000">();</span>
+<span style="color: #001080">topic</span><span style="color: #000000">.</span><span style="color: #795E26">publish</span><span style="color: #000000">&lt;</span><span style="color: #267F99">Payload</span><span style="color: #000000">&gt;(</span>
+<span style="color: #000000">  { </span><span style="color: #001080">id:</span><span style="color: #000000"> </span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #001080">data:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;My first message&#039;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">  {</span>
+<span style="color: #000000">    </span><span style="color: #001080">attributes:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">      </span><span style="color: #001080">filter:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;a&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #001080">company:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;b&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #001080">status:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;failed&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    },</span>
+<span style="color: #000000">  },</span>
+<span style="color: #000000">);</span>
+</code></pre>
+				<p>These attributes can then be used to filter messages using the <code>filter</code> option in Subscription Options.</p>
 				<a href="#subscriptions" id="subscriptions" style="color: inherit; text-decoration: none;">
 					<h2>Subscriptions</h2>
 				</a>
