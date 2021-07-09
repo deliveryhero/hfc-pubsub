@@ -1,4 +1,3 @@
-require('dotenv').config({ path: require('find-config')('.env') });
 import TestSubscription from './pubsub/subscriptions/example.subscription-ts';
 
 const mockTopic = jest.fn().mockImplementation(() => ({

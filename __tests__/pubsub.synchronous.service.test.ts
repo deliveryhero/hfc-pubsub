@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-require('dotenv').config({ path: require('find-config')('.env') });
 import PubSubService from '../src/service/pubsub';
 import ExampleTopic from './pubsub/topics/example.topic';
 import ExampleSubscriber from './pubsub/subscriptions/example.subscription-ts';

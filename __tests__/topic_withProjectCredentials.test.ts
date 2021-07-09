@@ -1,4 +1,3 @@
-require('dotenv').config({ path: require('find-config')('.env') });
 import GooglePubSubAdapter from '../src/client/googlePubSub';
 import PubSubService from '../src/service/pubsub';
 import exampleTopicWithProjectCredentials from './pubsub/topics/example.topic_withProjectCredentials';
