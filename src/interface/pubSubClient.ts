@@ -1,6 +1,6 @@
 import { Topic, Payload, Subscriber } from '../index';
 import { SubscriberTuple } from '../subscriber';
-import { RetryConfig } from './retryConfig';
+import { PublishOptions } from './publishOptions';
 
 export interface AllSubscriptions {
   topicName: string | null | undefined;
@@ -21,7 +21,7 @@ export interface PubSubClientV2 {
   publish<T extends Topic, P extends Payload>(
     topic: T,
     message: P,
-    retryConfig: RetryConfig,
+    options: PublishOptions,
   ): Promise<string>;
   subscribe(subscriber: SubscriberTuple): void;
   close(subscriber: SubscriberTuple): void;

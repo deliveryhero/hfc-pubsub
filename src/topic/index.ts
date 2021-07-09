@@ -1,5 +1,9 @@
 import PubSubService from '../service/pubsub';
-import { RecursivePartial, RetryConfig } from '../interface/retryConfig';
+import {
+  PublishOptions,
+  RetryConfig,
+  TopicPublishOptions,
+} from '../interface/publishOptions';
 import { GooglePubSubProject } from '../interface/GooglePubSubProject';
 
 /**
@@ -56,7 +60,7 @@ export default class Topic implements NamedTopic, TopicWithCustomProject {
 
   public async publish<T extends Payload>(
     message: T,
-    customRetryConfig?: RecursivePartial<RetryConfig>,
+    options?: TopicPublishOptions,
   ): Promise<string> {
     this.validateTopic(this.getName());
     this.validateMessage(message);
@@ -68,14 +72,14 @@ export default class Topic implements NamedTopic, TopicWithCustomProject {
       },
       {
         ...this.retryConfig,
-        ...customRetryConfig,
-        ...(customRetryConfig?.backoffSettings && {
+        ...options,
+        ...(options?.backoffSettings && {
           backoffSettings: {
             ...this.retryConfig.backoffSettings,
-            ...customRetryConfig?.backoffSettings,
+            ...options?.backoffSettings,
           },
         }),
-      } as RetryConfig,
+      } as PublishOptions,
     );
   }
 

@@ -17,6 +17,19 @@ jest.mock('../src/service/pubsub', (): any => ({
 }));
 
 describe('topics', (): void => {
+  const defaultRetrySettings = {
+    backoffSettings: {
+      initialRetryDelayMillis: 100,
+      initialRpcTimeoutMillis: 5000,
+      maxRetryDelayMillis: 60000,
+      maxRpcTimeoutMillis: 600000,
+      retryDelayMultiplier: 1.3,
+      rpcTimeoutMultiplier: 1,
+      totalTimeoutMillis: 600000,
+    },
+    retryCodes: [10, 1, 4, 13, 8, 14, 2],
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -46,19 +59,11 @@ describe('topics', (): void => {
       expect.any(Object),
       expect.any(Object),
       expect.objectContaining({
-        backoffSettings: {
-          initialRetryDelayMillis: 100,
-          initialRpcTimeoutMillis: 5000,
-          maxRetryDelayMillis: 60000,
-          maxRpcTimeoutMillis: 600000,
-          retryDelayMultiplier: 1.3,
-          rpcTimeoutMultiplier: 1,
-          totalTimeoutMillis: 600000,
-        },
-        retryCodes: [10, 1, 4, 13, 8, 14, 2],
+        ...defaultRetrySettings,
       }),
     );
   });
+
   it('Should test retry config to be the updated retry config one', async (): Promise<void> => {
     const spy = jest.spyOn(PubSubService.prototype, 'publish');
     const topic = new exampleTopic();
@@ -81,6 +86,26 @@ describe('topics', (): void => {
           totalTimeoutMillis: 600000,
         },
         retryCodes: [10, 1, 4, 13, 8, 14, 2],
+      }),
+    );
+  });
+
+  it('Should forward attributes to the publish method', async (): Promise<void> => {
+    const spy = jest.spyOn(PubSubService.prototype, 'publish');
+    const topic = new exampleTopic();
+    const data = await topic.publish<Payload>(
+      { data: 'test' },
+      { attributes: { test: 'filter' } },
+    );
+    expect(data).toBe('testid');
+    expect(spy).toBeCalledWith(
+      expect.any(Object),
+      expect.any(Object),
+      expect.objectContaining({
+        ...defaultRetrySettings,
+        attributes: {
+          test: 'filter',
+        },
       }),
     );
   });

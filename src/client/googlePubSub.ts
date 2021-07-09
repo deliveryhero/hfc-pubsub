@@ -9,6 +9,7 @@ import grpc from 'grpc';
 import { CredentialBody } from 'google-auth-library';
 import Bluebird from 'bluebird';
 import { Topic, Payload } from '../index';
+import { PublishOptions } from '../interface/publishOptions';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
 import {
   SubscriberMetadata,
@@ -80,12 +81,15 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   public async publish<T extends Topic, P extends Payload>(
     topic: T,
     message: P,
+    options: PublishOptions,
   ): Promise<string> {
     const pubSubTopic = await this.createOrGetTopic(topic.getName(), {
       project: topic.project,
     });
+    // FIXME: PUB-49 retryConfig not being considered, see https://github.com/googleapis/nodejs-pubsub/blob/master/samples/publishWithRetrySettings.js for how to use it
     const messageId = await pubSubTopic.publish(
       Buffer.from(JSON.stringify(message)),
+      options.attributes,
     );
     return messageId;
   }

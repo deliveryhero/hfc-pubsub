@@ -1,3 +1,4 @@
+import type { Attributes } from '@google-cloud/pubsub';
 export type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
 };
@@ -40,6 +41,21 @@ export type RetryCodesAllowed =
 export interface RetryConfig {
   retryCodes: RetryCodesAllowed[];
   backoffSettings: BackoffSettings;
+}
+
+/**
+ * This is the user facing type where things are optional
+ * and fields are overrides to base config in Topic
+ */
+export interface TopicPublishOptions extends RecursivePartial<RetryConfig> {
+  attributes?: Attributes;
+}
+
+/**
+ * This is the the actual type for use in the driver
+ */
+export interface PublishOptions extends RetryConfig {
+  attributes?: Attributes;
 }
 
 export interface BackoffSettings {
