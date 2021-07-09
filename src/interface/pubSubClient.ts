@@ -1,6 +1,6 @@
 import { Topic, Payload, Subscriber } from '../index';
 import { SubscriberTuple } from '../subscriber';
-import { PublishOptions } from './retryConfig';
+import { PublishOptions } from './publishOptions';
 
 export interface AllSubscriptions {
   topicName: string | null | undefined;

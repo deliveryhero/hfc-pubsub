@@ -3,7 +3,7 @@ import { SubscriberTuple, Subscribers } from '../subscriber';
 import EventBus from '../client/eventBus';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
 import GooglePubSubAdapter from '../client/googlePubSub';
-import { PublishOptions } from '../interface/retryConfig';
+import { PublishOptions } from '../interface/publishOptions';
 import SubscriptionService from './subscription';
 
 export default class PubSubService {

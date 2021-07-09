@@ -3,7 +3,7 @@ import {
   PublishOptions,
   RetryConfig,
   TopicPublishOptions,
-} from '../interface/retryConfig';
+} from '../interface/publishOptions';
 import { GooglePubSubProject } from '../interface/GooglePubSubProject';
 
 /**

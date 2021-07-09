@@ -9,7 +9,7 @@ import grpc from 'grpc';
 import { CredentialBody } from 'google-auth-library';
 import Bluebird from 'bluebird';
 import { Topic, Payload } from '../index';
-import { PublishOptions } from '../interface/retryConfig';
+import { PublishOptions } from '../interface/publishOptions';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
 import {
   SubscriberMetadata,
