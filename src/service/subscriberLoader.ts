@@ -18,6 +18,8 @@ const getSubscriberFiles = (
   dir: string,
   nestedDir = '',
 ): { nestedDir: string; fileName: string }[] => {
+  if (!fs.existsSync(dir)) return [];
+
   return fs
     .readdirSync(dir)
     .reduce((acc: { nestedDir: string; fileName: string }[], cur: string) => {
