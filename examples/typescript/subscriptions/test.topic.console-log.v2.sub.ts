@@ -8,7 +8,7 @@ import { SubscriberObject, Message } from '@honestfoodcompany/pubsub'; // this i
 
 const subscriber: SubscriberObject = {
   topicName: 'test.topic',
-  subscriptionName: 'test.topic.console-log',
+  subscriptionName: 'test.topic.console-log.v2',
   description: 'Will console log messages published on test.topic',
   options: {
     deadLetterPolicy: {
