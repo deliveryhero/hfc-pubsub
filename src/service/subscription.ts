@@ -56,6 +56,27 @@ export default class SubscriptionService {
 
     return SubscriptionService._subscribers as Subscribers;
   }
+  public static logInvalidDeadLetters(): void {
+    SubscriptionService._subscribers
+      .filter(
+        ([, { options }]) =>
+          options?.deadLetterPolicy &&
+          !options?.deadLetterPolicy?.createDefaultSubscription,
+      )
+      .map(([, { options }]) => {
+        const { deadLetterTopic, createDefaultSubscription } =
+          options?.deadLetterPolicy || {};
+        if (createDefaultSubscription) return;
+        const deadLetterSubscriber = SubscriptionService._subscribers.find(
+          ([, { topicName }]) => topicName === deadLetterTopic,
+        );
+        if (!deadLetterSubscriber) {
+          console.log(
+            `Please set createDefaultSubscription: true in deadLetterPolicy to create default subscriber for dead letter topic for ${deadLetterTopic}`,
+          );
+        }
+      });
+  }
 
   private static loadSubscribers(): Subscribers {
     const [subscriptionService, pubsubSubscriptionsDir] =
@@ -76,6 +97,7 @@ export default class SubscriptionService {
         subscriptionServiceClass.defaultSubscriberOptions,
       ),
     );
+    SubscriptionService.logInvalidDeadLetters();
 
     return SubscriptionService._subscribers;
   }

@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/@honestfoodcompany/pubsub)](https://www.npmjs.com/package/@honestfoodcompany/pubsub)
 [![Node.js CI](https://github.com/deliveryhero/hfc-pubsub/actions/workflows/build.yml/badge.svg)](https://github.com/deliveryhero/hfc-pubsub/actions/workflows/build.yml)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/70fe253d1da34e8aa16bf37ae613d2fe)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=deliveryhero/hfc-pubsub&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/70fe253d1da34e8aa16bf37ae613d2fe)](https://www.codacy.com?utm_source=github.com&utm_medium=referral&utm_content=deliveryhero/hfc-pubsub&utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/70fe253d1da34e8aa16bf37ae613d2fe)](https://www.codacy.com?utm_source=github.com&utm_medium=referral&utm_content=deliveryhero/hfc-pubsub&utm_campaign=Badge_Coverage)
 
 This package contains a lightweight framework and subscription server for [Google Pub/Sub](https://cloud.google.com/pubsub). It was created to speed up development time and it provides a common foundation for building event driven applications. It lets developers define topics and subscriptions simply and declaratively, while additionally offering a simple subscription server to run all of a project's subscription handlers.
@@ -79,9 +79,9 @@ PUBSUB_ROOT_DIR=/path/to/your/pubsub/directory # this can be a relative path
 | Variable                          | Description                                                                                                                                                                                                                      |
 | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `PUBSUB_ROOT_DIR`                 | must be the path to your project's pubsub directory. This module only works with .js files, so if you are writing your code in typescript, you must set this variable to the pubsub directory in your project's build directory. |
-| `GOOGLE_APPLICATION_CREDENTIALS`  | see <https://cloud.google.com/docs/authentication/getting-started#creating_a_service_account> to generate this                                                                                                                     |
+| `GOOGLE_APPLICATION_CREDENTIALS`  | see <https://cloud.google.com/docs/authentication/getting-started#creating_a_service_account> to generate this                                                                                                                   |
 | `GOOGLE_CLOUD_PUB_SUB_PROJECT_ID` | name of the project in Google Cloud Platform                                                                                                                                                                                     |
-| `PROJECT_NUMBER` | Project for binding DLQ roles. Check [Binding Subscriber and Publisher role](#binding-subscriber-and-publisher-role) for more details.                                                                                                                                                                        |
+| `PROJECT_NUMBER`                  | Project for binding DLQ roles. Check [Binding Subscriber and Publisher role](#binding-subscriber-and-publisher-role) for more details. If Not provided GOOGLE_CLOUD_PUB_SUB_PROJECT_ID is used to fetch the PROJECT_NUMBER       |
 
 ## CLI commands - starting and listing subscriptions
 
@@ -364,9 +364,9 @@ exports.default = {
   subscriptionName: 'test.topic.sub',
   description: 'Will console log messages published on test.topic',
   options: {
-    enableMessageOrdering: true
+    enableMessageOrdering: true,
   },
-  handleMessage: function(message) {
+  handleMessage: function (message) {
     console.log(`received a message on ${this.subscriptionName}`);
     console.log(message.data.toString());
   },
@@ -379,7 +379,6 @@ exports.default = {
 
 ```typescript
 interface SubscriberOptions {
-
   /**
    * override the default project settings from the environment variable
    * and use the project defined here instead for the subscription
@@ -389,14 +388,13 @@ interface SubscriberOptions {
     credentials: {
       client_email?: string;
       private_key?: string;
-    }
-  },
+    };
+  };
 
   /**
    * in seconds
    **/
   ackDeadline?: number;
-
 
   batching?: {
     callOptions?: CallOptions; // see https://github.com/googleapis/gax-nodejs/blob/77f16fd2ac2f1bd90cc6abfcccafa94a20582017/src/gax.ts#L114
@@ -547,21 +545,22 @@ export default class SubscriptionService extends PubSub.SubscriptionService {
   }
 }
 
-
 /**
  * Example setting up graceful shutdown
  */
 process.on('SIGTERM', () => {
   // First close all subscriptions
-  SubscriptionService.closeAll().then(() => {
-    // Then the databse so no new handlers are triggered
-    mongoose.disconnect(() => {
-      process.exit(0);
+  SubscriptionService.closeAll()
+    .then(() => {
+      // Then the databse so no new handlers are triggered
+      mongoose.disconnect(() => {
+        process.exit(0);
+      });
+    })
+    .catch((err) => {
+      console.error(err, 'Could not close subscriptions');
+      process.exit(1); // Exit with error
     });
-  }).catch((err) => {
-    console.error(err, 'Could not close subscriptions');
-    process.exit(1); // Exit with error
-  })
 });
 ```
 

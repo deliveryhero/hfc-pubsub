@@ -144,6 +144,7 @@ export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
   deadLetterPolicy?: {
     deadLetterTopic: string;
     maxDeliveryAttempts: number;
+    createDefaultSubscription?: boolean;
   };
   retryPolicy?: {
     minimumBackoff: {
