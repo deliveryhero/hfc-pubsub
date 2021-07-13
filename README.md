@@ -81,7 +81,7 @@ PUBSUB_ROOT_DIR=/path/to/your/pubsub/directory # this can be a relative path
 | `PUBSUB_ROOT_DIR`                 | must be the path to your project's pubsub directory. This module only works with .js files, so if you are writing your code in typescript, you must set this variable to the pubsub directory in your project's build directory. |
 | `GOOGLE_APPLICATION_CREDENTIALS`  | see <https://cloud.google.com/docs/authentication/getting-started#creating_a_service_account> to generate this                                                                                                                   |
 | `GOOGLE_CLOUD_PUB_SUB_PROJECT_ID` | name of the project in Google Cloud Platform                                                                                                                                                                                     |
-| `PROJECT_NUMBER`                  | Project for binding DLQ roles. Check [Binding Subscriber and Publisher role](#binding-subscriber-and-publisher-role) for more details. If Not provided GOOGLE_CLOUD_PUB_SUB_PROJECT_ID is used to fetch the PROJECT_NUMBER       |
+| `PROJECT_NUMBER` (Optional)       | Project for binding DLQ roles. Check [Binding Subscriber and Publisher role](#binding-subscriber-and-publisher-role) for more details. If Not provided GOOGLE_CLOUD_PUB_SUB_PROJECT_ID is used to fetch the PROJECT_NUMBER       |
 
 ## CLI commands - starting and listing subscriptions
 
@@ -311,6 +311,7 @@ exports.default = {
     deadLetterPolicy: {
       deadLetterTopic: 'test.deadletter.topic',
       maxDeliveryAttempts: 15,
+      createDefaultSubscription: true,
     },
   },
   handleMessage: function (message) {
@@ -322,8 +323,8 @@ exports.default = {
 
 ### Binding Subscriber and Publisher role
 
-To automatically have a Publisher,Subscriber role attached to your dead letters you need to add `PROJECT_NUMBER` in the env list. If this `PROJECT_NUMBER` isn't available in env then it'll not assign the above roles.
-Binding the above policies don't require current subscriptions to be deleted. Just specifying `PROJECT_NUMBER` will bind the roles to dead letter.
+To automatically have a Publisher,Subscriber role attached to your dead letters you need to add `PROJECT_NUMBER` in the env list. If this `PROJECT_NUMBER` isn't available in env then it'll use `GOOGLE_CLOUD_PUB_SUB_PROJECT_ID` to fetch it.
+Binding the above policies don't require current subscriptions to be deleted.
 
 To find out project number through CLI use the commands below:
 

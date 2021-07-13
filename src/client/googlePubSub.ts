@@ -189,23 +189,21 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   ): Promise<void> {
     try {
       const [, metadata] = subscriber;
-      const project = this.getProject(metadata.options);
-      const client = GooglePubSubAdapter.createClient(project.projectId, {
-        credentials: metadata.options?.project?.credentials,
-      });
+      const client = this.getProject(metadata.options).client;
       const deadLetterPolicy = metadata.options?.deadLetterPolicy;
+
+      if (!deadLetterPolicy?.deadLetterTopic) return;
+
       const defaultSubscriberName =
         deadLetterPolicy?.deadLetterTopic + '.default';
 
-      if (await this.subscriptionExists(defaultSubscriberName, client)) {
-        return;
-      }
-      if (!deadLetterPolicy?.deadLetterTopic) return;
+      if (await this.subscriptionExists(defaultSubscriberName, client)) return;
 
       const topic = await this.createOrGetTopic(
         deadLetterPolicy?.deadLetterTopic,
         {},
       );
+
       await topic.createSubscription(defaultSubscriberName);
     } catch (e) {
       console.log(`Error while creating default deadLetter subscription`);
@@ -272,6 +270,22 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     return topic.name;
   }
 
+  private async checkDeadLetterConfiguration(subscriber: SubscriberTuple) {
+    const [, metadata] = subscriber;
+    const client = this.getProject(metadata.options).client;
+    const options = this.getSubscriberOptions(subscriber);
+    const deadLetterTopic = options?.deadLetterPolicy?.deadLetterTopic;
+    if (!deadLetterTopic) return;
+    const [subscriptions] = await client
+      .topic(deadLetterTopic)
+      .getSubscriptions();
+    if (subscriptions.length === 0) {
+      console.warn(
+        `Please set createDefaultSubscription: true in deadLetterPolicy to create default subscriber for dead letter topic for ${deadLetterTopic}. Ignore if already added subscription for it.`,
+      );
+    }
+  }
+
   private async handleDeadLetterPolicyConfigurations(
     subscriber: SubscriberTuple,
   ) {
@@ -285,12 +299,17 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       );
       if (options?.deadLetterPolicy?.createDefaultSubscription) {
         await this.createDeadLetterDefaultSubscriber(subscriber);
+      } else {
+        await this.checkDeadLetterConfiguration(subscriber);
       }
     }
   }
 
   private async getProjectNumber() {
     try {
+      if (process.env.PROJECT_NUMBER) {
+        return process.env.PROJECT_NUMBER;
+      }
       const projectId = process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID;
       if (!projectId) {
         return '';
@@ -301,7 +320,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       // project.info return [_, projectInfoIncludingProjectNumber]
       return (projectInfo as any)[1]?.projectNumber;
     } catch (e) {
-      console.log('Error while getting project number', e);
+      console.error('Error while getting project number', e);
       return '';
     }
   }
@@ -314,10 +333,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       subscriptionName,
       options,
     } = metadata;
-    let projectNumber = process.env.PROJECT_NUMBER;
-    if (!projectNumber) {
-      projectNumber = await this.getProjectNumber();
-    }
+    const projectNumber = await this.getProjectNumber();
+
     if (projectNumber) {
       try {
         const pubSubTopic = this.getProject(options).client.topic(
@@ -349,10 +366,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     deadLetterTopicName: string,
     options?: { project?: GooglePubSubProject },
   ): Promise<void> {
-    let projectNumber = process.env.PROJECT_NUMBER;
-    if (!projectNumber) {
-      projectNumber = await this.getProjectNumber();
-    }
+    const projectNumber = await this.getProjectNumber();
+
     if (projectNumber) {
       try {
         const pubSubTopic =
