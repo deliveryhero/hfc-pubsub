@@ -187,8 +187,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   private async createDeadLetterDefaultSubscriber(
     subscriber: SubscriberTuple,
   ): Promise<void> {
+    const [, metadata] = subscriber;
     try {
-      const [, metadata] = subscriber;
       const client = this.getProject(metadata.options).client;
       const deadLetterPolicy = metadata.options?.deadLetterPolicy;
 
@@ -204,9 +204,15 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         {},
       );
 
-      await topic.createSubscription(defaultSubscriberName);
+      await topic.createSubscription(defaultSubscriberName, {
+        expirationPolicy: {
+          ttl: null,
+        },
+      });
     } catch (e) {
-      console.log(`Error while creating default deadLetter subscription`);
+      console.error(
+        `Error while creating default deadLetter subscription for ${metadata.subscriptionName}`,
+      );
     }
   }
   private async getMergedSubscriptionOptions(subscriber: SubscriberTuple) {
@@ -281,7 +287,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       .getSubscriptions();
     if (subscriptions.length === 0) {
       console.warn(
-        `Please set createDefaultSubscription: true in deadLetterPolicy to create default subscriber for dead letter topic for ${deadLetterTopic}. Ignore if already added subscription for it.`,
+        `Please set createDefaultSubscription: true in deadLetterPolicy to create default subscriber for dead letter topic of ${metadata.subscriptionName}. Ignore if already added subscription for it.`,
       );
     }
   }

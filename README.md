@@ -299,7 +299,7 @@ exports.default = {
 
 ### Subscription with a Dead-letter Policy
 
-It is possible to define a dead-letter policy for a subscription. If the dead letter topic does not exist, it will be created automatically by the framework. There needs to be a `PROJECT_NUMBER` defined for dead letter to pick up publisher, subscriber role. Check [Binding Subscriber and Publisher role](#binding-subscriber-and-publisher-role) for more details
+It is possible to define a dead-letter policy for a subscription. If the dead letter topic does not exist, it will be created automatically by the framework. There needs to be a `PROJECT_NUMBER` defined for dead letter to pick up publisher, subscriber role or we use the Project ID to fetch it. `createDefaultSubscription` will create a default dead letter subscription with name having `.default` added to `deadLetterTopic`. Check [Binding Subscriber and Publisher role](#binding-subscriber-and-publisher-role) for more details
 
 ```javascript
 // PUBSUB_ROOT_DIR/subscriptions/simple.topic.sub.js
