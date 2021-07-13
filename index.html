@@ -167,8 +167,8 @@
 							<td>name of the project in Google Cloud Platform</td>
 						</tr>
 						<tr>
-							<td><code>PROJECT_NUMBER</code></td>
-							<td>Project for binding DLQ roles. Check <a href="#binding-subscriber-and-publisher-role">Binding Subscriber and Publisher role</a> for more details.</td>
+							<td><code>PROJECT_NUMBER</code> (Optional)</td>
+							<td>Project for binding DLQ roles. Check <a href="#binding-subscriber-and-publisher-role">Binding Subscriber and Publisher role</a> for more details. If Not provided GOOGLE_CLOUD_PUB_SUB_PROJECT_ID is used to fetch the PROJECT_NUMBER</td>
 						</tr>
 				</tbody></table>
 				<a href="#cli-commands---starting-and-listing-subscriptions" id="cli-commands---starting-and-listing-subscriptions" style="color: inherit; text-decoration: none;">
@@ -377,7 +377,7 @@
 				<a href="#subscription-with-a-dead-letter-policy" id="subscription-with-a-dead-letter-policy" style="color: inherit; text-decoration: none;">
 					<h3>Subscription with a Dead-letter Policy</h3>
 				</a>
-				<p>It is possible to define a dead-letter policy for a subscription. If the dead letter topic does not exist, it will be created automatically by the framework. There needs to be a <code>PROJECT_NUMBER</code> defined for dead letter to pick up publisher, subscriber role. Check <a href="#binding-subscriber-and-publisher-role">Binding Subscriber and Publisher role</a> for more details</p>
+				<p>It is possible to define a dead-letter policy for a subscription. If the dead letter topic does not exist, it will be created automatically by the framework. There needs to be a <code>PROJECT_NUMBER</code> defined for dead letter to pick up publisher, subscriber role or we use the Project ID to fetch it. <code>createDefaultSubscription</code> will create a default dead letter subscription with name having <code>.default</code> added to <code>deadLetterTopic</code>. Check <a href="#binding-subscriber-and-publisher-role">Binding Subscriber and Publisher role</a> for more details</p>
 				<pre><code class="language-javascript"><span style="color: #008000">// PUBSUB_ROOT_DIR/subscriptions/simple.topic.sub.js</span>
 <span style="color: #267F99">exports</span><span style="color: #000000">.</span><span style="color: #001080">default</span><span style="color: #000000"> = {</span>
 <span style="color: #000000">  </span><span style="color: #001080">topicName:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;test.topic&#039;</span><span style="color: #000000">,</span>
@@ -387,6 +387,7 @@
 <span style="color: #000000">    </span><span style="color: #001080">deadLetterPolicy:</span><span style="color: #000000"> {</span>
 <span style="color: #000000">      </span><span style="color: #001080">deadLetterTopic:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;test.deadletter.topic&#039;</span><span style="color: #000000">,</span>
 <span style="color: #000000">      </span><span style="color: #001080">maxDeliveryAttempts:</span><span style="color: #000000"> </span><span style="color: #098658">15</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #001080">createDefaultSubscription:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
 <span style="color: #000000">    },</span>
 <span style="color: #000000">  },</span>
 <span style="color: #000000">  </span><span style="color: #795E26">handleMessage</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #0000FF">function</span><span style="color: #000000"> (</span><span style="color: #001080">message</span><span style="color: #000000">) {</span>
@@ -398,8 +399,8 @@
 				<a href="#binding-subscriber-and-publisher-role" id="binding-subscriber-and-publisher-role" style="color: inherit; text-decoration: none;">
 					<h3>Binding Subscriber and Publisher role</h3>
 				</a>
-				<p>To automatically have a Publisher,Subscriber role attached to your dead letters you need to add <code>PROJECT_NUMBER</code> in the env list. If this <code>PROJECT_NUMBER</code> isn&#39;t available in env then it&#39;ll not assign the above roles.
-				Binding the above policies don&#39;t require current subscriptions to be deleted. Just specifying <code>PROJECT_NUMBER</code> will bind the roles to dead letter.</p>
+				<p>To automatically have a Publisher,Subscriber role attached to your dead letters you need to add <code>PROJECT_NUMBER</code> in the env list. If this <code>PROJECT_NUMBER</code> isn&#39;t available in env then it&#39;ll use <code>GOOGLE_CLOUD_PUB_SUB_PROJECT_ID</code> to fetch it.
+				Binding the above policies don&#39;t require current subscriptions to be deleted.</p>
 				<p>To find out project number through CLI use the commands below:</p>
 				<ul>
 					<li><code>PROJECT=$(gcloud config get-value project)</code></li>
@@ -436,9 +437,9 @@
 <span style="color: #000000">  </span><span style="color: #001080">subscriptionName:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;test.topic.sub&#039;</span><span style="color: #000000">,</span>
 <span style="color: #000000">  </span><span style="color: #001080">description:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;Will console log messages published on test.topic&#039;</span><span style="color: #000000">,</span>
 <span style="color: #000000">  </span><span style="color: #001080">options:</span><span style="color: #000000"> {</span>
-<span style="color: #000000">    </span><span style="color: #001080">enableMessageOrdering:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span>
+<span style="color: #000000">    </span><span style="color: #001080">enableMessageOrdering:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
 <span style="color: #000000">  },</span>
-<span style="color: #000000">  </span><span style="color: #795E26">handleMessage</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #0000FF">function</span><span style="color: #000000">(</span><span style="color: #001080">message</span><span style="color: #000000">) {</span>
+<span style="color: #000000">  </span><span style="color: #795E26">handleMessage</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #0000FF">function</span><span style="color: #000000"> (</span><span style="color: #001080">message</span><span style="color: #000000">) {</span>
 <span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`received a message on </span><span style="color: #0000FF">${</span><span style="color: #0000FF">this</span><span style="color: #000000FF">.</span><span style="color: #001080">subscriptionName</span><span style="color: #0000FF">}</span><span style="color: #A31515">`</span><span style="color: #000000">);</span>
 <span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">message</span><span style="color: #000000">.</span><span style="color: #001080">data</span><span style="color: #000000">.</span><span style="color: #795E26">toString</span><span style="color: #000000">());</span>
 <span style="color: #000000">  },</span>
@@ -449,7 +450,6 @@
 				</a>
 				<p><a href="#subscription-example-with-subscriber-options">Usage Example</a></p>
 				<pre><code class="language-typescript"><span style="color: #0000FF">interface</span><span style="color: #000000"> </span><span style="color: #267F99">SubscriberOptions</span><span style="color: #000000"> {</span>
-
 <span style="color: #000000">  </span><span style="color: #008000">/**</span>
 <span style="color: #008000">   * override the default project settings from the environment variable</span>
 <span style="color: #008000">   * and use the project defined here instead for the subscription</span>
@@ -459,14 +459,13 @@
 <span style="color: #000000">    </span><span style="color: #001080">credentials</span><span style="color: #000000">: {</span>
 <span style="color: #000000">      </span><span style="color: #001080">client_email</span><span style="color: #000000">?: </span><span style="color: #267F99">string</span><span style="color: #000000">;</span>
 <span style="color: #000000">      </span><span style="color: #001080">private_key</span><span style="color: #000000">?: </span><span style="color: #267F99">string</span><span style="color: #000000">;</span>
-<span style="color: #000000">    }</span>
-<span style="color: #000000">  },</span>
+<span style="color: #000000">    };</span>
+<span style="color: #000000">  };</span>
 
 <span style="color: #000000">  </span><span style="color: #008000">/**</span>
 <span style="color: #008000">   * in seconds</span>
 <span style="color: #008000">   **/</span>
 <span style="color: #000000">  </span><span style="color: #001080">ackDeadline</span><span style="color: #000000">?: </span><span style="color: #267F99">number</span><span style="color: #000000">;</span>
-
 
 <span style="color: #000000">  </span><span style="color: #001080">batching</span><span style="color: #000000">?: {</span>
 <span style="color: #000000">    </span><span style="color: #001080">callOptions</span><span style="color: #000000">?: </span><span style="color: #267F99">CallOptions</span><span style="color: #000000">; </span><span style="color: #008000">// see https://github.com/googleapis/gax-nodejs/blob/77f16fd2ac2f1bd90cc6abfcccafa94a20582017/src/gax.ts#L114</span>
@@ -612,21 +611,22 @@
 <span style="color: #000000">  }</span>
 <span style="color: #000000">}</span>
 
-
 <span style="color: #008000">/**</span>
 <span style="color: #008000"> * Example setting up graceful shutdown</span>
 <span style="color: #008000"> */</span>
 <span style="color: #001080">process</span><span style="color: #000000">.</span><span style="color: #795E26">on</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;SIGTERM&#039;</span><span style="color: #000000">, () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
 <span style="color: #000000">  </span><span style="color: #008000">// First close all subscriptions</span>
-<span style="color: #000000">  </span><span style="color: #001080">SubscriptionService</span><span style="color: #000000">.</span><span style="color: #795E26">closeAll</span><span style="color: #000000">().</span><span style="color: #795E26">then</span><span style="color: #000000">(() </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
-<span style="color: #000000">    </span><span style="color: #008000">// Then the databse so no new handlers are triggered</span>
-<span style="color: #000000">    </span><span style="color: #001080">mongoose</span><span style="color: #000000">.</span><span style="color: #795E26">disconnect</span><span style="color: #000000">(() </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
-<span style="color: #000000">      </span><span style="color: #001080">process</span><span style="color: #000000">.</span><span style="color: #795E26">exit</span><span style="color: #000000">(</span><span style="color: #098658">0</span><span style="color: #000000">);</span>
+<span style="color: #000000">  </span><span style="color: #001080">SubscriptionService</span><span style="color: #000000">.</span><span style="color: #795E26">closeAll</span><span style="color: #000000">()</span>
+<span style="color: #000000">    .</span><span style="color: #795E26">then</span><span style="color: #000000">(() </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">      </span><span style="color: #008000">// Then the databse so no new handlers are triggered</span>
+<span style="color: #000000">      </span><span style="color: #001080">mongoose</span><span style="color: #000000">.</span><span style="color: #795E26">disconnect</span><span style="color: #000000">(() </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #001080">process</span><span style="color: #000000">.</span><span style="color: #795E26">exit</span><span style="color: #000000">(</span><span style="color: #098658">0</span><span style="color: #000000">);</span>
+<span style="color: #000000">      });</span>
+<span style="color: #000000">    })</span>
+<span style="color: #000000">    .</span><span style="color: #795E26">catch</span><span style="color: #000000">((</span><span style="color: #001080">err</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">      </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">error</span><span style="color: #000000">(</span><span style="color: #001080">err</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;Could not close subscriptions&#039;</span><span style="color: #000000">);</span>
+<span style="color: #000000">      </span><span style="color: #001080">process</span><span style="color: #000000">.</span><span style="color: #795E26">exit</span><span style="color: #000000">(</span><span style="color: #098658">1</span><span style="color: #000000">); </span><span style="color: #008000">// Exit with error</span>
 <span style="color: #000000">    });</span>
-<span style="color: #000000">  }).</span><span style="color: #795E26">catch</span><span style="color: #000000">((</span><span style="color: #001080">err</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
-<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">error</span><span style="color: #000000">(</span><span style="color: #001080">err</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;Could not close subscriptions&#039;</span><span style="color: #000000">);</span>
-<span style="color: #000000">    </span><span style="color: #001080">process</span><span style="color: #000000">.</span><span style="color: #795E26">exit</span><span style="color: #000000">(</span><span style="color: #098658">1</span><span style="color: #000000">); </span><span style="color: #008000">// Exit with error</span>
-<span style="color: #000000">  })</span>
 <span style="color: #000000">});</span>
 </code></pre>
 				<a href="#enabling-synchronous-driver" id="enabling-synchronous-driver" style="color: inherit; text-decoration: none;">
