@@ -5,6 +5,8 @@ import {
   Subscription as GoogleCloudSubscription,
   Topic as GoogleCloudTopic,
 } from '@google-cloud/pubsub';
+import { Resource } from '@google-cloud/resource';
+
 import grpc from 'grpc';
 import { CredentialBody } from 'google-auth-library';
 import Bluebird from 'bluebird';
@@ -97,7 +99,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   public async subscribe(subscriber: SubscriberTuple): Promise<void> {
     const [, metadata] = subscriber;
     const subscription = await this.createOrGetSubscription(subscriber);
-    await this.bindPoliciesForDeadLetter(subscriber);
+    await this.handleDeadLetterPolicyConfigurations(subscriber);
     await this.addHandler(subscriber, subscription);
     this.log(
       `   📭     ${metadata.subscriptionName} is ready to receive messages at a controlled volume of ${metadata.options?.flowControl?.maxMessages} messages.`,
@@ -182,6 +184,37 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
     return this.getSubscription(subscriber);
   }
+  private async createDeadLetterDefaultSubscriber(
+    subscriber: SubscriberTuple,
+  ): Promise<void> {
+    const [, metadata] = subscriber;
+    try {
+      const client = this.getProject(metadata.options).client;
+      const deadLetterPolicy = metadata.options?.deadLetterPolicy;
+
+      if (!deadLetterPolicy?.deadLetterTopic) return;
+
+      const defaultSubscriberName =
+        deadLetterPolicy?.deadLetterTopic + '.default';
+
+      if (await this.subscriptionExists(defaultSubscriberName, client)) return;
+
+      const topic = await this.createOrGetTopic(
+        deadLetterPolicy?.deadLetterTopic,
+        {},
+      );
+
+      await topic.createSubscription(defaultSubscriberName, {
+        expirationPolicy: {
+          ttl: null,
+        },
+      });
+    } catch (e) {
+      console.error(
+        `Error while creating default deadLetter subscription for ${metadata.subscriptionName}`,
+      );
+    }
+  }
   private async getMergedSubscriptionOptions(subscriber: SubscriberTuple) {
     const subscriberOptions = this.getSubscriberOptions(subscriber);
     const ackDeadlineSeconds =
@@ -243,7 +276,25 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     return topic.name;
   }
 
-  private async bindPoliciesForDeadLetter(subscriber: SubscriberTuple) {
+  private async checkDeadLetterConfiguration(subscriber: SubscriberTuple) {
+    const [, metadata] = subscriber;
+    const client = this.getProject(metadata.options).client;
+    const options = this.getSubscriberOptions(subscriber);
+    const deadLetterTopic = options?.deadLetterPolicy?.deadLetterTopic;
+    if (!deadLetterTopic) return;
+    const [subscriptions] = await client
+      .topic(deadLetterTopic)
+      .getSubscriptions();
+    if (subscriptions.length === 0) {
+      console.warn(
+        `Please set createDefaultSubscription: true in deadLetterPolicy to create default subscriber for dead letter topic of ${metadata.subscriptionName}. Ignore if already added subscription for it.`,
+      );
+    }
+  }
+
+  private async handleDeadLetterPolicyConfigurations(
+    subscriber: SubscriberTuple,
+  ) {
     const [, metadata] = subscriber;
     const options = this.getSubscriberOptions(subscriber);
     if (options?.deadLetterPolicy) {
@@ -252,6 +303,31 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         options.deadLetterPolicy.deadLetterTopic,
         options,
       );
+      if (options?.deadLetterPolicy?.createDefaultSubscription) {
+        await this.createDeadLetterDefaultSubscriber(subscriber);
+      } else {
+        await this.checkDeadLetterConfiguration(subscriber);
+      }
+    }
+  }
+
+  private async getProjectNumber() {
+    try {
+      if (process.env.PROJECT_NUMBER) {
+        return process.env.PROJECT_NUMBER;
+      }
+      const projectId = process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID;
+      if (!projectId) {
+        return '';
+      }
+      const resource = new Resource();
+      const project = resource.project(projectId);
+      const projectInfo = await project.get();
+      // project.info return [_, projectInfoIncludingProjectNumber]
+      return (projectInfo as any)[1]?.projectNumber;
+    } catch (e) {
+      console.error('Error while getting project number', e);
+      return '';
     }
   }
 
@@ -263,7 +339,9 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       subscriptionName,
       options,
     } = metadata;
-    if (process.env.PROJECT_NUMBER) {
+    const projectNumber = await this.getProjectNumber();
+
+    if (projectNumber) {
       try {
         const pubSubTopic = this.getProject(options).client.topic(
           subscriptionTopicName,
@@ -273,7 +351,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
             {
               role: 'roles/pubsub.subscriber',
               members: [
-                `serviceAccount:service-${process.env.PROJECT_NUMBER}@gcp-sa-pubsub.iam.gserviceaccount.com`,
+                `serviceAccount:service-${projectNumber}@gcp-sa-pubsub.iam.gserviceaccount.com`,
               ],
             },
           ],
@@ -294,7 +372,9 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     deadLetterTopicName: string,
     options?: { project?: GooglePubSubProject },
   ): Promise<void> {
-    if (process.env.PROJECT_NUMBER) {
+    const projectNumber = await this.getProjectNumber();
+
+    if (projectNumber) {
       try {
         const pubSubTopic =
           this.getProject(options).client.topic(deadLetterTopicName);
@@ -303,7 +383,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
             {
               role: 'roles/pubsub.publisher',
               members: [
-                `serviceAccount:service-${process.env.PROJECT_NUMBER}@gcp-sa-pubsub.iam.gserviceaccount.com`,
+                `serviceAccount:service-${projectNumber}@gcp-sa-pubsub.iam.gserviceaccount.com`,
               ],
             },
           ],

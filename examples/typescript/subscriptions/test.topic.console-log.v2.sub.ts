@@ -14,6 +14,7 @@ const subscriber: SubscriberObject = {
     deadLetterPolicy: {
       deadLetterTopic: 'example.test.deadletter',
       maxDeliveryAttempts: 6,
+      createDefaultSubscription: true,
     },
     retryPolicy: {
       minimumBackoff: { seconds: 102, nanos: 32 },
