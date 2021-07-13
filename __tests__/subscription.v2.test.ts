@@ -22,7 +22,7 @@ jest.mock('../src/service/pubsub', (): any => ({
   },
 }));
 
-describe.only('subscription v2 test', (): any => {
+describe('subscription v2 test', (): any => {
   let subscriptions: Subscribers;
   beforeAll(() => {
     subscriptions = SubscriptionService.getSubscribers();

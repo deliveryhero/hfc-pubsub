@@ -1,4 +1,3 @@
-require('dotenv').config({ path: require('find-config')('.env') });
 import GooglePubSubAdapter from '../src/client/googlePubSub';
 import PubSubService from '../src/service/pubsub';
 import exampleTopicWithProjectCredentials from './pubsub/topics/example.topic_withProjectCredentials';
@@ -71,7 +70,7 @@ describe('GooglePubSubAdapter', () => {
     expect(mockPublish).toBeCalled();
   });
 
-  it('should have the project defined in projects ', async () => {
+  it('should have the project defined in projects', async () => {
     const topic = new exampleTopicWithProjectCredentials();
     await topic.publish<any>({ data: 'test' });
     expect(
@@ -79,7 +78,7 @@ describe('GooglePubSubAdapter', () => {
     ).toBeDefined();
   });
 
-  it('should retrieve the correct project when publishing the message ', async () => {
+  it('should retrieve the correct project when publishing the message', async () => {
     const topic = new exampleTopicWithProjectCredentials();
     await topic.publish<any>({ data: 'test' });
     expect(

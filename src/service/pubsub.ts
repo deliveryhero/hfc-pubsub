@@ -116,6 +116,7 @@ export default class PubSubService {
     }
 
     PubSubService.status = 'ready';
+    console.log(`   ✅      All subscriptions started successfully.`);
   }
 
   /**

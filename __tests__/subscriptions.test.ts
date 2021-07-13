@@ -64,10 +64,12 @@ describe('subscriptions cli', (): any => {
     expect(JSON.stringify(result)).toContain('test-topic');
     expect(JSON.stringify(result)).toContain('v2-subscription');
   });
-  it('should list subscriptions', async (): Promise<any> => {
+
+  it('should list all subscriptions', async (): Promise<any> => {
     const subscriptions = SubscriptionService.getSubscribers();
     expect(subscriptions.length).toEqual(10);
   });
+
   it('should use project level default options', async (): Promise<any> => {
     const subscriber = findSubscriber(
       'example.v3_overrideoptions.subscription',

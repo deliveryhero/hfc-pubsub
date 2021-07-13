@@ -11,7 +11,7 @@ const subscriber: SubscriberObject = {
       maxMessages: 100,
     },
     deadLetterPolicy: {
-      topicName: 'example.test.deadletter',
+      deadLetterTopic: 'example.test.deadletter',
       maxDeliveryAttempts: 6,
     },
     retryPolicy: {

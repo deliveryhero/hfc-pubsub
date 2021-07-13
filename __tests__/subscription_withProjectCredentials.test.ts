@@ -1,4 +1,3 @@
-require('dotenv').config({ path: require('find-config')('.env') });
 import PubSubService from '../src/service/pubsub';
 import { Subscribers, SubscriberTuple } from '../src/subscriber';
 import { SubscriptionService } from '../src';

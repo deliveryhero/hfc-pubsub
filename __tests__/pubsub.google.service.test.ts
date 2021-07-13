@@ -65,7 +65,7 @@ describe('pubsub.service', () => {
     expect(mockPublish.mock.calls.length).toBe(1);
   });
 
-  it.only('should handle publishing with attributes', async () => {
+  it('should handle publishing with attributes', async () => {
     await service.publish<ExampleTopic, { data: number; _timestamp: string }>(
       topic,
       { data: 1, _timestamp: 'test' },
@@ -88,10 +88,9 @@ describe('pubsub.service', () => {
     });
   });
 
-  it('should return an array from getAllSubscriptions', async (done) => {
+  it('should return an array from getAllSubscriptions', async () => {
     const data = await service.getAllSubscriptions();
     expect(data).toBe(mockAllUsersList);
-    done();
   });
 
   it('should handle closeAll', async () => {

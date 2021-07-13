@@ -8,19 +8,10 @@ import { SubscriberObject, Message } from '@honestfoodcompany/pubsub'; // this i
 
 const subscriber: SubscriberObject = {
   topicName: 'test.topic',
-  subscriptionName: 'test.topic.console-log.v2',
-  description: 'Will console log messages published on test.topic',
-  options: {
-    deadLetterPolicy: {
-      deadLetterTopic: 'example.test.deadletter',
-      maxDeliveryAttempts: 6,
-    },
-    retryPolicy: {
-      minimumBackoff: { seconds: 102, nanos: 32 },
-      maximumBackoff: { seconds: 500 },
-    },
-    enableMessageOrdering: true,
-  },
+  subscriptionName: 'test.topic.subscription.goes-to-a',
+  description:
+    'Will console log messages published on test.topic from service A',
+
   handleMessage: function (message: Message): void {
     console.log(`received a message on ${this.subscriptionName}`);
     console.log(message.data.toString());
