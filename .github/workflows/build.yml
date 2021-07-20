@@ -46,7 +46,7 @@ jobs:
 
   changeset:
     runs-on: ubuntu-latest
-
+    if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
     steps:
       - name: Checkout commit
         uses: actions/checkout@v2
@@ -64,9 +64,8 @@ jobs:
         run: npm ci
 
       - name: 📝 Check if changeset added in PR
-        if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
         run: |
           # Checkout PR head commit instead of merge commit
           # See: https://github.com/atlassian/changesets/issues/517#issuecomment-813282523
           git checkout ${{ github.event.pull_request.head.sha }}
-          npx changeset status
+          npx changeset status --since=origin/main
