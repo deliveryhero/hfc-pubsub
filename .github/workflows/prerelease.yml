@@ -17,10 +17,20 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
+          cache: 'npm'
           registry-url: https://registry.npmjs.org/
+
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
 
       - name: 📦 Install dependencies
         run: npm ci
+
+      - name: Change package version to prerelease tag
+        run: |
+          sed -i 's/"version": "[0-9][0-9]*.[0-9][0-9]*.[0-9][0-9]*"/"version": "${{ steps.get_version.outputs.VERSION }}"/' package.json
+          sed -i 's/"version": "[0-9][0-9]*.[0-9][0-9]*.[0-9][0-9]*"/"version": "${{ steps.get_version.outputs.VERSION }}"/' package-lock.json
 
       - name: 🚀 Publish
         run: npm publish --tag next
