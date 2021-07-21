@@ -1,6 +1,6 @@
 export interface LoggerOptions {
   info: (...args: any[]) => void;
-  debug: (...args: any[]) => void;
+  debug?: (...args: any[]) => void;
   error: (...args: any[]) => void;
   warn: (...args: any[]) => void;
 }

@@ -453,6 +453,13 @@ import * as PubSub from '@honestfoodcompany/pubsub';
 import { SubscriberOptions } from '@honestfoodcompany/pubsub';
 
 export default class SubscriptionService extends PubSub.SubscriptionService {
+  /**
+   * This variable definition is optional, you can pass an instance of Pino, Winston logger
+   * By default it uses default console.* for logging
+   * The logger you pass must support .error, .info and .warn methods for it to work
+   */
+  logger = console;
+
   static subscribers = [
     /**
      * if your subscribers don't have the .sub.js suffix
