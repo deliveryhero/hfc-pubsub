@@ -7,9 +7,10 @@
 
 This package contains a lightweight framework and subscription server for [Google Pub/Sub](https://cloud.google.com/pubsub). It was created to speed up development time and it provides a common foundation for building event driven applications. It lets developers define topics and subscriptions simply and declaratively, while additionally offering a simple subscription server to run all of a project's subscription handlers.
 
-Docs: <https://deliveryhero.github.io/hfc-pubsub/>
+- [Docs](https://deliveryhero.github.io/hfc-pubsub/)
+- [Changelog](https://deliveryhero.github.io/hfc-pubsub/interfaces/changelog/)
 
-![](demo.gif)
+![demo of subscription service starting through cli](demo.gif)
 
 ## Table of Contents
 

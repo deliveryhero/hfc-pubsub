@@ -8,7 +8,7 @@
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.build.json",
     "check-types": "tsc",
-    "docs": "typedoc --out docs/ src/index.ts --tsconfig tsconfig.build.json",
+    "docs": "typedoc --out docs/ src/_docs.ts --tsconfig tsconfig.build.json --includes .",
     "lint": "eslint src examples __tests__ --ignore-path .gitignore --ext .js,.ts",
     "lint-fix": "npm run lint -- --fix",
     "list": "npm run subscriptions -- list",
@@ -48,6 +48,8 @@
     "yargs": "^14.2.3"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.16.0",
+    "@changesets/get-github-info": "^0.5.0",
     "@types/jest": "^26.0.19",
     "@types/node": ">=4.2.0 < 13",
     "@types/wrap-ansi": "^3.0.0",

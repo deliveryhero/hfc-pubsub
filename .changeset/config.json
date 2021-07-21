@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@1.6.0/schema.json",
+  "changelog": [
+    "../scripts/changesets/changelog.js",
+    {
+      "repo": "deliveryhero/hfc-pubsub",
+      "jiraUrl": "https://honesttech.atlassian.net"
+    }
+  ],
+  "commit": true,
+  "linked": [],
+  "access": "restricted",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}
