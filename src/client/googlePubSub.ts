@@ -20,6 +20,7 @@ import {
 import { SubscriberTuple } from '../subscriber';
 import Message from '../message';
 import { GooglePubSubProject } from '../interface/GooglePubSubProject';
+import { Logger } from '../service/logger';
 
 export interface Project {
   client: GooglePubSub;
@@ -130,7 +131,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   }
 
   private log(message: string): void {
-    console.log(chalk.green.bold(message));
+    Logger.Instance.info(chalk.green.bold(message));
   }
 
   private getSubscriberOptions(
@@ -169,7 +170,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     });
 
     if (await this.subscriptionExists(metadata.subscriptionName, client)) {
-      console.log(
+      Logger.Instance.info(
         chalk.gray(`   ✔️      ${metadata.subscriptionName} already exists.`),
       );
       await this.updateMetaData(subscriber);
@@ -210,7 +211,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         },
       });
     } catch (e) {
-      console.error(
+      Logger.Instance.error(
+        e,
         `Error while creating default deadLetter subscription for ${metadata.subscriptionName}`,
       );
     }
@@ -238,11 +240,12 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         metadata.subscriptionName,
         await this.getMergedSubscriptionOptions(subscriber),
       );
-      console.log(
+      Logger.Instance.info(
         chalk.gray(`   ✔️      ${metadata.subscriptionName} created.`),
       );
     } catch (e) {
-      console.error(
+      Logger.Instance.error(
+        e,
         `   ❌      There was an error creating "${metadata.subscriptionName}" subscription.`,
         e,
       );
@@ -286,7 +289,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       .topic(deadLetterTopic)
       .getSubscriptions();
     if (subscriptions.length === 0) {
-      console.warn(
+      Logger.Instance.warn(
         `Please set createDefaultSubscription: true in deadLetterPolicy to create default subscriber for dead letter topic of ${metadata.subscriptionName}. Ignore if already added subscription for it.`,
       );
     }
@@ -326,7 +329,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       // project.info return [_, projectInfoIncludingProjectNumber]
       return (projectInfo as any)[1]?.projectNumber;
     } catch (e) {
-      console.error('Error while getting project number', e);
+      Logger.Instance.error('Error while getting project number', e);
       return '';
     }
   }
@@ -360,9 +363,9 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
           .subscription(subscriptionName)
           .iam.setPolicy(myPolicy);
       } catch (e) {
-        console.error(
-          `   ❌      Error while binding policy for "${metadata.subscriptionName}" subscription.`,
+        Logger.Instance.error(
           e,
+          `   ❌      Error while binding policy for "${metadata.subscriptionName}" subscription.`,
         );
       }
     }
@@ -390,9 +393,9 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         };
         await pubSubTopic.iam.setPolicy(myPolicy);
       } catch (e) {
-        console.error(
-          `   ❌      Error while binding policy for "${deadLetterTopicName}" DLQ topic.`,
+        Logger.Instance.error(
           e,
+          `   ❌      Error while binding policy for "${deadLetterTopicName}" DLQ topic.`,
         );
       }
     }

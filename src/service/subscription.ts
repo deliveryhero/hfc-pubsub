@@ -9,6 +9,7 @@ import {
 } from '../subscriber';
 import SubscriberLoader from './subscriberLoader';
 import { ResourceResolver } from './resourceResolver';
+import { Logger } from './logger';
 
 export default class SubscriptionService {
   public static subscribers: (
@@ -21,7 +22,7 @@ export default class SubscriptionService {
   public static defaultSubscriberOptions: SubscriberOptions;
 
   public static instance = new SubscriptionService();
-
+  public logger = Logger.Instance;
   public constructor() {
     this.checkExistence(process.env, 'PUBSUB_ROOT_DIR');
   }
@@ -31,7 +32,7 @@ export default class SubscriptionService {
       !object.hasOwnProperty(property) ||
       (object.hasOwnProperty(property) && object[property] == '')
     ) {
-      console.warn(
+      Logger.Instance.warn(
         `@honestfoodcompany/pubsub module requires ${property} to be defined in your .env`,
       );
     }
