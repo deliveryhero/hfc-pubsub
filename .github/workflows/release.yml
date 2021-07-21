@@ -8,12 +8,14 @@ on:
       - main
 
 jobs:
-  build:
+  tag:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout commit
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Check if tag already exists
         run: |
