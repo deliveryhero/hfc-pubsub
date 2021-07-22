@@ -12,7 +12,7 @@ export default {
     const subscriptions =
       await PubSubService.getInstance().getAllSubscriptions();
     if (subscriptions.length == 0) {
-      Logger.Instance.info(chalk.white.bold('\n No subscriptions found'));
+      Logger.Instance.warn(chalk.white.bold('\n No subscriptions found'));
     } else {
       cli.table(
         subscriptions,

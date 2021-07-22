@@ -104,6 +104,7 @@ export default class PubSubService {
       } catch (err) {
         const [, metadata] = subscription;
         Logger.Instance.error(
+          err,
           `   ❌      Error while initializing "${metadata.subscriptionName}" subscription.`,
         );
         const error: Error & {
