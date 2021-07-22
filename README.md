@@ -459,7 +459,7 @@ import { SubscriberOptions } from '@honestfoodcompany/pubsub';
  * By default it uses default console.* for logging
  * The logger you pass must support .error, .info and .warn methods for it to work
  */
-PubSub.SubscriptionService.setLogger(console);
+PubSub.setLogger(console);
 
 export default class SubscriptionService extends PubSub.SubscriptionService {
   static subscribers = [
@@ -523,8 +523,14 @@ exports.default = SubscriptionService;
 
 In the main SubscriptionService before defining subscription class you can update the logger that is being used by the package for logging. It's an optional definition and by default it uses `console.*` for logging `.info`, `.warn` and `.error` these 3 function keys are a must have for the logger you pass.
 
+```typescript
+import { setLogger } from '@honestfoodcompany/pubsub';
+setLogger(console);
 ```
-SubscriptionService.setLogger(console);
+
+```javascript
+const { setLogger } = require('@honestfoodcompany/pubsub');
+setLogger(console);
 ```
 
 ### Connecting to a database

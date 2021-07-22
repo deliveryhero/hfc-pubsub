@@ -16,3 +16,6 @@ export class Logger {
     return Logger.logger;
   }
 }
+export const setLogger = (logger: LoggerOptions): void => {
+  Logger.Instance = logger;
+};
