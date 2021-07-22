@@ -1,5 +1,15 @@
 # HFC PubSub Framework
 
+## 1.10.0
+
+### Minor Changes
+
+- [PUB-44](https://honesttech.atlassian.net/browse/PUB-44) - Added option to add custom logger ([#45](https://github.com/deliveryhero/hfc-pubsub/pull/45) by [@ishan123456789](https://github.com/ishan123456789))
+
+### Patch Changes
+
+- [PUB-44](https://honesttech.atlassian.net/browse/PUB-44) - Add changesets to manage versioning ([#44](https://github.com/deliveryhero/hfc-pubsub/pull/44) by [@rohit-gohri](https://github.com/rohit-gohri))
+
 ## 1.9.0
 
 ### Minor Changes
