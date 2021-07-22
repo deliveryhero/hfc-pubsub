@@ -44,7 +44,7 @@ jobs:
       - name: Create Tag (from hfc-bot)
         if: ${{ env.create_release == 'yes' }}
         run: |
-          git tag -a v${{ env.package_version }}
+          git tag -a v${{ env.package_version }} -m "v${{ env.package_version }}"
           git push --follow-tags
 
       - name: Release
