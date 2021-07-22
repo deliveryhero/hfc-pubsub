@@ -1,0 +1,38 @@
+# This workflow will increment version according to available changesets whenever a Release PR is created
+
+name: Version
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+        with:
+          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
+          fetch-depth: 0
+          ssh-key: ${{ secrets.HFC_BOT_SSH_KEY }}
+
+      - name: git config
+        run: |
+          git config user.name hfc-bot
+          git config user.email 82871241+hfc-bot@users.noreply.github.com
+
+      - name: Setup Node.js 12.x
+        uses: actions/setup-node@master
+        with:
+          node-version: 12.x
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: Create Release Pull Request
+        uses: changesets/action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

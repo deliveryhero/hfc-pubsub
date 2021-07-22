@@ -1,49 +1,46 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
-# For more information see: https://help.github.com/actions/language-and-framework-guides/publishing-nodejs-packages
+# This workflow will create a new release every time a new version is encountered in package.json on the main branch
 
-name: Node.js Package
+name: Release
 
 on:
   push:
-    tags:
-      - v[0-9]+.[0-9]+.[0-9]+
+    branches:
+      - main
 
 jobs:
-  publish-npm:
+  tag:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - name: Checkout commit
+        uses: actions/checkout@v2
         with:
-          node-version: 12
-          registry-url: https://registry.npmjs.org/
+          fetch-depth: 0
 
-      - name: 📦 Install dependencies
-        run: npm ci
-
-      - name: 🚀 Publish
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_PUBLISH__HFC_BOT}}
-
-  publish-gpr:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-          registry-url: https://npm.pkg.github.com/
-
-      - name: Change package name
+      - name: Check if tag already exists
         run: |
-          sed -i 's,@honestfoodcompany/pubsub,@deliveryhero/pubsub,' package.json
-          sed -i 's,@honestfoodcompany/pubsub,@deliveryhero/pubsub,' package-lock.json
+          # Get version from package.json (head is needed because this also returns "version" npm script line)
+          sed -n '/version/s/,*\r*$//p' package.json | cut -d ':' -f2,3 | sed -e 's/^ "//' -e 's/"$//' | head -n 1 > app_version.tmp
+          export VERSION_TAG="v$(cat app_version.tmp)"
+          echo "package_version=$(cat app_version.tmp)" >> $GITHUB_ENV
 
-      - name: 📦 Install dependencies
-        run: npm ci
+          # Check if tag already exists
+          if [ $(git tag -l "$VERSION_TAG") ]; then
+              echo "Tag already exists, please increment version to create release"
+              echo "create_release=no" >> $GITHUB_ENV
+          else
+              echo "create_release=yes" >> $GITHUB_ENV
+          fi
 
-      - name: 🚀 Publish
-        run: npm publish
+      - name: Generate Changelog
+        run: cat CHANGELOG.md | grep -Pzo "## ${{ env.package_version }}\s+((.|\n)+?)(?=\n##\s)" > ${{ github.workflow }}-CHANGELOG.md
+
+      - name: Release
+        uses: softprops/action-gh-release@master
+        if: ${{ env.create_release == 'yes' }}
+        with:
+          body_path: ${{ github.workflow }}-CHANGELOG.md
+          tag_name: v${{ env.package_version }}
+          target_commitish: ${{ github.sha }}
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
