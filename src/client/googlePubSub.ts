@@ -211,9 +211,9 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
           ttl: null,
         },
       });
-    } catch (e) {
+    } catch (err) {
       Logger.Instance.error(
-        e,
+        { metadata, err },
         `Error while creating default deadLetter subscription for ${metadata.subscriptionName}`,
       );
     }
@@ -307,6 +307,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       await this.bindPolicyToDeadLetterTopic(
         options.deadLetterPolicy.deadLetterTopic,
         options,
+        metadata,
       );
       if (options?.deadLetterPolicy?.createDefaultSubscription) {
         await this.createDeadLetterDefaultSubscriber(subscriber);
@@ -364,9 +365,9 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         await pubSubTopic
           .subscription(subscriptionName)
           .iam.setPolicy(myPolicy);
-      } catch (e) {
+      } catch (err) {
         Logger.Instance.error(
-          e,
+          { metadata, err },
           `   ❌      Error while binding policy for "${metadata.subscriptionName}" subscription.`,
         );
       }
@@ -375,7 +376,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
   private async bindPolicyToDeadLetterTopic(
     deadLetterTopicName: string,
-    options?: { project?: GooglePubSubProject },
+    options: { project?: GooglePubSubProject },
+    metadata: SubscriberMetadata,
   ): Promise<void> {
     const projectNumber = await this.getProjectNumber();
 
@@ -394,9 +396,9 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
           ],
         };
         await pubSubTopic.iam.setPolicy(myPolicy);
-      } catch (e) {
+      } catch (err) {
         Logger.Instance.error(
-          e,
+          { metadata, err },
           `   ❌      Error while binding policy for "${deadLetterTopicName}" DLQ topic.`,
         );
       }
