@@ -16,6 +16,12 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          ssh-key: ${{ secrets.HFC_BOT_SSH_KEY }}
+
+      - name: git config
+        run: |
+          git config user.name hfc-bot
+          git config user.email 82871241+hfc-bot@users.noreply.github.com
 
       - name: Check if tag already exists
         run: |
@@ -34,6 +40,12 @@ jobs:
 
       - name: Generate Changelog
         run: cat CHANGELOG.md | grep -Pzo "## ${{ env.package_version }}\s+((.|\n)+?)(?=\n##\s)" > ${{ github.workflow }}-CHANGELOG.md
+
+      - name: Create Tag (from hfc-bot)
+        if: ${{ env.create_release == 'yes' }}
+        run: |
+          git tag -a v${{ env.package_version }}
+          git push --follow-tags
 
       - name: Release
         uses: softprops/action-gh-release@master
