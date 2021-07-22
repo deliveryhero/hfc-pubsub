@@ -2,4 +2,4 @@
 '@honestfoodcompany/pubsub': patch
 ---
 
-Added option to add custom logger
+Added option to add custom logger - PUB-44
