@@ -1,3 +1,4 @@
+import SubscriptionService from '../src/service/subscription';
 import { Logger } from '../src/service/logger';
 
 describe('Tests Logger singleton', () => {
@@ -18,5 +19,10 @@ describe('Tests Logger singleton', () => {
     Logger.Instance = customLogger;
     Logger.Instance = customLogger1;
     expect(Logger.Instance).toEqual(customLogger1);
+  });
+  it('Should overwrite logger instance from Subscription Service', () => {
+    const customLogger = { info: jest.fn(), debug: jest.fn() } as any;
+    SubscriptionService.setLogger(customLogger);
+    expect(Logger.Instance).toStrictEqual(customLogger);
   });
 });

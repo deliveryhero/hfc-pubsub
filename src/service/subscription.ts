@@ -9,7 +9,7 @@ import {
 } from '../subscriber';
 import SubscriberLoader from './subscriberLoader';
 import { ResourceResolver } from './resourceResolver';
-import { Logger } from './logger';
+import { Logger, LoggerOptions } from './logger';
 
 export default class SubscriptionService {
   public static subscribers: (
@@ -22,7 +22,11 @@ export default class SubscriptionService {
   public static defaultSubscriberOptions: SubscriberOptions;
 
   public static instance = new SubscriptionService();
-  public logger = Logger.Instance;
+
+  public static setLogger(logger: LoggerOptions): void {
+    Logger.Instance = logger;
+  }
+
   public constructor() {
     this.checkExistence(process.env, 'PUBSUB_ROOT_DIR');
   }
