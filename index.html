@@ -109,6 +109,7 @@
 									<li><a href="#typescript-example-1">Typescript example</a></li>
 									<li><a href="#javascript-example-1">Javascript Example</a></li>
 									<li><a href="#graceful-shutdown">Graceful Shutdown</a></li>
+									<li><a href="#passing-a-custom-logger">Passing a custom Logger</a></li>
 									<li><a href="#connecting-to-a-database">Connecting to a database</a></li>
 								</ul>
 							</li>
@@ -524,6 +525,13 @@
 <span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #0000FF">*</span><span style="color: #000000"> </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #001080">PubSub</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@honestfoodcompany/pubsub&#039;</span><span style="color: #000000">;</span>
 <span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">SubscriberOptions</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@honestfoodcompany/pubsub&#039;</span><span style="color: #000000">;</span>
 
+<span style="color: #008000">/**</span>
+<span style="color: #008000"> * This function call is optional, you can pass an instance of Pino, Winston logger</span>
+<span style="color: #008000"> * By default it uses default console.* for logging</span>
+<span style="color: #008000"> * The logger you pass must support .error, .info and .warn methods for it to work</span>
+<span style="color: #008000"> */</span>
+<span style="color: #001080">PubSub</span><span style="color: #000000">.</span><span style="color: #795E26">setLogger</span><span style="color: #000000">(</span><span style="color: #001080">console</span><span style="color: #000000">);</span>
+
 <span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">SubscriptionService</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">PubSub</span><span style="color: #000000">.</span><span style="color: #267F99">SubscriptionService</span><span style="color: #000000"> {</span>
 <span style="color: #000000">  </span><span style="color: #0000FF">static</span><span style="color: #000000"> </span><span style="color: #001080">subscribers</span><span style="color: #000000"> = [</span>
 <span style="color: #000000">    </span><span style="color: #008000">/**</span>
@@ -579,6 +587,16 @@
 <span style="color: #000000">};</span>
 
 <span style="color: #267F99">exports</span><span style="color: #000000">.</span><span style="color: #001080">default</span><span style="color: #000000"> = </span><span style="color: #001080">SubscriptionService</span><span style="color: #000000">;</span>
+</code></pre>
+				<a href="#passing-a-custom-logger" id="passing-a-custom-logger" style="color: inherit; text-decoration: none;">
+					<h3>Passing a custom Logger</h3>
+				</a>
+				<p>In the main SubscriptionService before defining subscription class you can update the logger that is being used by the package for logging. It&#39;s an optional definition and by default it uses <code>console.*</code> for logging <code>.info</code>, <code>.warn</code> and <code>.error</code> these 3 function keys are a must have for the logger you pass.</p>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">setLogger</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@honestfoodcompany/pubsub&#039;</span><span style="color: #000000">;</span>
+<span style="color: #795E26">setLogger</span><span style="color: #000000">(</span><span style="color: #001080">console</span><span style="color: #000000">);</span>
+</code></pre>
+				<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">setLogger</span><span style="color: #000000"> } = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;@honestfoodcompany/pubsub&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">setLogger</span><span style="color: #000000">(</span><span style="color: #001080">console</span><span style="color: #000000">);</span>
 </code></pre>
 				<a href="#connecting-to-a-database" id="connecting-to-a-database" style="color: inherit; text-decoration: none;">
 					<h3>Connecting to a database</h3>
@@ -687,6 +705,9 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="modules.html#subscriberv2" class="tsd-kind-icon">Subscriber<wbr>V2</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#setlogger" class="tsd-kind-icon">set<wbr>Logger</a>
 					</li>
 				</ul>
 			</nav>
