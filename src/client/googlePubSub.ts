@@ -171,7 +171,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
     if (await this.subscriptionExists(metadata.subscriptionName, client)) {
       Logger.Instance.info(
-        metadata,
+        { metadata },
         chalk.gray(`   ✔️      ${metadata.subscriptionName} already exists.`),
       );
       await this.updateMetaData(subscriber);
@@ -242,12 +242,12 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         await this.getMergedSubscriptionOptions(subscriber),
       );
       Logger.Instance.info(
-        metadata,
+        { metadata },
         chalk.gray(`   ✔️      ${metadata.subscriptionName} created.`),
       );
     } catch (e) {
       Logger.Instance.error(
-        { ...metadata, err: e },
+        { metadata, err: e },
         `   ❌      There was an error creating "${metadata.subscriptionName}" subscription.`,
       );
     }
@@ -291,7 +291,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       .getSubscriptions();
     if (subscriptions.length === 0) {
       Logger.Instance.warn(
-        metadata,
+        { metadata },
         `Please set createDefaultSubscription: true in deadLetterPolicy to create default subscriber for dead letter topic of ${metadata.subscriptionName}. Ignore if already added subscription for it.`,
       );
     }
