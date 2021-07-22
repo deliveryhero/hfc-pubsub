@@ -1,4 +1,4 @@
-## Delivery Hero {{REPO_NAME}} Library Security Issues
+## Delivery Hero HFC-Pubsub Library Security Issues
 | Version  | Issue | 
 | ------------ | ------------ |
 | 1.0.0  | [1]  |
