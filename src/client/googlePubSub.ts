@@ -245,9 +245,9 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         { metadata },
         chalk.gray(`   ✔️      ${metadata.subscriptionName} created.`),
       );
-    } catch (e) {
+    } catch (err) {
       Logger.Instance.error(
-        { metadata, err: e },
+        { metadata, err },
         `   ❌      There was an error creating "${metadata.subscriptionName}" subscription.`,
       );
     }
@@ -331,8 +331,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       const projectInfo = await project.get();
       // project.info return [_, projectInfoIncludingProjectNumber]
       return (projectInfo as any)[1]?.projectNumber;
-    } catch (e) {
-      Logger.Instance.error(e, 'Error while getting project number', e);
+    } catch (err) {
+      Logger.Instance.error({ err }, 'Error while getting project number');
       return '';
     }
   }
