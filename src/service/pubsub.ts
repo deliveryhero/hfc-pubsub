@@ -5,6 +5,7 @@ import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
 import GooglePubSubAdapter from '../client/googlePubSub';
 import { PublishOptions } from '../interface/publishOptions';
 import SubscriptionService from './subscription';
+import { Logger } from './logger';
 
 export default class PubSubService {
   protected static client: PubSubClientV2;
@@ -102,7 +103,8 @@ export default class PubSubService {
         await this.subscribe(subscription);
       } catch (err) {
         const [, metadata] = subscription;
-        console.error(
+        Logger.Instance.error(
+          { metadata, err },
           `   ❌      Error while initializing "${metadata.subscriptionName}" subscription.`,
         );
         const error: Error & {
@@ -116,7 +118,7 @@ export default class PubSubService {
     }
 
     PubSubService.status = 'ready';
-    console.log(`   ✅      All subscriptions started successfully.`);
+    Logger.Instance.info(`   ✅      All subscriptions started successfully.`);
   }
 
   /**

@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { cli } from 'cli-ux';
 import wrapAnsi = require('wrap-ansi');
+import { Logger } from '../../service/logger';
 import { PubSubService } from '../../index';
 import { SubscriberTuple } from '../../subscriber';
 
@@ -8,12 +9,11 @@ export default {
   command: 'list',
   desc: 'Lists all subscriptions',
   handler: async (): Promise<void> => {
-    console.log(
-      chalk.white.bgBlue.bold('\n Google Pub/Sub Subscriptions'),
-      '\n',
+    Logger.Instance.info(
+      chalk.white.bgBlue.bold('\n Google Pub/Sub Subscriptions \n'),
     );
     if (PubSubService.getInstance().getSubscribers().length == 0) {
-      console.log(chalk.white.bold('\n No subscriptions found'));
+      Logger.Instance.warn(chalk.white.bold('\n No subscriptions found'));
     } else {
       cli.table(
         PubSubService.getInstance().getSubscribers(),
@@ -30,10 +30,10 @@ export default {
           },
         },
         {
-          printLine: console.log,
+          printLine: Logger.Instance.info,
         },
       );
-      console.log('\n');
+      Logger.Instance.info('\n');
       process.exit(0);
     }
   },

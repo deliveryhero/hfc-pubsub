@@ -1,17 +1,18 @@
 require('dotenv').config({ path: require('find-config')('.env') });
 import chalk from 'chalk';
 import { cli } from 'cli-ux';
+import { Logger } from '../../service/logger';
 import { PubSubService } from '../../index';
 
 export default {
   command: 'subscriptions',
   desc: 'Lists all subscriptions',
   handler: async (): Promise<void> => {
-    console.log(chalk.white.bgBlue.bold('\n All Subscriptions'), '\n');
+    Logger.Instance.info(chalk.white.bgBlue.bold('\n All Subscriptions'), '\n');
     const subscriptions =
       await PubSubService.getInstance().getAllSubscriptions();
     if (subscriptions.length == 0) {
-      console.log(chalk.white.bold('\n No subscriptions found'));
+      Logger.Instance.warn(chalk.white.bold('\n No subscriptions found'));
     } else {
       cli.table(
         subscriptions,
@@ -24,10 +25,10 @@ export default {
           },
         },
         {
-          printLine: console.log,
+          printLine: Logger.Instance.info,
         },
       );
-      console.log('\n');
+      Logger.Instance.info('\n');
     }
   },
 };
