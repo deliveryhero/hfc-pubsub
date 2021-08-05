@@ -30,9 +30,9 @@
 
 ### Patch Changes
 
-- [PUB-34](https://honesttech.atlassian.net/browse/PUB-34) - Allow multiple entry points without checking for folder ([#32](https://github.com/deliveryhero/hfc-pubsub/pull/32) by [@ishan123456789](https://github.com/ishan123456789))
+- [PUB-34](https://honesttech.atlassian.net/browse/PUB-34) - Update subscriber metadata for existing subscriptions ([#32](https://github.com/deliveryhero/hfc-pubsub/pull/32) by [@ishan123456789](https://github.com/ishan123456789))
 
-- [PUB-43](https://honesttech.atlassian.net/browse/PUB-43) - Allow multiple entry points without checking for folder ([#39](https://github.com/deliveryhero/hfc-pubsub/pull/39) by [@rohit-gohri](https://github.com/rohit-gohri))
+- [PUB-43](https://honesttech.atlassian.net/browse/PUB-43) - Attach subscriber metadata to error object in case unable to start subscription ([#39](https://github.com/deliveryhero/hfc-pubsub/pull/39) by [@rohit-gohri](https://github.com/rohit-gohri))
 
 ## 1.7.12
 
