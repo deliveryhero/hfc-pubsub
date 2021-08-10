@@ -10,7 +10,7 @@ export default {
   desc: 'Lists all subscriptions',
   handler: async (): Promise<void> => {
     Logger.Instance.info(
-      chalk.white.bgBlue.bold('\n Google Pub/Sub Subscriptions \n'),
+      chalk.white.bgBlue.bold('\n Google Pub/Sub Subscriptions'),
     );
     if (PubSubService.getInstance().getSubscribers().length == 0) {
       Logger.Instance.warn(chalk.white.bold('\n No subscriptions found'));
@@ -30,10 +30,10 @@ export default {
           },
         },
         {
-          printLine: Logger.Instance.info,
+          printLine: console.log,
         },
       );
-      Logger.Instance.info('\n');
+      console.log('\n');
       process.exit(0);
     }
   },
