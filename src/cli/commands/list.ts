@@ -13,7 +13,7 @@ export default {
       chalk.white.bgBlue.bold('\n Google Pub/Sub Subscriptions'),
     );
     if (PubSubService.getInstance().getSubscribers().length == 0) {
-      Logger.Instance.info(chalk.white.bold('\n No subscriptions found'));
+      Logger.Instance.warn(chalk.white.bold('\n No subscriptions found'));
     } else {
       cli.table(
         PubSubService.getInstance().getSubscribers(),
