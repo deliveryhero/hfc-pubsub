@@ -63,7 +63,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "husky": "^3.1.0",
     "jest": "^26.6.3",
-    "lint-staged": "8.1.7",
+    "lint-staged": "^11.1.2",
     "nodemon": "^2.0.4",
     "prettier": "^2.3.0",
     "rimraf": "^3.0.2",
@@ -75,8 +75,7 @@
   },
   "lint-staged": {
     "*.{ts,js}": [
-      "./node_modules/.bin/prettier --write",
-      "git add"
+      "./node_modules/.bin/eslint --ignore-path .gitignore --ext .js,.ts --fix"
     ]
   },
   "author": "Delivery Hero HF Kitchens GmbH",
