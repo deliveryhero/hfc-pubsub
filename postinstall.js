@@ -16,7 +16,7 @@ const getTemplateEnv = () => {
   return envFile;
 };
 
-const copyFile = function(
+const copyFile = function (
   source,
   target,
   overwrite = false,
