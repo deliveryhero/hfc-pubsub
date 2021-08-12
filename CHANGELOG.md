@@ -1,5 +1,13 @@
 # HFC PubSub Framework
 
+## 1.10.1
+
+### Patch Changes
+
+- Undoes logger changes for list cli ([#48](https://github.com/deliveryhero/hfc-pubsub/pull/48) by [@ishan123456789](https://github.com/ishan123456789))
+
+* Upgrade dependencies ([#51](https://github.com/deliveryhero/hfc-pubsub/pull/51) by [@rohit-gohri](https://github.com/rohit-gohri))
+
 ## 1.10.0
 
 ### Minor Changes
