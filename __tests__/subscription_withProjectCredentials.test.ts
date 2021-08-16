@@ -38,12 +38,6 @@ jest.mock('@google-cloud/pubsub', () => {
   };
 });
 
-jest.mock('grpc', () => {
-  return {
-    __esModule: true,
-    default: jest.fn(),
-  };
-});
 jest.mock('google-gax');
 
 describe('Google Pub Sub', (): void => {
