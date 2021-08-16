@@ -6,8 +6,6 @@ import {
   Topic as GoogleCloudTopic,
 } from '@google-cloud/pubsub';
 import { Resource } from '@google-cloud/resource';
-
-import grpc from 'grpc';
 import { CredentialBody } from 'google-auth-library';
 import Bluebird from 'bluebird';
 import { Topic, Payload } from '../index';
@@ -69,16 +67,24 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     projectId: string,
     options?: CreateClientOptions,
   ): GooglePubSub {
-    const useCppGrpc =
-      options?.grpc || process.env.PUBSUB_USE_GRPC === 'true' ? { grpc } : null;
-    return new GooglePubSub(
-      // @ts-expect-error C++ grpc and grpc-js types differ
-      {
-        ...useCppGrpc,
-        projectId: projectId,
-        credentials: options?.credentials,
-      },
-    );
+    let useCppGrpc = null;
+
+    if (options?.grpc || process.env.PUBSUB_USE_GRPC === 'true') {
+      try {
+        useCppGrpc = { grpc: require('grpc') };
+      } catch (err) {
+        Logger.Instance.warn(
+          { err },
+          'Unable to import grpc. Please install the dependency.',
+        );
+      }
+    }
+
+    return new GooglePubSub({
+      ...useCppGrpc,
+      projectId: projectId,
+      credentials: options?.credentials,
+    });
   }
 
   public async publish<T extends Topic, P extends Payload>(
