@@ -90,11 +90,13 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="subscriberoptions.html#batching" class="tsd-kind-icon">batching</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="subscriberoptions.html#deadletterpolicy" class="tsd-kind-icon">dead<wbr>Letter<wbr>Policy</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="subscriberoptions.html#enablemessageordering" class="tsd-kind-icon">enable<wbr>Message<wbr>Ordering</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="subscriberoptions.html#enableopentelemetrytracing" class="tsd-kind-icon">enable<wbr>Open<wbr>Telemetry<wbr>Tracing</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="subscriberoptions.html#filter" class="tsd-kind-icon">filter</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="subscriberoptions.html#flowcontrol" class="tsd-kind-icon">flow<wbr>Control</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="subscriberoptions.html#project" class="tsd-kind-icon">project</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="subscriberoptions.html#retrypolicy" class="tsd-kind-icon">retry<wbr>Policy</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="subscriberoptions.html#streamingoptions" class="tsd-kind-icon">streaming<wbr>Options</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="subscriberoptions.html#uselegacyflowcontrol" class="tsd-kind-icon">use<wbr>Legacy<wbr>Flow<wbr>Control</a></li>
 							</ul>
 						</section>
 					</div>
@@ -119,7 +121,7 @@
 					<div class="tsd-signature tsd-kind-icon">ack<wbr>Deadline<wbr>Seconds<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/63ea421/src/subscriber/subscriberV2.ts#L142">src/subscriber/subscriberV2.ts:142</a></li>
+							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/424f0b0/src/subscriber/subscriberV2.ts#L142">src/subscriber/subscriberV2.ts:142</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -140,7 +142,7 @@
 					<div class="tsd-signature tsd-kind-icon">dead<wbr>Letter<wbr>Policy<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>createDefaultSubscription<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>deadLetterTopic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>maxDeliveryAttempts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/63ea421/src/subscriber/subscriberV2.ts#L144">src/subscriber/subscriberV2.ts:144</a></li>
+							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/424f0b0/src/subscriber/subscriberV2.ts#L144">src/subscriber/subscriberV2.ts:144</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -164,7 +166,7 @@
 					<div class="tsd-signature tsd-kind-icon">enable<wbr>Message<wbr>Ordering<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/63ea421/src/subscriber/subscriberV2.ts#L175">src/subscriber/subscriberV2.ts:175</a></li>
+							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/424f0b0/src/subscriber/subscriberV2.ts#L175">src/subscriber/subscriberV2.ts:175</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -176,13 +178,24 @@
 						</div>
 					</div>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+					<a name="enableopentelemetrytracing" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> enable<wbr>Open<wbr>Telemetry<wbr>Tracing</h3>
+					<div class="tsd-signature tsd-kind-icon">enable<wbr>Open<wbr>Telemetry<wbr>Tracing<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from GoogleCloudSubscriberOptions.enableOpenTelemetryTracing</p>
+						<ul>
+							<li>Defined in node_modules/@google-cloud/pubsub/build/src/subscriber.d.ts:110</li>
+						</ul>
+					</aside>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="filter" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> filter</h3>
 					<div class="tsd-signature tsd-kind-icon">filter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/63ea421/src/subscriber/subscriberV2.ts#L167">src/subscriber/subscriberV2.ts:167</a></li>
+							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/424f0b0/src/subscriber/subscriberV2.ts#L167">src/subscriber/subscriberV2.ts:167</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -212,7 +225,7 @@
 					<div class="tsd-signature tsd-kind-icon">project<span class="tsd-signature-symbol">:</span> <a href="interfaces.googlepubsubproject.html" class="tsd-signature-type" data-tsd-kind="Interface">GooglePubSubProject</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/63ea421/src/subscriber/subscriberV2.ts#L143">src/subscriber/subscriberV2.ts:143</a></li>
+							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/424f0b0/src/subscriber/subscriberV2.ts#L143">src/subscriber/subscriberV2.ts:143</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -222,7 +235,7 @@
 					<div class="tsd-signature tsd-kind-icon">retry<wbr>Policy<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>maximumBackoff<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>nanos<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>seconds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>minimumBackoff<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>nanos<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>seconds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/63ea421/src/subscriber/subscriberV2.ts#L149">src/subscriber/subscriberV2.ts:149</a></li>
+							<li>Defined in <a href="https://github.com/deliveryhero/hfc-pubsub/blob/424f0b0/src/subscriber/subscriberV2.ts#L149">src/subscriber/subscriberV2.ts:149</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -259,6 +272,17 @@
 					<div class="tsd-signature tsd-kind-icon">streaming<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">MessageStreamOptions</span></div>
 					<aside class="tsd-sources">
 						<p>Inherited from GoogleCloudSubscriberOptions.streamingOptions</p>
+						<ul>
+							<li>Defined in node_modules/@google-cloud/pubsub/build/src/subscriber.d.ts:109</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+					<a name="uselegacyflowcontrol" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> use<wbr>Legacy<wbr>Flow<wbr>Control</h3>
+					<div class="tsd-signature tsd-kind-icon">use<wbr>Legacy<wbr>Flow<wbr>Control<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from GoogleCloudSubscriberOptions.useLegacyFlowControl</p>
 						<ul>
 							<li>Defined in node_modules/@google-cloud/pubsub/build/src/subscriber.d.ts:108</li>
 						</ul>
@@ -317,6 +341,9 @@
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="subscriberoptions.html#enablemessageordering" class="tsd-kind-icon">enable<wbr>Message<wbr>Ordering</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="subscriberoptions.html#enableopentelemetrytracing" class="tsd-kind-icon">enable<wbr>Open<wbr>Telemetry<wbr>Tracing</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="subscriberoptions.html#filter" class="tsd-kind-icon">filter</a>
 							</li>
@@ -331,6 +358,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
 								<a href="subscriberoptions.html#streamingoptions" class="tsd-kind-icon">streaming<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="subscriberoptions.html#uselegacyflowcontrol" class="tsd-kind-icon">use<wbr>Legacy<wbr>Flow<wbr>Control</a>
 							</li>
 						</ul>
 					</li>
