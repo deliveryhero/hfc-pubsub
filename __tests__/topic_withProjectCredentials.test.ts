@@ -35,12 +35,6 @@ jest.mock('@google-cloud/pubsub', () => {
   };
 });
 
-jest.mock('grpc', () => {
-  return {
-    __esModule: true,
-    default: jest.fn(),
-  };
-});
 jest.mock('google-gax');
 
 describe('PubSubService', (): void => {
@@ -97,7 +91,6 @@ describe('Google PubSub Client', () => {
           client_email: 'client@google-auth.google.com',
           private_key: 'private_key_goes_here',
         },
-        grpc: undefined,
         projectId: 'custom-project-id',
       },
     ]);

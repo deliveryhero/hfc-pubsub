@@ -7,7 +7,6 @@ import {
 } from '@google-cloud/pubsub';
 import { Resource } from '@google-cloud/resource';
 
-import grpc from 'grpc';
 import { CredentialBody } from 'google-auth-library';
 import Bluebird from 'bluebird';
 import { Topic, Payload } from '../index';
@@ -34,7 +33,6 @@ export interface Projects {
 
 export interface CreateClientOptions {
   credentials?: CredentialBody;
-  grpc?: boolean;
 }
 export default class GooglePubSubAdapter implements PubSubClientV2 {
   protected static instance: GooglePubSubAdapter;
@@ -58,7 +56,6 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       GooglePubSubAdapter.instance = new GooglePubSubAdapter(
         GooglePubSubAdapter.createClient(
           process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID || '',
-          { grpc: process.env.PUBSUB_USE_GRPC === 'true' },
         ),
       );
     }
@@ -69,16 +66,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     projectId: string,
     options?: CreateClientOptions,
   ): GooglePubSub {
-    const useCppGrpc =
-      options?.grpc || process.env.PUBSUB_USE_GRPC === 'true' ? { grpc } : null;
-    return new GooglePubSub(
-      // @ts-expect-error C++ grpc and grpc-js types differ
-      {
-        ...useCppGrpc,
-        projectId: projectId,
-        credentials: options?.credentials,
-      },
-    );
+    return new GooglePubSub({
+      projectId: projectId,
+      credentials: options?.credentials,
+    });
   }
 
   public async publish<T extends Topic, P extends Payload>(
@@ -436,7 +427,6 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       return (this.projects[options.project?.id || ''] =
         GooglePubSubAdapter.initProject(options.project?.id || '', {
           credentials: options?.project?.credentials,
-          grpc: process.env.PUBSUB_USE_GRPC === 'true',
         }));
     }
   }
