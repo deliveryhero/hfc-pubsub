@@ -1,5 +1,11 @@
 # HFC PubSub Framework
 
+## 1.10.2
+
+### Patch Changes
+
+- Update google-cloud/pubsub package version ([#55](https://github.com/deliveryhero/hfc-pubsub/pull/55) by [@ketan-saxena](https://github.com/ketan-saxena))
+
 ## 1.10.1
 
 ### Patch Changes
