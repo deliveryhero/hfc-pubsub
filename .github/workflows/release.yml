@@ -39,7 +39,7 @@ jobs:
           fi
 
       - name: Generate Changelog
-        run: cat CHANGELOG.md | grep -Pzo "## ${{ env.package_version }}\s+((.|\n)+?)(?=\n##\s)" > ${{ github.workflow }}-CHANGELOG.md
+        run: cat CHANGELOG.md | grep -Pzo "## ${{ env.package_version }}\s+((.|\n)+?)(?=\n##\s)" | head -n -1 > ${{ github.workflow }}-CHANGELOG.md
 
       - name: Create Tag (from hfc-bot)
         if: ${{ env.create_release == 'yes' }}
