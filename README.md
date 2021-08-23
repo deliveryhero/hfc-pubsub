@@ -43,7 +43,6 @@ This package contains a lightweight framework and subscription server for [Googl
     - [Passing a custom Logger](#passing-a-custom-logger)
     - [Connecting to a database](#connecting-to-a-database)
   - [Enabling Synchronous Driver](#enabling-synchronous-driver)
-  - [Enabling gRPC C++ bindings](#enabling-grpc-c-bindings)
 
 ## Features
 
@@ -593,11 +592,3 @@ process.on('SIGTERM', () => {
 If you would like to bypass Google PubSub and run your subscriptions synchronously (for development purposes) set the following environment variable:
 
 `PUBSUB_DRIVER=synchronous`
-
-## Enabling gRPC C++ bindings
-
-For some workflows and environments it might make sense to use the C++ gRPC implementation, instead of the default one. To configure the module to use an alternative grpc transport use the following environment variable:
-
-```shell
-PUBSUB_USE_GRPC=true
-```
