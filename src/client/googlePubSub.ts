@@ -38,6 +38,7 @@ export interface CreateClientOptions {
 }
 export default class GooglePubSubAdapter implements PubSubClientV2 {
   protected static instance: GooglePubSubAdapter;
+  private static _nativeGRPC?: { grpc: any };
   protected projects: Projects = {};
 
   public constructor(client: GooglePubSub) {
@@ -65,10 +66,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     return GooglePubSubAdapter.instance;
   }
 
-  public static createClient(
-    projectId: string,
-    options?: CreateClientOptions,
-  ): GooglePubSub {
+  private static getNativeGRPC() {
+    if (this._nativeGRPC) return this._nativeGRPC;
     const getNativeGRPC = util.deprecate(() => {
       Logger.Instance.warn(
         'PUBSUB_USE_GRPC env var option is deprecated and will be removed in v2.x.x',
@@ -78,9 +77,16 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       };
     }, 'PUBSUB_USE_GRPC env var option is deprecated');
 
+    this._nativeGRPC = getNativeGRPC();
+  }
+
+  public static createClient(
+    projectId: string,
+    options?: CreateClientOptions,
+  ): GooglePubSub {
     const useCppGrpc =
       options?.grpc || process.env.PUBSUB_USE_GRPC === 'true'
-        ? getNativeGRPC()
+        ? this.getNativeGRPC()
         : null;
 
     return new GooglePubSub({
