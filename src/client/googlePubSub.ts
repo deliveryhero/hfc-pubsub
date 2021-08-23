@@ -78,6 +78,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     }, 'PUBSUB_USE_GRPC env var option is deprecated');
 
     this._nativeGRPC = getNativeGRPC();
+    return this._nativeGRPC;
   }
 
   public static createClient(
