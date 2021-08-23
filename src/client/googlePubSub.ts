@@ -1,3 +1,4 @@
+import util from 'util';
 import chalk from 'chalk';
 import {
   PubSub as GooglePubSub,
@@ -7,7 +8,6 @@ import {
 } from '@google-cloud/pubsub';
 import { Resource } from '@google-cloud/resource';
 
-import grpc from 'grpc';
 import { CredentialBody } from 'google-auth-library';
 import Bluebird from 'bluebird';
 import { Topic, Payload } from '../index';
@@ -38,6 +38,7 @@ export interface CreateClientOptions {
 }
 export default class GooglePubSubAdapter implements PubSubClientV2 {
   protected static instance: GooglePubSubAdapter;
+  private static _nativeGRPC?: { grpc: any };
   protected projects: Projects = {};
 
   public constructor(client: GooglePubSub) {
@@ -65,20 +66,35 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     return GooglePubSubAdapter.instance;
   }
 
+  private static getNativeGRPC() {
+    if (this._nativeGRPC) return this._nativeGRPC;
+    const getNativeGRPC = util.deprecate(() => {
+      Logger.Instance.warn(
+        'PUBSUB_USE_GRPC env var option is deprecated and will be removed in v2.x.x',
+      );
+      return {
+        grpc: require('grpc'),
+      };
+    }, 'PUBSUB_USE_GRPC env var option is deprecated');
+
+    this._nativeGRPC = getNativeGRPC();
+    return this._nativeGRPC;
+  }
+
   public static createClient(
     projectId: string,
     options?: CreateClientOptions,
   ): GooglePubSub {
     const useCppGrpc =
-      options?.grpc || process.env.PUBSUB_USE_GRPC === 'true' ? { grpc } : null;
-    return new GooglePubSub(
-      // @ts-expect-error C++ grpc and grpc-js types differ
-      {
-        ...useCppGrpc,
-        projectId: projectId,
-        credentials: options?.credentials,
-      },
-    );
+      options?.grpc || process.env.PUBSUB_USE_GRPC === 'true'
+        ? this.getNativeGRPC()
+        : null;
+
+    return new GooglePubSub({
+      ...useCppGrpc,
+      projectId: projectId,
+      credentials: options?.credentials,
+    });
   }
 
   public async publish<T extends Topic, P extends Payload>(
