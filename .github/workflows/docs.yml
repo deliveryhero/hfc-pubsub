@@ -5,6 +5,10 @@ on:
       - main
       - chore/PUB-50-docs
 
+env:
+  CI: 'true'
+  NODE_ENV: 'production'
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -19,7 +23,7 @@ jobs:
           node-version: '12'
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: npm ci --also=dev
 
       - name: Add changelog to docs
         run: cp CHANGELOG.md docs/changelog.md
