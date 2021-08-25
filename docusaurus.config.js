@@ -15,7 +15,7 @@ const config = {
     ? 'https://deliveryhero.github.io'
     : 'http://localhost:3000', // Your website URL
   baseUrl: process.env.CI ? '/hfc-pubsub/' : '/', // Base URL for your project */
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.png',
   presets: [
     [
       '@docusaurus/preset-classic',
