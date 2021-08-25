@@ -47,7 +47,7 @@ const config = {
           to: '/',
         },
         {
-          label: 'TypeDocs',
+          label: 'API',
           to: '/api',
         },
       ],
