@@ -10,7 +10,7 @@ This package contains a lightweight framework and subscription server for [Googl
 - [Docs](https://deliveryhero.github.io/hfc-pubsub/)
 - [Changelog](https://deliveryhero.github.io/hfc-pubsub/interfaces/changelog)
 
-![demo of subscription service starting through cli](demo.gif)
+![demo of subscription service starting through cli](./docs/demo.gif)
 
 ## Table of Contents
 

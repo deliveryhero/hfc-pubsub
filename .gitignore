@@ -62,7 +62,7 @@ creds/
 
 # Output
 dist/
-docs/
+docs-site/
 
 # Mac
 .DS_Store
