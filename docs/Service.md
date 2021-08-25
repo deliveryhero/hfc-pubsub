@@ -1,4 +1,8 @@
-# Subscription Service
+---
+id: service
+title: Subscription Service
+sidebar_position: 4
+---
 
 Extend and customize the behavior of the subscription server in the subscription service file. Initialize a database connection, register subscribers, and define default subscriber options in the subscription service file.
 

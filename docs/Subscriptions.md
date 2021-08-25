@@ -1,4 +1,8 @@
-# Subscriptions
+---
+id: subscriptions
+title: Subscriptions
+sidebar_position: 3
+---
 
 Create a `Subscriber` to define a message handler for messages that are published on the corresponding topic.
 

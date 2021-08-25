@@ -1,4 +1,8 @@
-# CLI
+---
+id: cli
+title: CLI
+sidebar_position: 1
+---
 
 ## CLI commands - starting and listing subscriptions
 

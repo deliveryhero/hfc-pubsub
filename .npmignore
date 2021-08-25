@@ -61,12 +61,14 @@ typings/
 dist/
 docs/
 docs-site/
+static/
+.docusaurus/
+build/
 
 # Mac
 .DS_Store
 .vscode
 
-.DS_Store
 /lib/
 /indexers/
 .vscode

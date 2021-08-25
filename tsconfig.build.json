@@ -17,5 +17,8 @@
     "jest.setup.ts",
     "examples/**/*"
   ],
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "typedocOptions": {
+    "readme": "none"
+  }
 }

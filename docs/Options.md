@@ -1,4 +1,7 @@
-# Other Options
+---
+id: options
+title: Other Options
+---
 
 ## Enabling gRPC C++ bindings
 

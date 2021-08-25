@@ -1,4 +1,8 @@
-# Topics
+---
+id: topics
+title: Topics
+sidebar_position: 2
+---
 
 Create a topic in `PUBSUB_ROOT_DIR/topics` which extends `Topic` and a payload which extends `BasePayload`
 

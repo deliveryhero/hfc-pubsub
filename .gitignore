@@ -63,6 +63,10 @@ creds/
 # Output
 dist/
 docs-site/
+docs/api/
+.docusaurus/
+build/
+typedoc-sidebar.js
 
 # Mac
 .DS_Store

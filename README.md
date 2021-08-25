@@ -12,7 +12,7 @@ This package contains a lightweight framework and subscription server for [Googl
 - [Docs](https://deliveryhero.github.io/hfc-pubsub/)
 - [Changelog](https://deliveryhero.github.io/hfc-pubsub/interfaces/changelog)
 
-![demo of subscription service starting through cli](./docs/demo.gif)
+![demo of subscription service starting through cli](/img/demo.gif)
 
 ## Table of Contents
 
@@ -41,10 +41,12 @@ This package contains a lightweight framework and subscription server for [Googl
 The framework expects that you've created a pubsub directory in your project with the following structure:
 
 <pre>
-| .env        <-- this should be in your project root directory
-| - pubsub/    <-- this can be anywhere (defined in .env as PUBSUB_ROOT_DIR)
+
+| .env        &lt;-- this should be in your project root directory
+| - pubsub/    &lt;-- this can be anywhere (defined in .env as PUBSUB_ROOT_DIR)
 |   | - subscriptions/
 |   | - topics/
+
 </pre>
 
 1. Once the directory structure has been defined, [environment variables should be set](#required-environment-variables).
