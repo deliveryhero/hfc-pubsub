@@ -21,7 +21,6 @@ This package contains a lightweight framework and subscription server for [Googl
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
   - [Getting started](#getting-started)
-  - [Required Environment Variables](#required-environment-variables)
   - [CLI commands - starting and listing subscriptions](#cli-commands---starting-and-listing-subscriptions)
   - [Topics](#topics)
   - [Subscriptions](#subscriptions)
@@ -38,59 +37,28 @@ This package contains a lightweight framework and subscription server for [Googl
 
 ## Getting started
 
-The framework expects that you've created a pubsub directory in your project with the following structure:
-
-<pre>
-
-| .env        &lt;-- this should be in your project root directory
-| - pubsub/    &lt;-- this can be anywhere (defined in .env as PUBSUB_ROOT_DIR)
-|   | - subscriptions/
-|   | - topics/
-
-</pre>
-
-1. Once the directory structure has been defined, [environment variables should be set](#required-environment-variables).
-2. Then you can create [subscriptions](#subscriptions) and [topics](#topics)
-3. After a subscription has been created, use the [CLI](#cli-commands---starting-and-listing-subscriptions) to start the subscriptions server.
-4. Initialize your database connection, define project-level subscription defaults, and register subscriptions in the [Subscription Service](#subscription-service).
-
-## Required Environment Variables
-
-The framework expects the following environment variables. They can be added the `.env` file.
-
-```ini
-GOOGLE_APPLICATION_CREDENTIALS=/path/to/gcp-project-83d5537a8388-key.json
-GOOGLE_CLOUD_PUB_SUB_PROJECT_ID=gcp-project-id
-PUBSUB_ROOT_DIR=/path/to/your/pubsub/directory # this can be a relative path
-```
-
-| Variable                          | Description                                                                                                                                                                                                                      |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PUBSUB_ROOT_DIR`                 | must be the path to your project's pubsub directory. This module only works with .js files, so if you are writing your code in typescript, you must set this variable to the pubsub directory in your project's build directory. |
-| `GOOGLE_APPLICATION_CREDENTIALS`  | see <https://cloud.google.com/docs/authentication/getting-started#creating_a_service_account> to generate this                                                                                                                   |
-| `GOOGLE_CLOUD_PUB_SUB_PROJECT_ID` | name of the project in Google Cloud Platform                                                                                                                                                                                     |
-| `PROJECT_NUMBER` (Optional)       | Project for binding DLQ roles. Check [Binding Subscriber and Publisher role](#binding-subscriber-and-publisher-role) for more details. If Not provided GOOGLE_CLOUD_PUB_SUB_PROJECT_ID is used to fetch the PROJECT_NUMBER       |
+Moved to [Docs](https://deliveryhero.github.io/hfc-pubsub/)
 
 ## CLI commands - starting and listing subscriptions
 
-Moved to [CLI](./docs/CLI)
+Moved to [CLI](https://deliveryhero.github.io/hfc-pubsub/cli)
 
 ## Topics
 
-Moved to [Topics](./docs/Topics)
+Moved to [Topics](https://deliveryhero.github.io/hfc-pubsub/topics)
 
 ## Subscriptions
 
-Moved to [Subscriptions](./docs/Subscriptions)
+Moved to [Subscriptions](https://deliveryhero.github.io/hfc-pubsub/subscriptions)
 
 ## Subscription Service
 
-Moved to [Service](./docs/Service)
+Moved to [Service](https://deliveryhero.github.io/hfc-pubsub/service)
 
 ## Enabling Synchronous Driver
 
-Moved to [Drivers](./docs/Drivers)
+Moved to [Drivers](https://deliveryhero.github.io/hfc-pubsub/drivers)
 
 ## Enabling gRPC C++ bindings
 
-Moved to [Options](./docs/Options)
+Moved to [Options](https://deliveryhero.github.io/hfc-pubsub/options)

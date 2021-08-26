@@ -1,6 +1,7 @@
 ---
 id: options
 title: Other Options
+sidebar_position: 5
 ---
 
 ## Enabling gRPC C++ bindings

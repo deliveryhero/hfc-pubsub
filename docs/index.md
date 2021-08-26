@@ -29,19 +29,19 @@ This package contains a lightweight framework and subscription server for [Googl
 
 The framework expects that you've created a pubsub directory in your project with the following structure:
 
-<pre>
-
-| .env        &lt;-- this should be in your project root directory
-| - pubsub/    &lt;-- this can be anywhere (defined in .env as PUBSUB_ROOT_DIR)
-|   | - subscriptions/
-|   | - topics/
-
-</pre>
+```
+├── .env                <-- this should be in your project root directory
+├── pubsub/             <-- this can be anywhere (defined in .env as PUBSUB_ROOT_DIR)
+│   ├── subscriptions/
+│   ├── topics/
+│   └── subscription.service.js <-- this is the entrypoint for the service
+└── package.json
+```
 
 1. Once the directory structure has been defined, [environment variables should be set](#required-environment-variables).
-2. Then you can create [subscriptions](#subscriptions) and [topics](#topics)
-3. After a subscription has been created, use the [CLI](#cli-commands---starting-and-listing-subscriptions) to start the subscriptions server.
-4. Initialize your database connection, define project-level subscription defaults, and register subscriptions in the [Subscription Service](#subscription-service).
+2. Then you can create [subscriptions](./Subscriptions) and [topics](./Topics)
+3. After a subscription has been created, use the [CLI](./CLI) to start the subscriptions server.
+4. Initialize your database connection, define project-level subscription defaults, and register subscriptions in the [Subscription Service](./service).
 
 ## Required Environment Variables
 
