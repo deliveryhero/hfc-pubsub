@@ -8,7 +8,11 @@ Create a `Subscriber` to define a message handler for messages that are publishe
 
 Subscribers are contained in `PUBSUB_ROOT_DIR/subscriptions`.
 
-> Files ending in `.sub.js` in `PUBSUB_ROOT_DIR/subscriptions` will be autoloaded by the subscription server.
+:::tip
+  Files ending in `.sub.js` or `.sub.ts` in `PUBSUB_ROOT_DIR/subscriptions` will be autoloaded by the subscription server.
+:::
+
+## Examples
 
 ### Typescript subscription example
 
@@ -45,7 +49,7 @@ exports.default = {
 };
 ```
 
-### Subscription example with [subscriber options](#subscriber-options)
+### Subscription example with custom [subscriber options](#subscriber-options)
 
 ```js title="/pubsub/subscriptions/simple.topic.name.subscription.js
 exports.default = {
@@ -65,9 +69,11 @@ exports.default = {
 };
 ```
 
-### Subscription with a Dead-letter Policy
+## Subscription with a Dead-letter Policy
 
-It is possible to define a dead-letter policy for a subscription. If the dead letter topic does not exist, it will be created automatically by the framework. There needs to be a `PROJECT_NUMBER` defined for dead letter to pick up publisher, subscriber role or we use the Project ID to fetch it. `createDefaultSubscription` will create a default dead letter subscription with name having `.default` added to `deadLetterTopic`. Check [Binding Subscriber and Publisher role](#binding-subscriber-and-publisher-role) for more details
+It is possible to define a dead-letter policy for a subscription. If the dead letter topic does not exist, it will be created automatically by the framework.
+
+`createDefaultSubscription` will create a default dead letter subscription with name having `.default` added to `deadLetterTopic`.
 
 ```js title="/pubsub/subscriptions/simple.topic.sub.js
 exports.default = {
@@ -90,15 +96,13 @@ exports.default = {
 
 ### Binding Subscriber and Publisher role
 
-To automatically have a Publisher,Subscriber role attached to your dead letters you need to add `PROJECT_NUMBER` in the env list. If this `PROJECT_NUMBER` isn't available in env then it'll use `GOOGLE_CLOUD_PUB_SUB_PROJECT_ID` to fetch it.
-Binding the above policies don't require current subscriptions to be deleted.
+The framework will automatically attach a Publisher & Subscriber role to your dead letter queue, just add a DLQ config and make sure your service account has the roles defined [here](./Drivers#google-pubsub-driver).
 
-To find out project number through CLI use the commands below:
+:::tip
+  Binding the above policies don't require current subscriptions to be deleted.
+:::
 
-- `PROJECT=$(gcloud config get-value project)`
-- `gcloud projects list --filter="$PROJECT" --format="value(PROJECT_NUMBER)"`
-
-### Subscription with Retry Policy
+## Subscription with Retry Policy
 
 It is possible to define a retry configuration for a subscription:
 
@@ -120,7 +124,7 @@ exports.default = {
 };
 ```
 
-### Subscription with Message Ordering
+## Subscription with Message Ordering
 
 Messages published with the same `ordering_key` in `PubsubMessage` will be delivered to the subscribers in the order in which they are received by the Pub/Sub system.
 

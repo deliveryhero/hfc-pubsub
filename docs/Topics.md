@@ -4,7 +4,7 @@ title: Topics
 sidebar_position: 2
 ---
 
-Create a topic in `PUBSUB_ROOT_DIR/topics` which extends `Topic` and a payload which extends `BasePayload`
+Create a topic in `PUBSUB_ROOT_DIR/topics` which extends `Topic` and a payload which extends `Payload` from package.
 
 ```ts title="/pubsub/topics/simple.topic.name.ts"
 import { Topic, Payload as BasePayload } from '@honestfoodcompany/pubsub';
@@ -19,7 +19,9 @@ export interface Payload extends BasePayload {
 }
 ```
 
-> As a convention, the name of the topic file should match the name of the topic name so the file directory becomes self-documenting.
+:::tip
+As a convention, the name of the topic file should match the name of the topic name so the file directory becomes self-documenting.
+:::
 
 ### Publishing a message (simple example)
 
@@ -35,17 +37,19 @@ new SimpleTopic().publish<Payload>({ id: 1, data: 'My first message' });
 
 #### Javascript example
 
-```ts title="client.example.ts"
-import SimpleTopic from 'PUBSUB_ROOT_DIR/topics/simple.topic.name';
+```ts title="client.example.js"
+const SimpleTopic = require('PUBSUB_ROOT_DIR/topics/simple.topic.name');
 
 new SimpleTopic().publish({ id: 1, data: 'My first message' });
 ```
 
 ### Publishing a message with retry settings
 
-> NOTE: This may not work right now
+:::caution
+  NOTE: This may not work right now, it is a known bug.
+:::
 
-see [Sample Topic with Retry Settings](https://github.com/honest-food-company/pubsub/tree/master/examples/typescript/test.topic.withRetrySettings.ts) for defining a default retry policy
+See [Sample Topic with Retry Settings](https://github.com/deliveryhero/hfc-pubsub/tree/main/examples/typescript/test.topic.withRetrySettings.ts) for defining a default retry policy
 
 ```ts title="client.example.ts"
 import SimpleTopic, { Payload } from 'pubsub/topics/simple.topic.name';
@@ -64,7 +68,7 @@ topic.publish<Payload>(
 
 ### Publishing on a different GCP project
 
-see [Sample Topic using its own GCP Project](https://github.com/honest-food-company/pubsub/tree/master/__tests__/pubsub/topics/example.topic_withProjectCredentials.ts)
+See [Sample Topic using its own GCP Project](https://github.com/deliveryhero/hfc-pubsub/tree/main/__tests__/pubsub/topics/example.topic_withProjectCredentials.ts)
 
 ### Publishing with Attributes
 

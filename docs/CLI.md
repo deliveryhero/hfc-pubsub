@@ -13,7 +13,9 @@ Prerequisites: Install npx if you don't have it installed yet: `npm i -g npx`
 | `npx subscriptions start` | starts project subscriptions |
 | `npx subscriptions list`  | lists project subscriptions  |
 
-> Alternatively the CLI can be found at `./node_modules/.bin/subscriptions`
+:::note
+  Alternatively the CLI can be found at `./node_modules/.bin/subscriptions`
+:::
 
 ### Usage with Typescript
 
