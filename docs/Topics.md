@@ -6,8 +6,7 @@ sidebar_position: 2
 
 Create a topic in `PUBSUB_ROOT_DIR/topics` which extends `Topic` and a payload which extends `BasePayload`
 
-```typescript
-// PUBSUB_ROOT_DIR/topics/simple.topic.name.ts
+```ts title="/pubsub/topics/simple.topic.name.ts"
 import { Topic, Payload as BasePayload } from '@honestfoodcompany/pubsub';
 
 export default class SimpleTopic extends Topic {
@@ -28,8 +27,7 @@ If a topic does not exist, it will be created before a message is published.
 
 #### Typescript example
 
-```typescript
-// client.example.ts
+```ts title="client.example.ts"
 import SimpleTopic, { Payload } from 'PUBSUB_ROOT_DIR/topics/simple.topic.name';
 
 new SimpleTopic().publish<Payload>({ id: 1, data: 'My first message' });
@@ -37,8 +35,7 @@ new SimpleTopic().publish<Payload>({ id: 1, data: 'My first message' });
 
 #### Javascript example
 
-```typescript
-// client.example.ts
+```ts title="client.example.ts"
 import SimpleTopic from 'PUBSUB_ROOT_DIR/topics/simple.topic.name';
 
 new SimpleTopic().publish({ id: 1, data: 'My first message' });
@@ -50,8 +47,7 @@ new SimpleTopic().publish({ id: 1, data: 'My first message' });
 
 see [Sample Topic with Retry Settings](https://github.com/honest-food-company/pubsub/tree/master/examples/typescript/test.topic.withRetrySettings.ts) for defining a default retry policy
 
-```typescript
-// client.example.ts
+```ts title="client.example.ts"
 import SimpleTopic, { Payload } from 'pubsub/topics/simple.topic.name';
 
 let topic = new SimpleTopic();
@@ -74,8 +70,7 @@ see [Sample Topic using its own GCP Project](https://github.com/honest-food-comp
 
 See: <https://cloud.google.com/pubsub/docs/publisher#using_attributes>
 
-```typescript
-// client.example.ts
+```ts title="client.example.ts"
 import SimpleTopic, { Payload } from 'pubsub/topics/simple.topic.name';
 
 let topic = new SimpleTopic();

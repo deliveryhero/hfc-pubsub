@@ -47,7 +47,7 @@ The framework expects that you've created a pubsub directory in your project wit
 
 The framework expects the following environment variables. They can be added the `.env` file.
 
-```ini
+```ini title=".env"
 GOOGLE_APPLICATION_CREDENTIALS=/path/to/gcp-project-83d5537a8388-key.json
 GOOGLE_CLOUD_PUB_SUB_PROJECT_ID=gcp-project-id
 PUBSUB_ROOT_DIR=/path/to/your/pubsub/directory # this can be a relative path

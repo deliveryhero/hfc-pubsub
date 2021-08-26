@@ -6,10 +6,9 @@ sidebar_position: 4
 
 Extend and customize the behavior of the subscription server in the subscription service file. Initialize a database connection, register subscribers, and define default subscriber options in the subscription service file.
 
-### Typescript example
+## Typescript example
 
-```ts
-// PUBSUB_ROOT_DIR/subscription.service.ts
+```ts title="/pubsub/subscription.service.ts"
 import * as PubSub from '@honestfoodcompany/pubsub';
 import { SubscriberOptions } from '@honestfoodcompany/pubsub';
 
@@ -45,10 +44,9 @@ export default class SubscriptionService extends PubSub.SubscriptionService {
 }
 ```
 
-### Javascript Example
+## Javascript Example
 
-```javascript
-// PUBSUB_ROOT_DIR/subscription.service.js
+```js title="/pubsub/subscription.service.js"
 const PubSub = require('@honestfoodcompany/pubsub');
 
 class SubscriptionService extends PubSub.SubscriptionService {}
@@ -78,16 +76,18 @@ SubscriptionService.init = () => {
 exports.default = SubscriptionService;
 ```
 
+## Options
+
 ### Passing a custom Logger
 
 In the main SubscriptionService before defining subscription class you can update the logger that is being used by the package for logging. It's an optional definition and by default it uses `console.*` for logging `.info`, `.warn` and `.error` these 3 function keys are a must have for the logger you pass.
 
-```typescript
+```ts
 import { setLogger } from '@honestfoodcompany/pubsub';
 setLogger(console);
 ```
 
-```javascript
+```js
 const { setLogger } = require('@honestfoodcompany/pubsub');
 setLogger(console);
 ```
@@ -96,14 +96,11 @@ setLogger(console);
 
 It is recommended to initialize a database connection in the `subscription.service` file in your `PUBSUB_ROOT_DIR`. Insert your database connection logic in the `init` method.
 
-see: [Subscription Service](#subscription-service) for more details
-
 ### Graceful Shutdown
 
 When gracefully shutting down a process, it is a good idea to first close all open subscriptions. For this reason we have a static `closeAll` method in the `SubscriptionService` that can close all connections before shutting down. An example using it with process signal handlers:
 
-```ts
-// PUBSUB_ROOT_DIR/subscription.service.js
+```ts {28-41} title="/pubsub/subscription.service.ts"
 import * as PubSub from '@honestfoodcompany/pubsub';
 import mongoose from 'mongoose';
 import { SubscriberOptions } from '@honestfoodcompany/pubsub';

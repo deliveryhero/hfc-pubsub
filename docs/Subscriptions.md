@@ -12,8 +12,7 @@ Subscribers are contained in `PUBSUB_ROOT_DIR/subscriptions`.
 
 ### Typescript subscription example
 
-```typescript
-// PUBSUB_ROOT_DIR/subscriptions/simple.topic.name.console-log.sub.ts
+```ts title="/pubsub/subscriptions/simple.topic.name.console-log.sub.ts"
 import { SubscriberObject, Message } from "@honestfoodcompany/pubsub"; // this import is optional, it's gives us the interfaces to use below
 
 export default: SubscriberObject = {
@@ -32,8 +31,7 @@ export default: SubscriberObject = {
 
 ### Javascript subscription example
 
-```javascript
-// PUBSUB_ROOT_DIR/subscriptions/simple.topic.name.sub.js
+```js title="/pubsub/subscriptions/simple.topic.name.sub.js"
 exports.default = {
   topicName: 'test.topic',
   subscriptionName: 'test.topic.sub',
@@ -49,8 +47,7 @@ exports.default = {
 
 ### Subscription example with [subscriber options](#subscriber-options)
 
-```javascript
-// PUBSUB_ROOT_DIR/subscriptions/simple.topic.name.subscription.js
+```js title="/pubsub/subscriptions/simple.topic.name.subscription.js
 exports.default = {
   topicName: 'test.topic',
   subscriptionName: 'test.topic.subscription',
@@ -72,8 +69,7 @@ exports.default = {
 
 It is possible to define a dead-letter policy for a subscription. If the dead letter topic does not exist, it will be created automatically by the framework. There needs to be a `PROJECT_NUMBER` defined for dead letter to pick up publisher, subscriber role or we use the Project ID to fetch it. `createDefaultSubscription` will create a default dead letter subscription with name having `.default` added to `deadLetterTopic`. Check [Binding Subscriber and Publisher role](#binding-subscriber-and-publisher-role) for more details
 
-```javascript
-// PUBSUB_ROOT_DIR/subscriptions/simple.topic.sub.js
+```js title="/pubsub/subscriptions/simple.topic.sub.js
 exports.default = {
   topicName: 'test.topic',
   subscriptionName: 'test.topic.sub',
@@ -106,8 +102,7 @@ To find out project number through CLI use the commands below:
 
 It is possible to define a retry configuration for a subscription:
 
-```javascript
-// PUBSUB_ROOT_DIR/subscriptions/simple.topic.name.subscription.sub.js
+```js title="/pubsub/subscriptions/simple.topic.name.subscription.sub.js"
 exports.default = {
   topicName: 'test.topic',
   subscriptionName: 'test.topic.sub',
@@ -129,8 +124,7 @@ exports.default = {
 
 Messages published with the same `ordering_key` in `PubsubMessage` will be delivered to the subscribers in the order in which they are received by the Pub/Sub system.
 
-```javascript
-// PUBSUB_ROOT_DIR/subscriptions/simple.topic.name.subscription.sub.js
+```js title="/pubsub/subscriptions/simple.topic.name.subscription.sub.js
 exports.default = {
   topicName: 'test.topic',
   subscriptionName: 'test.topic.sub',
@@ -149,7 +143,7 @@ exports.default = {
 
 [Usage Example](#subscription-example-with-subscriber-options)
 
-```typescript
+```ts
 interface SubscriberOptions {
   /**
    * override the default project settings from the environment variable

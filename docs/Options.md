@@ -5,7 +5,9 @@ title: Other Options
 
 ## Enabling gRPC C++ bindings
 
-### **NOTE: DEPRECATED**
+:::caution
+ **NOTE: DEPRECATED**
+:::
 
 The native [grpc](https://npmjs.com/grpc) module has been deprecated and we would be removing this option in the future.
 
