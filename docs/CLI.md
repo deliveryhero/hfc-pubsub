@@ -17,6 +17,19 @@ sidebar_position: 5
   Alternatively the CLI can be found at `./node_modules/.bin/subscriptions`
 :::
 
+## CLI Options
+
+```sh
+Options:
+  --help                            Show help                                     [boolean]
+  --version                         Show version number                           [boolean]
+  --project-id                      Google project id                             [string]
+  --root-dir                        Path where pubsub folder resides              [string]
+  --project-number                  (Optional) project number for the project     [string]
+  --driver                          Use value synchronous or leave it to default  [string]
+  --google-application-credentials  Path to exported credentials file             [string]
+```
+
 ### Subscriptions List
 
 This will output a table of all subscriptions and their descriptions. Example output:
