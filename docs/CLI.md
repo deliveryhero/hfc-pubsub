@@ -4,16 +4,16 @@ title: CLI
 sidebar_position: 5
 ---
 
-## CLI commands - starting and listing subscriptions
-
-Prerequisites: Install npx if you don't have it installed yet: `npm i -g npx`
+:::note
+  Prerequisites: Install npx if you don't have it installed yet: `npm i -g npx`
+:::
 
 | Command                   | Description                  |
 | ------------------------- | ---------------------------- |
 | `npx subscriptions list`  | lists project subscriptions  |
 | `npx subscriptions start` | starts project subscriptions |
 
-:::note
+:::tip
   Alternatively the CLI can be found at `./node_modules/.bin/subscriptions`
 :::
 
@@ -33,7 +33,7 @@ test.topic   test.topic.console-log.v2                        Will console log m
 
 ### Subscriptions Start
 
-This will start a subscription service using the `subscription.service.{js/ts}` file in your `PUBSUB_ROOT_DIR`. It will first call the `init` method of the Service class and then start the subscriptions, allowing you to do any startup tasks. Read more about [service here](./Service.md)
+This will start a subscription service using the `subscription.service.{js/ts}` file in your `PUBSUB_ROOT_DIR`. It will first call the `init` method of the Service class and then start the subscriptions, allowing you to do any startup tasks. Read more about [service here](./server/Service.md)
 
 ```sh
 $ npx subscriptions start

@@ -1,4 +1,4 @@
-label: 'Guides'
-position: 7 # float position is supported
+label: 'Subscribing'
+position: 2 # float position is supported
 collapsible: true # make the category collapsible
 collapsed: true # keep the category open by default

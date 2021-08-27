@@ -37,23 +37,23 @@ PubSub Framework is built with the developer experience in mind.
 
 ## Getting started
 
-Moved to [Docs](https://deliveryhero.github.io/hfc-pubsub/)
+Moved to [Docs](https://deliveryhero.github.io/hfc-pubsub/getting-started/installation)
 
 ## CLI commands - starting and listing subscriptions
 
-Moved to [CLI](https://deliveryhero.github.io/hfc-pubsub/getting-started/cli)
-
-## Topics
-
-Moved to [Topics](https://deliveryhero.github.io/hfc-pubsub/getting-started/topics)
+Moved to [CLI](https://deliveryhero.github.io/hfc-pubsub/cli)
 
 ## Subscriptions
 
-Moved to [Subscriptions](https://deliveryhero.github.io/hfc-pubsub/getting-started/subscriptions)
+Moved to [Subscriptions](https://deliveryhero.github.io/hfc-pubsub/subscribing/subscriptions)
+
+## Topics
+
+Moved to [Topics](https://deliveryhero.github.io/hfc-pubsub/publishing/topics)
 
 ## Subscription Service
 
-Moved to [Service](https://deliveryhero.github.io/hfc-pubsub/getting-started/service)
+Moved to [Service](https://deliveryhero.github.io/hfc-pubsub/server/service)
 
 ## Enabling Synchronous Driver
 
