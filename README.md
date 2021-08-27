@@ -9,7 +9,7 @@
 
 PubSub is a lightweight framework and subscription server for [Google Pub/Sub](https://cloud.google.com/pubsub). It was created to speed up development time ⚡️ and it provides a common foundation for building event driven applications. It lets developers define topics and subscriptions simply and declaratively, while additionally offering a simple subscription server to run all of a project's subscription handlers.
 
-![demo of subscription service starting through cli](/img/demo.gif)
+![demo of subscription service starting through cli](https://github.com/deliveryhero/hfc-pubsub/raw/main/static/img/demo.gif)
 
 ## Features
 
