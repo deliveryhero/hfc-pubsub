@@ -41,19 +41,19 @@ Moved to [Docs](https://deliveryhero.github.io/hfc-pubsub/)
 
 ## CLI commands - starting and listing subscriptions
 
-Moved to [CLI](https://deliveryhero.github.io/hfc-pubsub/cli)
+Moved to [CLI](https://deliveryhero.github.io/hfc-pubsub/getting-started/cli)
 
 ## Topics
 
-Moved to [Topics](https://deliveryhero.github.io/hfc-pubsub/topics)
+Moved to [Topics](https://deliveryhero.github.io/hfc-pubsub/getting-started/topics)
 
 ## Subscriptions
 
-Moved to [Subscriptions](https://deliveryhero.github.io/hfc-pubsub/subscriptions)
+Moved to [Subscriptions](https://deliveryhero.github.io/hfc-pubsub/getting-started/subscriptions)
 
 ## Subscription Service
 
-Moved to [Service](https://deliveryhero.github.io/hfc-pubsub/service)
+Moved to [Service](https://deliveryhero.github.io/hfc-pubsub/getting-started/service)
 
 ## Enabling Synchronous Driver
 
