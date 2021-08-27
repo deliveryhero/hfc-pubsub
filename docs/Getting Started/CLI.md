@@ -10,14 +10,54 @@ Prerequisites: Install npx if you don't have it installed yet: `npm i -g npx`
 
 | Command                   | Description                  |
 | ------------------------- | ---------------------------- |
-| `npx subscriptions start` | starts project subscriptions |
 | `npx subscriptions list`  | lists project subscriptions  |
+| `npx subscriptions start` | starts project subscriptions |
 
 :::note
   Alternatively the CLI can be found at `./node_modules/.bin/subscriptions`
 :::
 
-### Usage with Typescript
+### Subscriptions List
+
+This will output a table of all subscriptions and their descriptions. Example output:
+
+```sh
+$ npx subscriptions list
+
+ Google Pub/Sub Subscriptions
+Topic name   Subscription name                                Description
+simple.topic simple.topic.console-log.subscriptionWithOptions Will console log messages published on test.topic
+test.topic   test.topic.console-log                           Will console log messages published on test.topic
+test.topic   test.topic.console-log.v2                        Will console log messages published on test.topic
+```
+
+### Subscriptions Start
+
+This will start a subscription service using the `subscription.service.{js/ts}` file in your `PUBSUB_ROOT_DIR`. It will first call the `init` method of the Service class and then start the subscriptions, allowing you to do any startup tasks. Read more about [service here](./Service.md)
+
+```sh
+$ npx subscriptions start
+
+Starting Google Pub/Sub Subscriptions Server
+[2021-08-27 10:16:26.824 +0530] INFO: ***** INIT CALLED *****
+[2021-08-27 10:16:26.824 +0530] INFO: Connecting to DB
+[2021-08-27 10:16:27.829 +0530] INFO: Connected to DB
+[2021-08-27 10:16:27.830 +0530] INFO: ***** INIT CALLED *****
+[2021-08-27 10:16:29.515 +0530] INFO:    ✔️      simple.topic.console-log.subscriptionWithOptions already exists.
+[2021-08-27 10:16:43.766 +0530] INFO:    📭     simple.topic.console-log.subscriptionWithOptions is ready to receive messages at a controlled volume of 100 messages.
+[2021-08-27 10:16:44.887 +0530] INFO:    ✔️      test.topic.console-log already exists.
+[2021-08-27 10:16:49.395 +0530] INFO:    📭     test.topic.console-log is ready to receive messages at a controlled volume of 5 messages.
+[2021-08-27 10:16:51.349 +0530] INFO:    ✔️      test.topic.console-log.v2 already exists.
+[2021-08-27 10:17:03.902 +0530] INFO:    📭     test.topic.console-log.v2 is ready to receive messages at a controlled volume of 5 messages.
+[2021-08-27 10:17:03.902 +0530] INFO:    ✅      All subscriptions started successfully.
+
+```
+
+### Development Environment
+
+For local use you may want to call the CLI with ts-node instead of directly if you are using typescript.
+
+#### Usage with Typescript
 
 For use with Typescript, update your local `PUBSUB_ROOT_DIR` env var to the src directory of the project with the typescript files.
 
