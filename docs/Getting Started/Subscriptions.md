@@ -96,7 +96,7 @@ exports.default = {
 
 ### Binding Subscriber and Publisher role
 
-The framework will automatically attach a Publisher & Subscriber role to your dead letter queue, just add a DLQ config and make sure your service account has the roles defined [here](./Drivers#google-pubsub-driver).
+The framework will automatically attach a Publisher & Subscriber role to your dead letter queue, just add a DLQ config and make sure your service account has the roles defined [here](../Drivers#google-pubsub-driver).
 
 :::tip
   Binding the above policies don't require current subscriptions to be deleted.

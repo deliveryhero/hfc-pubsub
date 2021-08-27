@@ -45,7 +45,7 @@ This uses an `EventEmitter` based pubsub model, and hence only works inside a si
  **NOTE:** Not recommended for production use
 :::
 
-This is useful for writing unit tests, read more in the [testing guide](./Testing#unit-tests)
+This is useful for writing unit tests, read more in the [testing guide](./Guides/Testing#unit-tests)
 
 ### Features not supported in Synchronous Driver
 

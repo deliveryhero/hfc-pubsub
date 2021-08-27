@@ -18,10 +18,12 @@ PubSub Framework is built with the developer experience in mind.
 - Built with 💚 and Typescript
   - In built types
   - Run with `ts-node` in dev
+
 - Easy to setup
   - Define pub/sub subscriptions and topics in a declarative way
   - Define your subscription handlers with a simple object
   - Define a topic and publish messages with a few lines of code
+
 - ✂️ Developer experience
   - Start receiving messages in minutes
   - Add configuration defaults for all your subscriptions in one place
