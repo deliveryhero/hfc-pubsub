@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - chore/PUB-50-docs
 
 env:
   CI: 'true'

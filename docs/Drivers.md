@@ -1,7 +1,7 @@
 ---
 id: drivers
 title: PubSub Drivers
-sidebar_position: 6
+sidebar_position: 4
 ---
 
 ## Google PubSub Driver
@@ -47,4 +47,7 @@ This uses an `EventEmitter` based pubsub model, and hence only works inside a si
 
 This is useful for writing unit tests, read more in the [testing guide](./Testing#unit-tests)
 
-### Supported Features in Synchronous Driver
+### Features not supported in Synchronous Driver
+
+- Filtering using attributes
+- Retrying failed messages

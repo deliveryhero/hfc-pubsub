@@ -1,7 +1,7 @@
 ---
 id: testing
 title: Testing
-sidebar_position: 7
+sidebar_position: 2
 ---
 
 ## Unit Tests

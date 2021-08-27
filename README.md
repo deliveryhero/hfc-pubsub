@@ -7,33 +7,31 @@
 [![dependencies Status](https://status.david-dm.org/gh/deliveryhero/hfc-pubsub.svg)](https://david-dm.org/deliveryhero/hfc-pubsub)
 [![Known Vulnerabilities](https://snyk.io/test/github/deliveryhero/hfc-pubsub/badge.svg)](https://snyk.io/test/github/deliveryhero/hfc-pubsub/)
 
-This package contains a lightweight framework and subscription server for [Google Pub/Sub](https://cloud.google.com/pubsub). It was created to speed up development time and it provides a common foundation for building event driven applications. It lets developers define topics and subscriptions simply and declaratively, while additionally offering a simple subscription server to run all of a project's subscription handlers.
+PubSub is a lightweight framework and subscription server for [Google Pub/Sub](https://cloud.google.com/pubsub). It was created to speed up development time ⚡️ and it provides a common foundation for building event driven applications. It lets developers define topics and subscriptions simply and declaratively, while additionally offering a simple subscription server to run all of a project's subscription handlers.
 
-- [Docs](https://deliveryhero.github.io/hfc-pubsub/)
-- [Changelog](https://deliveryhero.github.io/hfc-pubsub/changelog)
-
-![demo of subscription service starting through cli](./static/img/demo.gif)
-
-## Table of Contents
-
-- [Google Pub/Sub Node.js Framework](#google-pubsub-nodejs-framework)
-
-  - [Table of Contents](#table-of-contents)
-  - [Features](#features)
-  - [Getting started](#getting-started)
-  - [CLI commands - starting and listing subscriptions](#cli-commands---starting-and-listing-subscriptions)
-  - [Topics](#topics)
-  - [Subscriptions](#subscriptions)
-  - [Subscription Service](#subscription-service)
-  - [Enabling Synchronous Driver](#enabling-synchronous-driver)
-  - [Enabling gRPC C++ bindings](#enabling-grpc-c-bindings)
+![demo of subscription service starting through cli](/img/demo.gif)
 
 ## Features
 
-1. Run all of your subscriptions at once with a subscription server
-2. Define pub/sub subscriptions and topics in a declarative way
-3. Define your subscription handlers with a simple object
-4. Get started quickly: define a topic and publish messages with a few lines of code
+PubSub Framework is built with the developer experience in mind.
+
+- Built with 💚 and Typescript
+  - In built types
+  - Run with `ts-node` in dev
+- Easy to setup
+  - Define pub/sub subscriptions and topics in a declarative way
+  - Define your subscription handlers with a simple object
+  - Define a topic and publish messages with a few lines of code
+- ✂️ Developer experience
+  - Start receiving messages in minutes
+  - Add configuration defaults for all your subscriptions in one place
+  - DLQs and IAM automatically handled for you
+  - Auto load code from folder
+
+## Links
+
+- [Docs](https://deliveryhero.github.io/hfc-pubsub/)
+- [Changelog](https://deliveryhero.github.io/hfc-pubsub/changelog)
 
 ## Getting started
 

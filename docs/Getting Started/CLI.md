@@ -1,7 +1,7 @@
 ---
 id: cli
 title: CLI
-sidebar_position: 1
+sidebar_position: 5
 ---
 
 ## CLI commands - starting and listing subscriptions
