@@ -23,7 +23,7 @@ const config = {
         debug: Boolean(process.env.DEBUG || process.env.CI),
         docs: {
           routeBasePath: '/',
-          editUrl: 'https://github.com/deliveryhero/hfc-pubsub/edit/main/docs/',
+          editUrl: 'https://github.com/deliveryhero/hfc-pubsub/edit/main/',
         },
       },
     ],
