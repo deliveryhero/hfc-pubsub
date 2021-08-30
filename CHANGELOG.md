@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.10.3
+
+### Patch Changes
+
+- [PUB-52](https://honesttech.atlassian.net/browse/PUB-52) - Deprecate native grpc usage ([#58](https://github.com/deliveryhero/hfc-pubsub/pull/58) by [@rohit-gohri](https://github.com/rohit-gohri))
+
+* Allows setting up env variables through CLI args ([#61](https://github.com/deliveryhero/hfc-pubsub/pull/61) by [@ishan123456789](https://github.com/ishan123456789))
+
+- [PUB-50](https://honesttech.atlassian.net/browse/PUB-50) - Update documentation ([#60](https://github.com/deliveryhero/hfc-pubsub/pull/60) by [@rohit-gohri](https://github.com/rohit-gohri))
+
 ## 1.10.2
 
 ### Patch Changes
