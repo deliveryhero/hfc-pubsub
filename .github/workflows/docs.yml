@@ -3,6 +3,11 @@ on:
   push:
     branches:
       - main
+      - chore/PUB-50-docs
+
+env:
+  CI: 'true'
+  NODE_ENV: 'production'
 
 jobs:
   build-and-deploy:
@@ -18,7 +23,10 @@ jobs:
           node-version: '12'
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: npm ci --also=dev
+
+      - name: Add changelog to docs
+        run: cp CHANGELOG.md docs/changelog.md
 
       - name: Generate Docs 🔧
         run: npm run docs
@@ -28,5 +36,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages # The branch the action should deploy to.
-          folder: docs # The folder the action should deploy.
+          folder: build # The folder the action should deploy.
           clean: true # Automatically remove deleted files from the deploy branch
