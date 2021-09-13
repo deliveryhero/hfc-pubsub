@@ -5,9 +5,9 @@ import {
   Message as GoogleCloudMessage,
   Subscription as GoogleCloudSubscription,
   Topic as GoogleCloudTopic,
+  SubscriptionMetadata as GoogleSubscriptionMetadata,
 } from '@google-cloud/pubsub';
 import { Resource } from '@google-cloud/resource';
-
 import { CredentialBody } from 'google-auth-library';
 import Bluebird from 'bluebird';
 import { Topic, Payload } from '../index';
@@ -25,6 +25,7 @@ import { Logger } from '../service/logger';
 export interface Project {
   client: GooglePubSub;
   topics: Map<GoogleCloudTopic['name'], GoogleCloudTopic>;
+  subscriptions: Map<GoogleCloudSubscription['name'], GoogleCloudSubscription>;
   projectId: string;
   credentials?: CredentialBody;
 }
@@ -48,6 +49,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     this.projects[DEFAULT_PROJECT] = {
       client,
       topics: new Map(),
+      subscriptions: new Map(),
       projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID || '',
     };
     this.createOrGetSubscription = this.createOrGetSubscription.bind(this);
@@ -159,21 +161,16 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const [, metadata] = subscriber;
     return metadata.options;
   }
+
   private async updateMetaData(subscriber: SubscriberTuple) {
-    const [, metadata] = subscriber;
     const { ackDeadlineSeconds, retryPolicy, deadLetterPolicy } =
       await this.getMergedSubscriptionOptions(subscriber);
-    const toUpdateOptions = {
+    const toUpdateOptions: GoogleSubscriptionMetadata = {
       ackDeadlineSeconds,
       retryPolicy,
       deadLetterPolicy,
     };
-    await this.getProject(metadata.options)
-      .client.subscription(
-        metadata.subscriptionName,
-        this.getSubscriberOptions(subscriber),
-      )
-      .setMetadata(toUpdateOptions);
+    await this.getSubscription(subscriber).setMetadata(toUpdateOptions);
   }
 
   /**
@@ -184,9 +181,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   ): Promise<GoogleCloudSubscription> {
     const [, metadata] = subscriber;
     const project = this.getProject(metadata.options);
-    const client = GooglePubSubAdapter.createClient(project.projectId, {
-      credentials: metadata.options?.project?.credentials,
-    });
+    const { client } = project;
 
     if (await this.subscriptionExists(metadata.subscriptionName, client)) {
       Logger.Instance.info(
@@ -194,15 +189,13 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         chalk.gray(`   ✔️      ${metadata.subscriptionName} already exists.`),
       );
       await this.updateMetaData(subscriber);
-      return this.getSubscription(subscriber);
+    } else {
+      const topic = await this.createOrGetTopic(
+        metadata.topicName,
+        metadata.options,
+      );
+      await this.createSubscription(topic, subscriber);
     }
-
-    const topic = await this.createOrGetTopic(
-      metadata.topicName,
-      metadata.options,
-    );
-    await this.createSubscription(topic, subscriber);
-
     return this.getSubscription(subscriber);
   }
   private async createDeadLetterDefaultSubscriber(
@@ -269,6 +262,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         { metadata, err },
         `   ❌      There was an error creating "${metadata.subscriptionName}" subscription.`,
       );
+      // FIXME: PUB-70 Should throw error here
     }
   }
 
@@ -428,10 +422,19 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     subscriber: SubscriberTuple,
   ): GoogleCloudSubscription {
     const [, metadata] = subscriber;
-    return this.getProject(metadata.options).client.subscription(
+    const { client, subscriptions } = this.getProject(metadata.options);
+    if (subscriptions.has(metadata.subscriptionName)) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return subscriptions.get(metadata.subscriptionName)!;
+    }
+
+    const subscription = client.subscription(
       metadata.subscriptionName,
       this.getSubscriberOptions(subscriber),
     );
+
+    subscriptions.set(metadata.subscriptionName, subscription);
+    return subscription;
   }
 
   private async subscriptionExists(
@@ -467,6 +470,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     return {
       client: GooglePubSubAdapter.createClient(projectId, options),
       topics: new Map(),
+      subscriptions: new Map(),
       projectId,
     };
   }
