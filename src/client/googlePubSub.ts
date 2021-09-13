@@ -36,13 +36,16 @@ export interface CreateClientOptions {
   credentials?: CredentialBody;
   grpc?: boolean;
 }
+
+const DEFAULT_PROJECT = 'default';
+
 export default class GooglePubSubAdapter implements PubSubClientV2 {
   protected static instance: GooglePubSubAdapter;
   private static _nativeGRPC?: { grpc: any };
   protected projects: Projects = {};
 
   public constructor(client: GooglePubSub) {
-    this.projects['default'] = {
+    this.projects[DEFAULT_PROJECT] = {
       client,
       topics: new Map(),
       projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID || '',
@@ -442,15 +445,15 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   }
 
   public getProject(options?: { project?: GooglePubSubProject }): Project {
-    if (!options) {
-      return this.projects['default'];
+    if (!options || !options.project?.id) {
+      return this.projects[DEFAULT_PROJECT];
     }
-    if (this.projects[options.project?.id || '']) {
-      return this.projects[options.project?.id || ''];
+    if (this.projects[options.project?.id]) {
+      return this.projects[options.project?.id];
     } else {
       // init project with client
-      return (this.projects[options.project?.id || ''] =
-        GooglePubSubAdapter.initProject(options.project?.id || '', {
+      return (this.projects[options.project?.id] =
+        GooglePubSubAdapter.initProject(options.project?.id, {
           credentials: options?.project?.credentials,
           grpc: process.env.PUBSUB_USE_GRPC === 'true',
         }));
