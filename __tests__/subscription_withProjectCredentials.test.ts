@@ -52,15 +52,16 @@ jest.mock('google-gax');
 
 describe('Google Pub Sub', (): void => {
   let subscriptions: Subscribers;
+  let subscription: SubscriberTuple;
   beforeAll(() => {
     subscriptions = SubscriptionService.getSubscribers();
-  });
-
-  it('should call subscribe to the right project and cache subscription', async (): Promise<void> => {
-    const subscription = subscriptions.find((sub) => {
+    subscription = subscriptions.find((sub) => {
       const [, { subscriptionName }] = sub;
       return subscriptionName === 'test.v3_withProjectCredentials';
     }) as SubscriberTuple;
+  });
+
+  it('should call subscribe to the right project and cache subscription', async (): Promise<void> => {
     expect(subscription).toBeDefined();
 
     const subscribe = jest.spyOn(GooglePubSubAdapter.prototype, 'subscribe');
@@ -89,6 +90,11 @@ describe('Google Pub Sub', (): void => {
         projectId: 'google-pubsub-project-id',
       },
     ]);
+    expect(mockSubscription).toBeCalledTimes(1);
+  });
+
+  it('should close existing subscription and skip not subscribed topics', async (): Promise<void> => {
+    await PubSubService.getInstance().closeAll();
     expect(mockSubscription).toBeCalledTimes(1);
   });
 });

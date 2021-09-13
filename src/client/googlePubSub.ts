@@ -130,6 +130,12 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
   public async close(subscriber: SubscriberTuple): Promise<void> {
     const [, metadata] = subscriber;
+    const { subscriptions } = this.getProject(metadata.options);
+    if (!subscriptions.has(metadata.subscriptionName)) {
+      this.log(`   📪     ${metadata.subscriptionName} wasn't started at all`);
+      return;
+    }
+
     const subscription = await this.getSubscription(subscriber);
     await subscription.close();
     this.log(`   📪     ${metadata.subscriptionName} is closed now`);
