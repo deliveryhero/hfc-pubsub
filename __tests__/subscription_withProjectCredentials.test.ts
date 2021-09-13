@@ -18,17 +18,21 @@ const mockGet = jest.fn(() => {
 });
 
 const mockConstructor = jest.fn();
+
+const mockSubscription = jest.fn(() => ({
+  exists: jest.fn(() => [true]),
+  on: jest.fn(),
+  close: jest.fn(),
+  setMetadata: jest.fn(),
+}));
+
 jest.mock('@google-cloud/pubsub', () => {
   return {
     __esModule: true,
     PubSub: jest.fn().mockImplementation((config) => {
       mockConstructor(config);
       return {
-        subscription: jest.fn(() => ({
-          exists: jest.fn(() => [true]),
-          on: jest.fn(),
-          setMetadata: jest.fn(),
-        })),
+        subscription: mockSubscription,
         subscribe: mockSubscribe(config),
         topic: jest.fn(() => ({
           get: mockGet,
@@ -52,7 +56,7 @@ describe('Google Pub Sub', (): void => {
     subscriptions = SubscriptionService.getSubscribers();
   });
 
-  it('should call subscribe to the right project', async (): Promise<void> => {
+  it('should call subscribe to the right project and cache subscription', async (): Promise<void> => {
     const subscription = subscriptions.find((sub) => {
       const [, { subscriptionName }] = sub;
       return subscriptionName === 'test.v3_withProjectCredentials';
@@ -65,16 +69,17 @@ describe('Google Pub Sub', (): void => {
     await PubSubService.getInstance().subscribe(subscription);
     expect(subscribe).toBeCalled();
     expect(getProject).toBeCalledWith(subscription[1].options);
-    expect(createClient.mock.calls[2]).toEqual([
+    expect(createClient.mock.calls[1]).toEqual([
       'google-pubsub-project-id',
       {
         credentials: {
           client_email: 'client email goes here',
           private_key: 'private key goes here',
         },
+        grpc: false,
       },
     ]);
-    expect(mockConstructor.mock.calls[2]).toEqual([
+    expect(mockConstructor.mock.calls[1]).toEqual([
       {
         credentials: {
           client_email: 'client email goes here',
@@ -84,5 +89,6 @@ describe('Google Pub Sub', (): void => {
         projectId: 'google-pubsub-project-id',
       },
     ]);
+    expect(mockSubscription).toBeCalledTimes(1);
   });
 });
