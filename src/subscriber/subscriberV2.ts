@@ -64,8 +64,8 @@ export default class SubscriberV2 extends Subscriber {
             },
           };
 
-          constructor(...args: any[]) {
-            // @ts-expect-error spread error
+          constructor(...args: unknown[]) {
+            // @ts-expect-error no params in type
             super(...args);
             util.deprecate(() => {
               Logger.Instance.warn(
