@@ -69,9 +69,12 @@ export default class SubscriberV2 extends Subscriber {
             super(...args);
             util.deprecate(() => {
               Logger.Instance.warn(
+                {
+                  metadata: this.metadata,
+                },
                 'Class style subscriptions have been deprecated, please convert to objects. This will be removed in v2.x',
               );
-            }, 'Class style subscriptions have been deprecated')();
+            }, `Class style subscriptions have been deprecated: ${subscriber.subscriptionName}`)();
           }
 
           public static from(
@@ -110,9 +113,12 @@ export default class SubscriberV2 extends Subscriber {
             super(...args);
             util.deprecate(() => {
               Logger.Instance.warn(
+                {
+                  metadata: subscriberObj.metadata,
+                },
                 'Class style subscriptions have been deprecated, please convert to objects. This will be removed in v2.x',
               );
-            }, 'Class style subscriptions have been deprecated')();
+            }, `Class style subscriptions have been deprecated: ${subscriberObj.metadata?.subscriptionName}`)();
           }
 
           metadata = subscriberObj.metadata;
