@@ -1,4 +1,8 @@
 import Message from '../message';
+
+/**
+ * @deprecated
+ */
 export default class Subscriber {
   /**
    * @deprecated in favor of SubscriberV2.metadata.topicName
@@ -28,15 +32,24 @@ export default class Subscriber {
    */
   public static ackDeadlineSeconds = 10;
 
+  /**
+   * @deprecated
+   */
   public constructor() {
     this.init = this.init.bind(this);
     this.handleMessage = this.handleMessage.bind(this);
   }
 
+  /**
+   * @deprecated
+   */
   public async init(): Promise<void> {
     //
   }
 
+  /**
+   * @deprecated
+   */
   public async handleMessage(_message: Message): Promise<void> {
     //
   }
