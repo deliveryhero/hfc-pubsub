@@ -59,24 +59,37 @@ typings/
 
 # Output
 dist/
-docs/
+coverage/
 
 # Mac
 .DS_Store
 .vscode
 
-.DS_Store
-/lib/
-/indexers/
+# Docs
+examples/
+docs/
+static/
+.docusaurus/
+build/
+demo.gif
+
+# Development
 .vscode
 .github
+.changeset
 .git
-examples
-demo.gif
-__tests__
+scripts/
+/lib/
+/indexers/
+__tests__/
 tsconfig.json
 tsconfig.build.json
 .eslintrc.js
 .prettierignore
 .prettierrc.js
 jest.config.js
+jest.setup.ts
+docusaurus.config.js
+typedoc-sidebar.js
+DEVELOPMENT.md
+CHANGELOG.md

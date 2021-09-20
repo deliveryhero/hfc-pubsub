@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import {
   PubSub as GooglePubSub,
   Message as GoogleCloudMessage,
@@ -6,9 +5,10 @@ import {
   Topic as GoogleCloudTopic,
 } from '@google-cloud/pubsub';
 import { Resource } from '@google-cloud/resource';
-
 import { CredentialBody } from 'google-auth-library';
+import chalk from 'chalk';
 import Bluebird from 'bluebird';
+
 import { Topic, Payload } from '../index';
 import { PublishOptions } from '../interface/publishOptions';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';

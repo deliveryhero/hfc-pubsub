@@ -1,4 +1,6 @@
+import util from 'util';
 import { SubscriberOptions as GoogleCloudSubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber';
+import { Logger } from '../service/logger';
 import { GooglePubSubProject } from '../interface/GooglePubSubProject';
 import Message from '../message';
 import Subscriber from './subscriber';
@@ -62,6 +64,19 @@ export default class SubscriberV2 extends Subscriber {
             },
           };
 
+          constructor(...args: unknown[]) {
+            // @ts-expect-error no params in type
+            super(...args);
+            util.deprecate(() => {
+              Logger.Instance.warn(
+                {
+                  metadata: this.metadata,
+                },
+                'Class style subscriptions have been deprecated, please convert to objects. This will be removed in v2.x',
+              );
+            }, `Class style subscriptions have been deprecated: ${subscriber.subscriptionName}`)();
+          }
+
           public static from(
             subscriberClass: SubscriberObject | typeof Subscriber,
             version: SubscriberVersion,
@@ -94,6 +109,18 @@ export default class SubscriberV2 extends Subscriber {
         };
 
         return class extends subscriberClass {
+          constructor(...args: any[]) {
+            super(...args);
+            util.deprecate(() => {
+              Logger.Instance.warn(
+                {
+                  metadata: subscriberObj.metadata,
+                },
+                'Class style subscriptions have been deprecated, please convert to objects. This will be removed in v2.x',
+              );
+            }, `Class style subscriptions have been deprecated: ${subscriberObj.metadata?.subscriptionName}`)();
+          }
+
           metadata = subscriberObj.metadata;
         };
 
