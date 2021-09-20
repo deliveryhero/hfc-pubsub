@@ -38,7 +38,7 @@ module.exports = {
       },
     },
     'import/internal-regex':
-      '^(@deliveryhero|@honestfoodcompany|react|next)(/.+)?$',
+      '^(@deliveryhero|@honestfoodcompany|@google-cloud|google.*)(/.+)?$',
   },
   overrides: [
     {
