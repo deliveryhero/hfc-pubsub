@@ -1,8 +1,6 @@
 import { resolve } from 'path';
 import {
   Subscribers,
-  SubscriberV1,
-  SubscriberV2,
   SubscriberObject,
   SubscriberTuple,
   SubscriberOptions,
@@ -12,11 +10,7 @@ import { ResourceResolver } from './resourceResolver';
 import { Logger } from './logger';
 
 export default class SubscriptionService {
-  public static subscribers: (
-    | typeof SubscriberV1
-    | typeof SubscriberV2
-    | SubscriberObject
-  )[] = [];
+  public static subscribers: SubscriberObject[] = [];
   private static _subscribers: Subscribers = [];
 
   public static defaultSubscriberOptions: SubscriberOptions;
