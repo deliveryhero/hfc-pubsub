@@ -1,5 +1,5 @@
 import { resolve, join } from 'path';
-import fs = require('fs');
+import fs from 'fs';
 import { SubscriberV2, Subscribers, SubscriberTuple } from '../subscriber';
 import {
   SubscriberMetadata,
