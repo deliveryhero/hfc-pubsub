@@ -50,6 +50,10 @@ module.exports = {
       extends: ['plugin:jest/recommended'],
       rules: {
         'max-lines': 'off',
+        'import/no-unresolved': [
+          'error',
+          { ignore: ['@honestfoodcompany/pubsub', '@deliveryhero/pubsub'] },
+        ],
         // These are off since we require dynamically after mocks are set
         '@typescript-eslint/no-var-requires': 'off',
         'global-require': 'off',

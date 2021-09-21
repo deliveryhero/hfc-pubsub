@@ -18,14 +18,14 @@ export interface Payload extends BasePayload {
 }
 
 export default class ExampleTopic extends Topic {
-  public readonly name = 'example-topic-with-customCredentials';
+  public readonly name = 'example.topic.with-custom-credentials';
   public project: GooglePubSubProject = {
     id: 'custom-project-id',
     credentials: {
       // eslint-disable-next-line
       client_email: 'client@google-auth.google.com',
       // eslint-disable-next-line
-      private_key: 'private_key_goes_here'
+      private_key: 'private_key_goes_here',
     },
   };
 }

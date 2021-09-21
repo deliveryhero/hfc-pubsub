@@ -1,6 +1,9 @@
-exports.default = {
-  topicName: 'test.v3.topic',
-  subscriptionName: 'test.v3_withProjectCredentials',
+/**
+ * @type {import('@honestfoodcompany/pubsub').SubscriberObject}
+ */
+const subscription = {
+  topicName: 'test-topic',
+  subscriptionName: 'test-topic.example.with-custom-credentials.subscription',
   description: 'Will test that the correct project credentials are being used',
   options: {
     project: {
@@ -17,3 +20,5 @@ exports.default = {
     console.log(message.data.toString());
   },
 };
+
+exports.default = subscription;
