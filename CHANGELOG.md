@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.10.4
+
+### Patch Changes
+
+- [PUB-60](https://honesttech.atlassian.net/browse/PUB-60) - Deprecate v1,v2 style Subscriber classes ([#64](https://github.com/deliveryhero/hfc-pubsub/pull/64) by [@rohit-gohri](https://github.com/rohit-gohri))
+
+* [PUB-66](https://honesttech.atlassian.net/browse/PUB-66) - Fix close method creating new subscription instance rather than closing existing one ([#63](https://github.com/deliveryhero/hfc-pubsub/pull/63) by [@rohit-gohri](https://github.com/rohit-gohri))
+
 ## 1.10.3
 
 ### Patch Changes
