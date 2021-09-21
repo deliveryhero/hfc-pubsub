@@ -14,7 +14,7 @@ exports.default = {
   description: 'Will console log messages published on test.topic',
   options: {
     deadLetterPolicy: {
-      deadLetterTopic: 'test.deadletter.topic',
+      deadLetterTopic: 'dlq.test.topic.sub',
       maxDeliveryAttempts: 15,
       createDefaultSubscription: true,
     },
@@ -43,11 +43,11 @@ A dead letter topic is not useful without a subscription for it, because without
 To avoid this scenario, we automatically check for subscriptions on the DLQ topic and warn in case the DLQ topic **doesn't have any subscriptions**. Example warning:
 
 ```sh
-Please set createDefaultSubscription: true in deadLetterPolicy to create default subscriber for dead letter topic of simple.topic.console-log.subscriptionWithOptions. Ignore if already added subscription for it.
+Please set createDefaultSubscription: true in deadLetterPolicy to create default subscriber for dead letter topic of simple.topic.console-log.subscription-with-options. Ignore if already added subscription for it.
 ```
 
 ### Automatically creating default subscribers
 
 To make it easy to set this up, we have a option `createDefaultSubscription` that will automatically create a default dead letter subscription with name having `.default` added to the `deadLetterTopic`.
 
-For example, if deadLetterTopic is `example.test.deadletter` then a subscription called `example.test.deadletter.default` will be automatically created if `createDefaultSubscription` is true.
+For example, if deadLetterTopic is `dlq.example.test` then a subscription called `dlq.example.test.default` will be automatically created if `createDefaultSubscription` is true.

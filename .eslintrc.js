@@ -70,5 +70,13 @@ module.exports = {
         '@typescript-eslint/no-floating-promises': 'warn',
       },
     },
+    {
+      // Disable some TS rules for JS files
+      files: ['**/*.js'],
+      rules: {
+        '@typescript-eslint/no-var-requires': 'off',
+        '@typescript-eslint/explicit-function-return-type': 'off',
+      },
+    },
   ],
 };
