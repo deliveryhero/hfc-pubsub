@@ -142,6 +142,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
     const subscription = await this.getSubscription(subscriber);
     await subscription.close();
+    await subscription.removeAllListeners();
+    subscriptions.delete(metadata.subscriptionName);
     this.log(`   📪     ${metadata.subscriptionName} is closed now`, metadata);
   }
 
