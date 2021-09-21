@@ -74,7 +74,6 @@ describe('Google Pub Sub', (): void => {
           client_email: 'client email goes here',
           private_key: 'private key goes here',
         },
-        grpc: false,
       },
     ]);
     expect(mockConstructor.mock.calls[1]).toEqual([
