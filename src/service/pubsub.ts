@@ -11,7 +11,7 @@ export default class PubSubService {
   protected static client: PubSubClientV2;
   protected static instance: PubSubService;
   protected static driver: 'synchronous' | 'google';
-  private static status: 'ready' | 'pending' = 'pending';
+  private static status: 'ready' | 'pending' | 'closed' = 'pending';
 
   private constructor() {
     this.initDriver();
@@ -85,10 +85,12 @@ export default class PubSubService {
     for (const subscription of subscribers) {
       await this.getClient().close(subscription);
     }
+    PubSubService.status = 'closed';
   }
 
   public async startSubscriptions(): Promise<void> {
     if (PubSubService.status === 'ready') return;
+    PubSubService.status = 'pending';
 
     const subscriptionServiceClass =
       SubscriptionService.loadSubscriptionService();
@@ -99,6 +101,15 @@ export default class PubSubService {
 
     const subscribers = subscriptionServiceClass.getSubscribers();
     for (const subscription of subscribers) {
+      // @ts-expect-error weird const error
+      if (PubSubService.status === 'closed') {
+        Logger.Instance.warn(
+          `   ❌      closeAll called and subscriptions closed, not continuing with startup process`,
+        );
+
+        return;
+      }
+
       try {
         await this.subscribe(subscription);
       } catch (err) {
@@ -111,7 +122,7 @@ export default class PubSubService {
           originalError?: Error;
           metadata?: typeof metadata;
         } = new Error('Error while initializing subscription.');
-        error.originalError = err;
+        error.originalError = err as Error;
         error.metadata = metadata;
         throw error;
       }

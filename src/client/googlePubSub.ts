@@ -4,6 +4,7 @@ import {
   Message as GoogleCloudMessage,
   Subscription as GoogleCloudSubscription,
   Topic as GoogleCloudTopic,
+  SubscriptionMetadata as GoogleSubscriptionMetadata,
 } from '@google-cloud/pubsub';
 import { Resource } from '@google-cloud/resource';
 import { CredentialBody } from 'google-auth-library';
@@ -25,6 +26,7 @@ import { Logger } from '../service/logger';
 export interface Project {
   client: GooglePubSub;
   topics: Map<GoogleCloudTopic['name'], GoogleCloudTopic>;
+  subscriptions: Map<GoogleCloudSubscription['name'], GoogleCloudSubscription>;
   projectId: string;
   credentials?: CredentialBody;
 }
@@ -36,15 +38,19 @@ export interface CreateClientOptions {
   credentials?: CredentialBody;
   grpc?: boolean;
 }
+
+const DEFAULT_PROJECT = 'default';
+
 export default class GooglePubSubAdapter implements PubSubClientV2 {
   protected static instance: GooglePubSubAdapter;
   private static _nativeGRPC?: { grpc: any };
   protected projects: Projects = {};
 
   public constructor(client: GooglePubSub) {
-    this.projects['default'] = {
+    this.projects[DEFAULT_PROJECT] = {
       client,
       topics: new Map(),
+      subscriptions: new Map(),
       projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID || '',
     };
     this.createOrGetSubscription = this.createOrGetSubscription.bind(this);
@@ -120,14 +126,26 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     await this.addHandler(subscriber, subscription);
     this.log(
       `   📭     ${metadata.subscriptionName} is ready to receive messages at a controlled volume of ${metadata.options?.flowControl?.maxMessages} messages.`,
+      metadata,
     );
   }
 
   public async close(subscriber: SubscriberTuple): Promise<void> {
     const [, metadata] = subscriber;
+    const { subscriptions } = this.getProject(metadata.options);
+    if (!subscriptions.has(metadata.subscriptionName)) {
+      this.log(
+        `   📪     ${metadata.subscriptionName} wasn't started at all`,
+        metadata,
+      );
+      return;
+    }
+
     const subscription = await this.getSubscription(subscriber);
     await subscription.close();
-    this.log(`   📪     ${metadata.subscriptionName} is closed now`);
+    subscription.removeAllListeners();
+    subscriptions.delete(metadata.subscriptionName);
+    this.log(`   📪     ${metadata.subscriptionName} is closed now`, metadata);
   }
 
   private async addHandler(
@@ -146,8 +164,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     });
   }
 
-  private log(message: string): void {
-    Logger.Instance.info(chalk.green.bold(message));
+  private log(message: string, metadata?: SubscriberTuple[1]): void {
+    Logger.Instance.info({ metadata }, chalk.green.bold(message));
   }
 
   private getSubscriberOptions(
@@ -156,21 +174,16 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const [, metadata] = subscriber;
     return metadata.options;
   }
+
   private async updateMetaData(subscriber: SubscriberTuple) {
-    const [, metadata] = subscriber;
     const { ackDeadlineSeconds, retryPolicy, deadLetterPolicy } =
       await this.getMergedSubscriptionOptions(subscriber);
-    const toUpdateOptions = {
+    const toUpdateOptions: GoogleSubscriptionMetadata = {
       ackDeadlineSeconds,
       retryPolicy,
       deadLetterPolicy,
     };
-    await this.getProject(metadata.options)
-      .client.subscription(
-        metadata.subscriptionName,
-        this.getSubscriberOptions(subscriber),
-      )
-      .setMetadata(toUpdateOptions);
+    await this.getSubscription(subscriber).setMetadata(toUpdateOptions);
   }
 
   /**
@@ -180,26 +193,20 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     subscriber: SubscriberTuple,
   ): Promise<GoogleCloudSubscription> {
     const [, metadata] = subscriber;
-    const project = this.getProject(metadata.options);
-    const client = GooglePubSubAdapter.createClient(project.projectId, {
-      credentials: metadata.options?.project?.credentials,
-    });
 
-    if (await this.subscriptionExists(metadata.subscriptionName, client)) {
+    if (await this.subscriptionExists(subscriber)) {
       Logger.Instance.info(
         { metadata },
         chalk.gray(`   ✔️      ${metadata.subscriptionName} already exists.`),
       );
       await this.updateMetaData(subscriber);
-      return this.getSubscription(subscriber);
+    } else {
+      const topic = await this.createOrGetTopic(
+        metadata.topicName,
+        metadata.options,
+      );
+      await this.createSubscription(topic, subscriber);
     }
-
-    const topic = await this.createOrGetTopic(
-      metadata.topicName,
-      metadata.options,
-    );
-    await this.createSubscription(topic, subscriber);
-
     return this.getSubscription(subscriber);
   }
   private async createDeadLetterDefaultSubscriber(
@@ -207,7 +214,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   ): Promise<void> {
     const [, metadata] = subscriber;
     try {
-      const client = this.getProject(metadata.options).client;
+      const { client } = this.getProject(metadata.options);
       const deadLetterPolicy = metadata.options?.deadLetterPolicy;
 
       if (!deadLetterPolicy?.deadLetterTopic) return;
@@ -215,7 +222,11 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       const defaultSubscriberName =
         deadLetterPolicy?.deadLetterTopic + '.default';
 
-      if (await this.subscriptionExists(defaultSubscriberName, client)) return;
+      const [defaultSubscriberExists] = await client
+        .subscription(defaultSubscriberName)
+        .exists();
+
+      if (defaultSubscriberExists) return;
 
       const topic = await this.createOrGetTopic(
         deadLetterPolicy?.deadLetterTopic,
@@ -266,6 +277,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         { metadata, err },
         `   ❌      There was an error creating "${metadata.subscriptionName}" subscription.`,
       );
+      // FIXME: PUB-70 Should throw error here
     }
   }
 
@@ -425,36 +437,46 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     subscriber: SubscriberTuple,
   ): GoogleCloudSubscription {
     const [, metadata] = subscriber;
-    return this.getProject(metadata.options).client.subscription(
+    const { client, subscriptions } = this.getProject(metadata.options);
+    if (subscriptions.has(metadata.subscriptionName)) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return subscriptions.get(metadata.subscriptionName)!;
+    }
+
+    const subscription = client.subscription(
       metadata.subscriptionName,
       this.getSubscriberOptions(subscriber),
     );
+
+    subscriptions.set(metadata.subscriptionName, subscription);
+    return subscription;
   }
 
   private async subscriptionExists(
-    subscriptionName: string,
-    client: GooglePubSub,
+    subscriber: SubscriberTuple,
   ): Promise<boolean> {
-    const [subscriptionExists] = await client
-      .subscription(subscriptionName)
-      .exists();
+    const [subscriptionExists] = await this.getSubscription(
+      subscriber,
+    ).exists();
     return subscriptionExists;
   }
 
   public getProject(options?: { project?: GooglePubSubProject }): Project {
-    if (!options) {
-      return this.projects['default'];
+    if (!options || !options.project?.id) {
+      return this.projects[DEFAULT_PROJECT];
     }
-    if (this.projects[options.project?.id || '']) {
-      return this.projects[options.project?.id || ''];
-    } else {
-      // init project with client
-      return (this.projects[options.project?.id || ''] =
-        GooglePubSubAdapter.initProject(options.project?.id || '', {
-          credentials: options?.project?.credentials,
-          grpc: process.env.PUBSUB_USE_GRPC === 'true',
-        }));
+    if (this.projects[options.project?.id]) {
+      return this.projects[options.project?.id];
     }
+    // init project with client
+    this.projects[options.project?.id] = GooglePubSubAdapter.initProject(
+      options.project?.id,
+      {
+        credentials: options?.project?.credentials,
+        grpc: process.env.PUBSUB_USE_GRPC === 'true',
+      },
+    );
+    return this.projects[options.project?.id];
   }
 
   protected static initProject(
@@ -464,6 +486,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     return {
       client: GooglePubSubAdapter.createClient(projectId, options),
       topics: new Map(),
+      subscriptions: new Map(),
       projectId,
     };
   }
