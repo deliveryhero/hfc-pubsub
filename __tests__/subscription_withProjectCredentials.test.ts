@@ -18,11 +18,14 @@ const mockGet = jest.fn(() => {
 });
 
 const mockConstructor = jest.fn();
+const mockClose = jest.fn();
+const mockRemoveListeners = jest.fn();
 
 const mockSubscription = jest.fn(() => ({
   exists: jest.fn(() => [true]),
   on: jest.fn(),
-  close: jest.fn(),
+  close: mockClose,
+  removeAllListeners: mockRemoveListeners,
   setMetadata: jest.fn(),
 }));
 
@@ -96,5 +99,7 @@ describe('Google Pub Sub', (): void => {
   it('should close existing subscription and skip not subscribed topics', async (): Promise<void> => {
     await PubSubService.getInstance().closeAll();
     expect(mockSubscription).toBeCalledTimes(1);
+    expect(mockClose).toBeCalledTimes(1);
+    expect(mockRemoveListeners).toBeCalledTimes(1);
   });
 });
