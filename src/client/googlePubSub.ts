@@ -125,6 +125,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     await this.addHandler(subscriber, subscription);
     this.log(
       `   📭     ${metadata.subscriptionName} is ready to receive messages at a controlled volume of ${metadata.options?.flowControl?.maxMessages} messages.`,
+      metadata,
     );
   }
 
@@ -132,13 +133,16 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const [, metadata] = subscriber;
     const { subscriptions } = this.getProject(metadata.options);
     if (!subscriptions.has(metadata.subscriptionName)) {
-      this.log(`   📪     ${metadata.subscriptionName} wasn't started at all`);
+      this.log(
+        `   📪     ${metadata.subscriptionName} wasn't started at all`,
+        metadata,
+      );
       return;
     }
 
     const subscription = await this.getSubscription(subscriber);
     await subscription.close();
-    this.log(`   📪     ${metadata.subscriptionName} is closed now`);
+    this.log(`   📪     ${metadata.subscriptionName} is closed now`, metadata);
   }
 
   private async addHandler(
@@ -157,8 +161,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     });
   }
 
-  private log(message: string): void {
-    Logger.Instance.info(chalk.green.bold(message));
+  private log(message: string, metadata?: SubscriberTuple[1]): void {
+    Logger.Instance.info({ metadata }, chalk.green.bold(message));
   }
 
   private getSubscriberOptions(
