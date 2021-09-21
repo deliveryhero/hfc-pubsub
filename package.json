@@ -94,6 +94,9 @@
   "bin": {
     "subscriptions": "./dist/cli/subscriptions.js"
   },
+  "engines": {
+    "node": ">=12.22.0"
+  },
   "lint-staged": {
     "*.{ts,js}": [
       "./node_modules/.bin/eslint --ignore-path .gitignore --ext .js,.ts --fix"
