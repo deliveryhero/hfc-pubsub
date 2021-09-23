@@ -27,4 +27,14 @@ require('yargs')
       describe: 'Path to exported credentials file',
       type: 'string',
     },
+
+    'pubsub-server-port': {
+      describe: 'Port at which server would run default 8080',
+      type: 'string',
+    },
+
+    'no-server': {
+      describe: "If true doesn't run server",
+      type: 'string',
+    },
   }).argv;

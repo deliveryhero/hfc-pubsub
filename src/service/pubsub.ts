@@ -1,3 +1,4 @@
+import http from 'http';
 import Topic, { Payload } from '../topic';
 import { SubscriberTuple, Subscribers } from '../subscriber';
 import EventBus from '../client/eventBus';
@@ -16,7 +17,50 @@ export default class PubSubService {
   private constructor() {
     this.initDriver();
     this.initClient();
+    this.startServer();
     this.bind(this);
+  }
+
+  public startServer(): void {
+    if (process.env.NO_SERVER === 'true') {
+      return;
+    }
+    const port = process.env.PUBSUB_SERVER_PORT || 8080;
+    //create a server object:
+    http
+      .createServer(async function (_req, res) {
+        const isHealthy = await PubSubService.isHealthy();
+        if (isHealthy) {
+          res.write(`is healthy`); //write a response to the client
+          res.end(); //end the response
+        } else {
+          res.statusCode = 500;
+          res.write(`Not healthy`); //write a response to the client
+          res.end(); //end the response
+        }
+      })
+      .listen(port); //the server object listens on port 8080
+    Logger.Instance.info(`Pubsub server running on port ${port}`);
+  }
+  public static async isHealthy(): Promise<boolean> {
+    if (PubSubService.status !== 'ready') {
+      Logger.Instance.warn('All subscriptions are not ready yet');
+      return false;
+    }
+
+    const subsOpenState =
+      await PubSubService.client.getAllSubscriptionsOpenState();
+    const subscriptions = await PubSubService.getInstance().getSubscribers();
+    const notOpenSubs = subscriptions
+      .map(([_, metadata]) => metadata.subscriptionName)
+      .filter((subName) => {
+        const subState = subsOpenState.find(([name]) => name === subName);
+        return !subState?.[1];
+      });
+    if (notOpenSubs.length) {
+      Logger.Instance.warn(notOpenSubs, "These subs aren't open yet");
+    }
+    return !notOpenSubs.length;
   }
 
   private bind(instance: PubSubService): void {

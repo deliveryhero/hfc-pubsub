@@ -13,7 +13,11 @@ import Bluebird from 'bluebird';
 
 import { Topic, Payload } from '../index';
 import { PublishOptions } from '../interface/publishOptions';
-import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
+import {
+  AllSubscriptions,
+  IsOpenTuple,
+  PubSubClientV2,
+} from '../interface/pubSubClient';
 import {
   SubscriberMetadata,
   SubscriberOptions,
@@ -521,6 +525,25 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
             subscriptionName: metadata?.name || '',
           };
         });
+      },
+    );
+    return subscriptions.flat();
+  }
+
+  public async getAllSubscriptionsOpenState(): Promise<IsOpenTuple[]> {
+    const subscriptions = await Bluebird.map(
+      Object.keys(this.projects),
+      async (project) => {
+        const [subscriptions] = await this.projects[
+          project
+        ].client.getSubscriptions();
+        return subscriptions.map(
+          ({ pubsub, metadata }) =>
+            [
+              metadata?.name?.split('/')?.slice(-1)[0] as string,
+              pubsub.isOpen as boolean,
+            ] as IsOpenTuple,
+        );
       },
     );
     return subscriptions.flat();
