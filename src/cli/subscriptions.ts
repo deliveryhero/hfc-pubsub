@@ -33,8 +33,8 @@ require('yargs')
       type: 'string',
     },
 
-    'no-server': {
-      describe: "If true doesn't run server",
+    'run-health-server': {
+      describe: 'If true runs server telling health state of subscriptions',
       type: 'string',
     },
   }).argv;

@@ -22,9 +22,8 @@ export default class PubSubService {
   }
 
   public startServer(): void {
-    if (process.env.NO_SERVER === 'true') {
-      return;
-    }
+    if (process.env.RUN_HEALTH_SERVER !== 'true') return;
+
     const port = process.env.PUBSUB_SERVER_PORT || 8080;
     //create a server object:
     http
@@ -58,7 +57,10 @@ export default class PubSubService {
         return !subState?.[1];
       });
     if (notOpenSubs.length) {
-      Logger.Instance.warn(notOpenSubs, "These subs aren't open yet");
+      Logger.Instance.warn(
+        { subscriptions: notOpenSubs },
+        "These subs aren't open yet",
+      );
     }
     return !notOpenSubs.length;
   }

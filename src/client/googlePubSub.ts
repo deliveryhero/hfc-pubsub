@@ -534,15 +534,12 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const subscriptions = await Bluebird.map(
       Object.keys(this.projects),
       async (project) => {
-        const [subscriptions] = await this.projects[
+        const subscriptions = await this.projects[
           project
-        ].client.getSubscriptions();
-        return subscriptions.map(
-          ({ pubsub, metadata }) =>
-            [
-              metadata?.name?.split('/')?.slice(-1)[0] as string,
-              pubsub.isOpen as boolean,
-            ] as IsOpenTuple,
+        ].subscriptions.values();
+        return Array.from(subscriptions).map(
+          ({ isOpen, metadata }) =>
+            [metadata?.name?.split('/')?.slice(-1)[0], isOpen] as IsOpenTuple,
         );
       },
     );

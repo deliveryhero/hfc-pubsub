@@ -4,7 +4,7 @@ const envMapping: any = {
   projectNumber: 'PROJECT_NUMBER',
   driver: 'PUBSUB_DRIVER',
   googleApplicationCredentials: 'GOOGLE_APPLICATION_CREDENTIALS',
-  noServer: 'NO_SERVER',
+  runHealthServer: 'RUN_HEALTH_SERVER',
   pubsubServerPort: 'PUBSUB_SERVER_PORT',
 };
 
