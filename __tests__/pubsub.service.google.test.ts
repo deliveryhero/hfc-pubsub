@@ -18,30 +18,30 @@ const mockAllUsersList = [
 jest.mock('../src/client/googlePubSub', () => ({
   __esModule: true,
   default: class {
-    public static getInstance(): any {
+    public static getInstance() {
       return new this();
     }
-    public publish(...args: any[]): any {
+    public publish(...args: any[]) {
       return mockPublish(...args);
     }
-    public subscribe(...args: any[]): any {
+    public subscribe(...args: any[]) {
       return mockSubscribe(...args);
     }
-    public close(): any {
+    public close() {
       return mockClose();
     }
-    public async getAllSubscriptions(): Promise<any[]> {
+    public async getAllSubscriptions() {
       return mockAllUsersList;
     }
   },
 }));
 
-let service: PubSubService;
-let subscriber: ReturnType<PubSubService['getSubscribers']>[number];
-let topic: ExampleTopic;
-
 describe('pubsub.service', () => {
+  let service: PubSubService;
+  let subscriber: ReturnType<PubSubService['getSubscribers']>[number];
+  let topic: ExampleTopic;
   const retryConfig = {} as RetryConfig;
+
   beforeAll(() => {
     service = PubSubService.getInstance();
     subscriber = PubSubService.getInstance()
@@ -51,6 +51,7 @@ describe('pubsub.service', () => {
       )!;
     topic = new ExampleTopic();
   });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });

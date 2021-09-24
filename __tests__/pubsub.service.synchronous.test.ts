@@ -20,16 +20,16 @@ jest.mock('@google-cloud/pubsub', () => ({
 jest.mock('../src/client/eventBus', () => ({
   __esModule: true,
   default: class {
-    public static getInstance(): any {
+    public static getInstance() {
       return new this();
     }
-    public publish(): any {
+    public publish() {
       return mockPublish();
     }
-    public subscribe(): any {
+    public subscribe() {
       return mockSubscribe();
     }
-    public async getAllSubscriptions(): Promise<any> {
+    public async getAllSubscriptions() {
       throw new Error(
         'This feature is not available with the synchronous driver',
       );

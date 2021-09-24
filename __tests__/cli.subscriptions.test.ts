@@ -9,14 +9,14 @@ jest.mock('@google-cloud/pubsub', () => ({
 }));
 
 const mockPublish = jest.fn();
-jest.mock('../src/service/pubsub', (): any => ({
+jest.mock('../src/service/pubsub', () => ({
   __esModule: true,
   default: class {
-    public static getInstance(): any {
+    public static getInstance() {
       console.log('getting instance');
       return new this();
     }
-    public publish(): any {
+    public publish() {
       return mockPublish();
     }
   },
