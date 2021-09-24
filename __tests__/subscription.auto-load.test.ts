@@ -1,5 +1,7 @@
-import { Subscribers } from '../src/subscriber';
-import SubscriptionService from '../src/service/subscription';
+import {
+  SubscriberTuple,
+  SubscriptionService,
+} from '@honestfoodcompany/pubsub';
 import generateMockMessage from './helpers/generateMockMessage';
 
 const mockPubSub = jest.fn();
@@ -10,44 +12,46 @@ jest.mock('@google-cloud/pubsub', () => ({
 }));
 
 const mockPublish = jest.fn();
-jest.mock('../src/service/pubsub', (): any => ({
+jest.mock('../src/service/pubsub', () => ({
   __esModule: true,
   default: class {
-    public static getInstance(): any {
+    public static getInstance() {
       console.log('getting instance');
       return new this();
     }
-    public publish(): any {
+    public publish() {
       return mockPublish();
     }
   },
 }));
 
-describe('subscription v2 test', (): any => {
-  let subscriptions: Subscribers;
+describe('@auto-load subscription tests', () => {
+  let subscriptions: SubscriberTuple[];
   beforeAll(() => {
     subscriptions = SubscriptionService.getSubscribers();
   });
 
-  it('should find autoload subscription', async (): Promise<any> => {
+  it('should find autoload subscription', () => {
     expect(JSON.stringify(subscriptions)).toContain(
-      'test.auto-load-subscription',
+      'test-topic.example.auto-load.subscription',
     );
     expect(
       subscriptions.find(
         (subscription) =>
-          subscription[1].subscriptionName === 'test.auto-load-subscription',
+          subscription[1].subscriptionName ===
+          'test-topic.example.auto-load.subscription',
       ),
     ).toBeTruthy();
   });
 
-  it('should find handle a message', async (): Promise<any> => {
+  it('should handle a message', () => {
     const subscriberTuple = subscriptions.find(
       (subscription) =>
-        subscription[1].subscriptionName === 'test.auto-load-subscription',
+        subscription[1].subscriptionName ===
+        'test-topic.example.auto-load.subscription',
     );
     expect(subscriberTuple).toBeDefined();
-    if (!subscriberTuple) return;
+    if (!subscriberTuple) throw new Error('Invalid subscriber');
     const subscriberClass = subscriberTuple[0];
     const metadata = subscriberTuple[1];
     const subscriber = new subscriberClass();
@@ -55,7 +59,7 @@ describe('subscription v2 test', (): any => {
       subscriber.handleMessage(generateMockMessage({ subscriber: metadata })),
     ).not.toThrow();
     expect(JSON.stringify(subscriptions)).toContain(
-      'test.auto-load-subscription',
+      'test-topic.example.auto-load.subscription',
     );
   });
 });

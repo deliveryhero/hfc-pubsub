@@ -1,48 +1,64 @@
-import TestSubscription from './pubsub/subscriptions/example.subscription-ts';
+import { Subscribers } from '../src/subscriber';
+import SubscriptionService from '../src/service/subscription';
 
-const mockTopic = jest.fn().mockImplementation(() => ({
-  get: jest.fn(),
-  publish: jest.fn(),
-}));
-const mockPublish = jest.fn();
-const mockSubscribe = jest.fn();
+const mockPubSub = jest.fn();
+
 jest.mock('@google-cloud/pubsub', () => ({
   __esModule: true,
-  PubSub: jest.fn().mockImplementation(() => ({
-    topic: mockTopic,
-    publish: jest.fn(),
-  })),
+  PubSub: mockPubSub,
 }));
 
-jest.mock('../src/service/pubsub', () => ({
+const mockPublish = jest.fn();
+jest.mock('../src/service/pubsub', (): any => ({
+  __esModule: true,
   default: class {
-    public static getInstance() {
+    public static getInstance(): any {
+      console.log('getting instance');
       return new this();
     }
-    public publish() {
+    public publish(): any {
       return mockPublish();
-    }
-    public subscribe() {
-      return mockSubscribe();
     }
   },
 }));
-jest.mock('@google-cloud/pubsub', () => ({
-  __esModule: true,
-  PubSub: jest.fn().mockImplementation(() => ({
-    topic: mockTopic,
-    publish: jest.fn(),
-  })),
-}));
 
-describe('subscription', () => {
-  it('getters should return correct values', async () => {
-    const sub = new TestSubscription();
-    expect(TestSubscription.topicName).toBe('test-topic');
-    expect(TestSubscription.subscriptionName).toBe('test-topic.subscription');
-    expect(TestSubscription.description).toBe('Just a test subscription');
-    expect(typeof sub.handleMessage).toBe('function');
-    expect(TestSubscription.ackDeadlineSeconds).toBe(10);
-    expect(TestSubscription.maxMessages).toBe(1);
+describe('@subscription', (): any => {
+  let subscriptions: Subscribers;
+  beforeAll(() => {
+    subscriptions = SubscriptionService.getSubscribers();
+  });
+
+  it('should find subscription', async (): Promise<any> => {
+    expect(JSON.stringify(subscriptions)).toContain(
+      'test-topic.example.subscription',
+    );
+  });
+
+  it('should have default options when not specified', () => {
+    const subscription = subscriptions.find((sub) => {
+      const [, { subscriptionName }] = sub;
+      return subscriptionName === 'test-topic.example.subscription';
+    });
+
+    const subscriptionObj = subscription?.length
+      ? subscription[1]
+      : ({} as any);
+
+    expect(subscriptionObj?.options?.ackDeadline).toBe(145);
+    expect(subscriptionObj?.options?.flowControl?.maxMessages).toBe(134);
+  });
+
+  it('should allow the default values to be overridden', () => {
+    const subscription = subscriptions.find((sub) => {
+      const [, { subscriptionName }] = sub;
+      return (
+        subscriptionName === 'test-topic.example.override-options.subscription'
+      );
+    });
+
+    const subscriptionObj =
+      subscription && subscription.length > 1 ? subscription[1] : ({} as any);
+    expect(subscriptionObj?.options?.ackDeadline).toBe(20);
+    expect(subscriptionObj?.options?.flowControl?.maxMessages).toBe(40);
   });
 });

@@ -1,7 +1,7 @@
-import PubSubService from '../src/service/pubsub';
+import { PubSubService } from '@honestfoodcompany/pubsub';
 import { RetryConfig } from '../src/interface';
 import ExampleTopic from './pubsub/topics/example.topic';
-import ExampleSubscriber from './pubsub/subscriptions/example.subscription-ts';
+import ExampleSubscriber from './pubsub/subscriptions/test-topic.example.subscription';
 
 process.env.PUBSUB_DRIVER = 'google';
 
@@ -37,14 +37,18 @@ jest.mock('../src/client/googlePubSub', () => ({
 }));
 
 let service: PubSubService;
-let subscriber: any;
-let topic: any;
+let subscriber: ReturnType<PubSubService['getSubscribers']>[number];
+let topic: ExampleTopic;
 
 describe('pubsub.service', () => {
   const retryConfig = {} as RetryConfig;
   beforeAll(() => {
     service = PubSubService.getInstance();
-    subscriber = new ExampleSubscriber();
+    subscriber = PubSubService.getInstance()
+      .getSubscribers()
+      .find(
+        (sub) => sub[1].subscriptionName === ExampleSubscriber.subscriptionName,
+      )!;
     topic = new ExampleTopic();
   });
   beforeEach(() => {

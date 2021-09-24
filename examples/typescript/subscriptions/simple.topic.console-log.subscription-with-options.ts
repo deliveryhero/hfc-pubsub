@@ -11,7 +11,7 @@ const subscriber: SubscriberObject = {
       maxMessages: 100,
     },
     deadLetterPolicy: {
-      deadLetterTopic: 'dlq.simple.topic.console-log.subscription-with-options',
+      deadLetterTopic: 'simple.topic.console-log.subscription-with-options.dlq',
       maxDeliveryAttempts: 6,
     },
     retryPolicy: {

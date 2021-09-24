@@ -1,4 +1,4 @@
-import SubscriptionService from '../src/service/subscription';
+import { SubscriptionService } from '@honestfoodcompany/pubsub';
 
 const mockPubSub = jest.fn();
 
@@ -21,21 +21,24 @@ jest.mock('../src/service/pubsub', (): any => ({
   },
 }));
 
-jest.mock('./pubsub/subscriptions/example.subscription', (): any => ({
-  __esModule: true,
-  default: jest.fn().mockImplementation((): any => ({
-    getTopicName: (): any => {
-      return 'test-topic';
-    },
-    setMongooseConnection: function (): any {
-      return this;
-    },
-    init: function (): any {
-      return this;
-    },
-    start: jest.fn(),
-  })),
-}));
+jest.mock(
+  './pubsub/subscriptions/test-topic.example.subscription',
+  (): any => ({
+    __esModule: true,
+    default: jest.fn().mockImplementation((): any => ({
+      getTopicName: (): any => {
+        return 'test-topic';
+      },
+      setMongooseConnection: function (): any {
+        return this;
+      },
+      init: function (): any {
+        return this;
+      },
+      start: jest.fn(),
+    })),
+  }),
+);
 
 describe('subscriptions cli', (): any => {
   it('should load subscription service', async (): Promise<any> => {

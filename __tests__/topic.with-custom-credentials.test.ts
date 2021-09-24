@@ -1,6 +1,6 @@
+import { PubSubService } from '@honestfoodcompany/pubsub';
 import GooglePubSubAdapter from '../src/client/googlePubSub';
-import PubSubService from '../src/service/pubsub';
-import exampleTopicWithProjectCredentials from './pubsub/topics/example.topic_withProjectCredentials';
+import ExampleTopicWithProjectCredentials from './pubsub/topics/example.topic.with-custom-credentials';
 
 process.env.PUBSUB_DRIVER = 'google';
 
@@ -35,37 +35,29 @@ jest.mock('@google-cloud/pubsub', () => {
   };
 });
 
-jest.mock('google-gax');
-
-describe('PubSubService', (): void => {
-  beforeEach(() => {
-    // jest.clearMocks();
-  });
-
+describe('With Custom Credentials', (): void => {
   it('should call publish', async (): Promise<void> => {
     const spy = jest.spyOn(PubSubService.prototype, 'publish');
-    const topic = new exampleTopicWithProjectCredentials();
+    const topic = new ExampleTopicWithProjectCredentials();
     await topic.publish<any>({ data: 'test' });
     expect(spy).toBeCalled();
   });
-});
 
-describe('GooglePubSubAdapter', () => {
-  it('should call publish method', async (): Promise<void> => {
+  it('should call Google Driver publish method', async (): Promise<void> => {
     const spy = jest.spyOn(GooglePubSubAdapter.prototype, 'publish');
-    const topic = new exampleTopicWithProjectCredentials();
+    const topic = new ExampleTopicWithProjectCredentials();
     await topic.publish<any>({ data: 'test' });
     expect(spy).toBeCalled();
   });
 
   it('should call GooglePubSub publish method', async (): Promise<void> => {
-    const topic = new exampleTopicWithProjectCredentials();
+    const topic = new ExampleTopicWithProjectCredentials();
     await topic.publish<any>({ data: 'test' });
     expect(mockPublish).toBeCalled();
   });
 
   it('should have the project defined in projects', async () => {
-    const topic = new exampleTopicWithProjectCredentials();
+    const topic = new ExampleTopicWithProjectCredentials();
     await topic.publish<any>({ data: 'test' });
     expect(
       GooglePubSubAdapter.getInstance().getProjects()['custom-project-id'],
@@ -73,17 +65,15 @@ describe('GooglePubSubAdapter', () => {
   });
 
   it('should retrieve the correct project when publishing the message', async () => {
-    const topic = new exampleTopicWithProjectCredentials();
+    const topic = new ExampleTopicWithProjectCredentials();
     await topic.publish<any>({ data: 'test' });
     expect(
       GooglePubSubAdapter.getInstance().getProjects()['custom-project-id'],
     ).toBeDefined();
   });
-});
 
-describe('Google PubSub Client', () => {
-  it('should be called with correct credentials', async () => {
-    const topic = new exampleTopicWithProjectCredentials();
+  it('should call GooglePubSub with correct credentials', async () => {
+    const topic = new ExampleTopicWithProjectCredentials();
     await topic.publish<any>({ data: 'test' });
     expect(mockConstructor.mock.calls[1]).toEqual([
       {

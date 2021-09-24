@@ -1,8 +1,8 @@
 process.env.PUBSUB_ROOT_DIR = './__tests__/pubsub';
 const TEST_REGEX = '/__tests__/.*.test.(js|ts)?$';
 module.exports = {
-  // Automatically clear mock calls and instances between every test
-  clearMocks: true,
+  // FIXME: Automatically clear mock calls and instances between every test
+  // clearMocks: true,
 
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',

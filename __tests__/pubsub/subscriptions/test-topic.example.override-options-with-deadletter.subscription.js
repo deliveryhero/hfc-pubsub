@@ -11,7 +11,7 @@ const subscription = {
     flowControl: { maxMessages: 40 },
     deadLetterPolicy: {
       deadLetterTopic:
-        'dlq.test-topic.example.override-options-with-deadletter.subscription',
+        'test-topic.example.override-options-with-deadletter.subscription.dlq',
       maxDeliveryAttempts: 14,
     },
   },

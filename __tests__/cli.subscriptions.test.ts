@@ -1,6 +1,5 @@
-import path from 'path';
 import { exec } from 'child_process';
-import SubscriptionService from '../src/service/subscription';
+import { SubscriptionService } from '@honestfoodcompany/pubsub';
 
 const mockPubSub = jest.fn();
 
@@ -33,7 +32,7 @@ const findSubscriber = (name: string) => {
 function cli(args: any, cwd: string | undefined = undefined): any {
   return new Promise((resolve): any => {
     exec(
-      `node ${path.resolve('./dist/cli/subscriptions')} ${args.join(' ')}`,
+      `npm run subscriptions -- ${args.join(' ')}`,
       { cwd },
       (error: any, stdout: any, stderr: any): any => {
         resolve({
@@ -46,8 +45,9 @@ function cli(args: any, cwd: string | undefined = undefined): any {
     );
   });
 }
-describe('subscriptions cli', (): any => {
-  it('should find config', async (): Promise<any> => {
+describe('subscriptions cli', () => {
+  // eslint-disable-next-line jest/expect-expect
+  it('should find config', () => {
     if (
       process.env.PUBSUB_ROOT_DIR &&
       !process.env.PUBSUB_ROOT_DIR.match(/__tests__/)
@@ -59,36 +59,42 @@ describe('subscriptions cli', (): any => {
     }
   });
 
-  it('should list subscriptions', async (): Promise<any> => {
+  it('should list subscriptions', async (): Promise<void> => {
+    jest.setTimeout(10000);
     const result = await cli(['list']);
-    expect(JSON.stringify(result)).toContain('test-topic');
-    expect(JSON.stringify(result)).toContain('v2-subscription');
+    expect(JSON.stringify(result)).toContain('test-topic.example.subscription');
+    expect(JSON.stringify(result)).toContain(
+      'test-topic.example.auto-load.subscription',
+    );
+    expect(JSON.stringify(result)).toContain(
+      'test-topic.example.with-custom-credentials.subscription',
+    );
   });
 
-  it('should list all subscriptions', async (): Promise<any> => {
+  it('should list all subscriptions', () => {
     const subscriptions = SubscriptionService.getSubscribers();
-    expect(subscriptions.length).toEqual(10);
+    expect(subscriptions.length).toEqual(6);
   });
 
-  it('should use project level default options', async (): Promise<any> => {
+  it('should use project level default options', () => {
     const subscriber = findSubscriber(
-      'example.v3_overrideoptions.subscription',
+      'test-topic.example.override-options.subscription',
     );
     expect(subscriber.options.deadLetterPolicy).toEqual({
-      deadletterTopic: 'global.deadletter',
-      maxRetryAttempts: 15,
+      deadLetterTopic: 'global.deadletter',
+      maxDeliveryAttempts: 15,
     });
   });
 
   it('should use subscriber level default options over project level options', async (): Promise<any> => {
     const subscriber = findSubscriber(
-      'example.v3_overrideoptions-with-deadletter.subscription',
+      'test-topic.example.override-options-with-deadletter.subscription',
     );
 
     expect(subscriber.options.deadLetterPolicy).toEqual({
-      deadletterTopic:
-        'example.v3_overrideoptions-with-deadletter.subscription.deadletter',
-      maxRetryAttempts: 14,
+      deadLetterTopic:
+        'test-topic.example.override-options-with-deadletter.subscription.dlq',
+      maxDeliveryAttempts: 14,
     });
   });
 });

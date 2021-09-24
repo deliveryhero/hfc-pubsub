@@ -12,7 +12,7 @@ const subscriber: SubscriberObject = {
   description: 'Will console log messages published on test.topic',
   options: {
     deadLetterPolicy: {
-      deadLetterTopic: 'dlq.test.topic.console-log',
+      deadLetterTopic: 'test.topic.console-log.dlq',
       maxDeliveryAttempts: 6,
       createDefaultSubscription: true,
     },

@@ -1,6 +1,6 @@
-import PubSubService from '../src/service/pubsub';
+import { PubSubService, Subscriber } from '@honestfoodcompany/pubsub';
 import ExampleTopic from './pubsub/topics/example.topic';
-import ExampleSubscriber from './pubsub/subscriptions/example.subscription-ts';
+import ExampleSubscriber from './pubsub/subscriptions/test-topic.example.subscription';
 
 process.env.PUBSUB_DRIVER = 'synchronous';
 
@@ -43,7 +43,7 @@ let topic: any;
 describe('pubsub.service - synchronous driver', () => {
   beforeAll(() => {
     service = PubSubService.getInstance();
-    subscriber = new ExampleSubscriber();
+    subscriber = new Subscriber(ExampleSubscriber);
     topic = new ExampleTopic();
   });
   beforeEach(() => {

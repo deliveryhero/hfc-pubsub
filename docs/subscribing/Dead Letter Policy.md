@@ -14,7 +14,7 @@ exports.default = {
   description: 'Will console log messages published on test.topic',
   options: {
     deadLetterPolicy: {
-      deadLetterTopic: 'dlq.test.topic.sub',
+      deadLetterTopic: 'test.topic.sub.dlq',
       maxDeliveryAttempts: 15,
       createDefaultSubscription: true,
     },
@@ -50,4 +50,4 @@ Please set createDefaultSubscription: true in deadLetterPolicy to create default
 
 To make it easy to set this up, we have a option `createDefaultSubscription` that will automatically create a default dead letter subscription with name having `.default` added to the `deadLetterTopic`.
 
-For example, if deadLetterTopic is `dlq.example.test` then a subscription called `dlq.example.test.default` will be automatically created if `createDefaultSubscription` is true.
+For example, if deadLetterTopic is `example.test.dlq` then a subscription called `example.test.dlq.default` will be automatically created if `createDefaultSubscription` is true.
