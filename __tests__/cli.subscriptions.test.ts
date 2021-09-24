@@ -45,6 +45,9 @@ function cli(args: any, cwd: string | undefined = undefined): any {
     );
   });
 }
+
+jest.setTimeout(10000);
+
 describe('subscriptions cli', () => {
   // eslint-disable-next-line jest/expect-expect
   it('should find config', () => {
@@ -60,7 +63,6 @@ describe('subscriptions cli', () => {
   });
 
   it('should list subscriptions', async (): Promise<void> => {
-    jest.setTimeout(10000);
     const result = await cli(['list']);
     expect(JSON.stringify(result)).toContain('test-topic.example.subscription');
     expect(JSON.stringify(result)).toContain(
