@@ -61,8 +61,8 @@ GOOGLE_CLOUD_PUB_SUB_PROJECT_ID=gcp-project-id
 | `root-dir`                       | `PUBSUB_ROOT_DIR`                 | must be the path to your project's pubsub directory. This module only works with .js files, so if you are writing your code in typescript, you must set this variable to the pubsub directory in your project's build directory. |
 | `google-application-credentials` | `GOOGLE_APPLICATION_CREDENTIALS`  | see <https://cloud.google.com/docs/authentication/getting-started#creating_a_service_account> to generate this                                                                                                                   |
 | `project-id`                     | `GOOGLE_CLOUD_PUB_SUB_PROJECT_ID` | name of the project in Google Cloud Platform                                                                                                                                                                                     |
-| `pubsub-server-port`             | `SERVER_PORT`                     | PORT at which the pubsub should run the server at                                                                                                                                                                                |
-| `run-health-server`              | `RUN_HEALTH_SERVER`               | If value assigned is true this would run a server showing health state and return 500 if not healthy                                                                                                                             |
+| `server-port`                    | `SERVER_PORT`                     | PORT at which the pubsub should run the server at                                                                                                                                                                                |
+| `health-server`                  | `PUBSUB_HEALTH_SERVER`            | If value assigned is true this would run a server showing health state and return 500 if not healthy                                                                                                                             |
 
 |
 

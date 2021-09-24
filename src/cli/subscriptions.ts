@@ -28,12 +28,12 @@ require('yargs')
       type: 'string',
     },
 
-    'pubsub-server-port': {
+    'server-port': {
       describe: 'Port at which server would run default 8080',
       type: 'string',
     },
 
-    'run-health-server': {
+    'health-server': {
       describe: 'If true runs server telling health state of subscriptions',
       type: 'string',
     },

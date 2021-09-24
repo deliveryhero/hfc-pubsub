@@ -11,7 +11,7 @@ import { SubscriberTuple } from '../subscriber';
 export default class EventBus extends EventEmitter implements PubSubClientV2 {
   getAllSubscriptionsOpenState(): IsOpenTuple[] {
     throw new Error(
-      'Not available for synchronous driver Please set env variable RUN_HEALTH_SERVER=false',
+      'Not available for synchronous driver Please set env variable PUBSUB_HEALTH_SERVER=false',
     );
   }
   protected static instance: EventBus;

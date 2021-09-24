@@ -4,8 +4,8 @@ const envMapping: any = {
   projectNumber: 'PROJECT_NUMBER',
   driver: 'PUBSUB_DRIVER',
   googleApplicationCredentials: 'GOOGLE_APPLICATION_CREDENTIALS',
-  runHealthServer: 'RUN_HEALTH_SERVER',
-  pubsubServerPort: 'PUBSUB_SERVER_PORT',
+  healthServer: 'PUBSUB_HEALTH_SERVER',
+  serverPort: 'PUBSUB_SERVER_PORT',
 };
 
 export const setEnvFromArgs = (_args: { [key: string]: any }): void => {

@@ -22,7 +22,7 @@ export default class PubSubService {
   }
 
   public startServer(): void {
-    if (process.env.RUN_HEALTH_SERVER !== 'true') return;
+    if (process.env.PUBSUB_HEALTH_SERVER !== 'true') return;
 
     const port = process.env.PUBSUB_SERVER_PORT || 8080;
     //create a server object:
