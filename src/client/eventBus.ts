@@ -9,7 +9,7 @@ import { Topic, Payload } from '../index';
 import { SubscriberTuple } from '../subscriber';
 
 export default class EventBus extends EventEmitter implements PubSubClientV2 {
-  getAllSubscriptionsOpenState(): Promise<IsOpenTuple[]> {
+  getAllSubscriptionsOpenState(): IsOpenTuple[] {
     throw new Error(
       'Not available for synchronous driver Please set env variable RUN_HEALTH_SERVER=false',
     );

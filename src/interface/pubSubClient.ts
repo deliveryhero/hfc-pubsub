@@ -27,6 +27,6 @@ export interface PubSubClientV2 {
   subscribe(subscriber: SubscriberTuple): void;
   close(subscriber: SubscriberTuple): void;
   getAllSubscriptions(): Promise<AllSubscriptions[]>;
-  getAllSubscriptionsOpenState(): Promise<IsOpenTuple[]>;
+  getAllSubscriptionsOpenState(): IsOpenTuple[];
   //@todo: getAllTopics(): Promise<string[]>;
 }

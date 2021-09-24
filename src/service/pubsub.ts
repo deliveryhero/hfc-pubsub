@@ -48,15 +48,11 @@ export default class PubSubService {
       return false;
     }
 
-    const subsOpenState =
-      await PubSubService.client.getAllSubscriptionsOpenState();
-    const subscriptions = await PubSubService.getInstance().getSubscribers();
-    const notOpenSubs = subscriptions
-      .map(([_, metadata]) => metadata.subscriptionName)
-      .filter((subName) => {
-        const subState = subsOpenState.find(([name]) => name === subName);
-        return !subState?.[1];
-      });
+    const subsOpenState = PubSubService.client.getAllSubscriptionsOpenState();
+
+    const notOpenSubs = subsOpenState
+      .filter((subState) => !subState[1])
+      .map((subState) => subState[0]);
     if (notOpenSubs.length) {
       Logger.Instance.warn(
         { subscriptions: notOpenSubs },
