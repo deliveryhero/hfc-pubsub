@@ -38,8 +38,9 @@ export default class PubSubService {
           res.end(); //end the response
         }
       })
-      .listen(port); //the server object listens on port 8080
-    Logger.Instance.info(`Pubsub server running on port ${port}`);
+      .listen(port, 128, () => {
+        Logger.Instance.info(`Pubsub server running on port ${port}`);
+      }); //the server object listens on port 8080
   }
   public static async isHealthy(): Promise<boolean> {
     if (PubSubService.status !== 'ready') {
