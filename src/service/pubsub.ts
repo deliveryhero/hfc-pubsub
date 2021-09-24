@@ -38,7 +38,7 @@ export default class PubSubService {
           res.end(); //end the response
         }
       })
-      .listen(port, 128, () => {
+      .listen(port, () => {
         Logger.Instance.info(`Pubsub server running on port ${port}`);
       }); //the server object listens on port 8080
   }
