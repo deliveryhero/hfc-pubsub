@@ -27,8 +27,8 @@ export default class PubSubService {
     const port = process.env.PUBSUB_SERVER_PORT || 8080;
     //create a server object:
     http
-      .createServer(async function (_req, res) {
-        const isHealthy = await PubSubService.isHealthy();
+      .createServer(function (_req, res) {
+        const isHealthy = PubSubService.isHealthy();
         if (isHealthy) {
           res.write(`is healthy`); //write a response to the client
           res.end(); //end the response
@@ -42,25 +42,29 @@ export default class PubSubService {
         Logger.Instance.info(`Pubsub server running on port ${port}`);
       }); //the server object listens on port 8080
   }
-  public static async isHealthy(): Promise<boolean> {
+
+  public static isHealthy(): boolean {
     if (PubSubService.status !== 'ready') {
       Logger.Instance.warn('All subscriptions are not ready yet');
       return false;
     }
 
     const subsState = PubSubService.client.getAllSubscriptionsState();
-    const allSubs = await PubSubService.getInstance().getSubscribers();
+    const allSubs = PubSubService.getInstance().getSubscribers();
 
     const notOpenSubs = subsState
       .filter((subState) => !subState[1])
       .map((subState) => subState[0]);
-    if (notOpenSubs.length && subsState.length === allSubs.length) {
+    const allSubsNotHealthy = !!(
+      notOpenSubs.length && subsState.length === allSubs.length
+    );
+    if (allSubsNotHealthy) {
       Logger.Instance.warn(
         { subscriptions: notOpenSubs },
         "These subs aren't open yet",
       );
     }
-    return !notOpenSubs.length;
+    return !allSubsNotHealthy;
   }
 
   private bind(instance: PubSubService): void {
