@@ -27,4 +27,14 @@ require('yargs')
       describe: 'Path to exported credentials file',
       type: 'string',
     },
+
+    'server-port': {
+      describe: 'Port at which server would run default 8080',
+      type: 'string',
+    },
+
+    'health-server': {
+      describe: 'If true runs server telling health state of subscriptions',
+      type: 'string',
+    },
   }).argv;
