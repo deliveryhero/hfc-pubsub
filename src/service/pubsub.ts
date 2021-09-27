@@ -55,16 +55,16 @@ export default class PubSubService {
     const notOpenSubs = subsState
       .filter((subState) => !subState[1])
       .map((subState) => subState[0]);
-    const allSubsNotHealthy = !!(
-      notOpenSubs.length && subsState.length === allSubs.length
-    );
-    if (allSubsNotHealthy) {
+    if (subsState.length !== allSubs.length) {
+      Logger.Instance.warn("Some subs aren't active");
+    }
+    if (notOpenSubs.length) {
       Logger.Instance.warn(
         { subscriptions: notOpenSubs },
         "These subs aren't open yet",
       );
     }
-    return !allSubsNotHealthy;
+    return !(subsState.length || subsState.length !== allSubs.length);
   }
 
   private bind(instance: PubSubService): void {
