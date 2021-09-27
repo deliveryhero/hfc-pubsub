@@ -7,6 +7,8 @@ export interface AllSubscriptions {
   subscriptionName: string;
 }
 
+export type IsOpenTuple = [string, boolean];
+
 export interface PubSubClientV2 {
   publish<T extends Topic, P extends Payload>(
     topic: T,
@@ -16,5 +18,6 @@ export interface PubSubClientV2 {
   subscribe(subscriber: SubscriberTuple): void;
   close(subscriber: SubscriberTuple): void;
   getAllSubscriptions(): Promise<AllSubscriptions[]>;
+  getAllSubscriptionsState(): IsOpenTuple[];
   //@todo: getAllTopics(): Promise<string[]>;
 }
