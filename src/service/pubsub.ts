@@ -64,7 +64,7 @@ export default class PubSubService {
         "These subs aren't open yet",
       );
     }
-    return !(subsState.length || subsState.length !== allSubs.length);
+    return !(notOpenSubs.length || subsState.length !== allSubs.length);
   }
 
   private bind(instance: PubSubService): void {
