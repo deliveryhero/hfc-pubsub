@@ -14,7 +14,6 @@ export default interface PubSubClient {
   ): Promise<string>;
   subscribe(subscriber: typeof Subscriber): void;
   getAllSubscriptions(): Promise<AllSubscriptions[]>;
-  getAllSubscriptionsOpen(): Promise<IsOpenTuple>;
   //@todo: getAllTopics(): Promise<string[]>;
 }
 export type IsOpenTuple = [string, boolean];
