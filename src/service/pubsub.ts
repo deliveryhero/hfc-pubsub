@@ -48,12 +48,13 @@ export default class PubSubService {
       return false;
     }
 
-    const subsOpenState = PubSubService.client.getAllSubscriptionsOpenState();
+    const subsState = PubSubService.client.getAllSubscriptionsState();
+    const allSubs = await PubSubService.getInstance().getSubscribers();
 
-    const notOpenSubs = subsOpenState
+    const notOpenSubs = subsState
       .filter((subState) => !subState[1])
       .map((subState) => subState[0]);
-    if (notOpenSubs.length) {
+    if (notOpenSubs.length && subsState.length === allSubs.length) {
       Logger.Instance.warn(
         { subscriptions: notOpenSubs },
         "These subs aren't open yet",

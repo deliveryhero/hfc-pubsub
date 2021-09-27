@@ -530,7 +530,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     return subscriptions.flat();
   }
 
-  public getAllSubscriptionsOpenState(): IsOpenTuple[] {
+  public getAllSubscriptionsState(): IsOpenTuple[] {
     const subscriptions = Object.values(this.projects).map((project) => {
       const subscriptions = project.subscriptions.values();
       return Array.from(subscriptions).map(
