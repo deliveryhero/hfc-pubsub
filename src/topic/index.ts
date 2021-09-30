@@ -17,7 +17,6 @@ import { GooglePubSubProject } from '../interface/GooglePubSubProject';
  * ```
  */
 export interface Payload {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _timestamp?: string;
 }
 

@@ -1,6 +1,8 @@
-import PubSubService from '../src/service/pubsub';
-import { Subscribers, SubscriberTuple } from '../src/subscriber';
-import { SubscriptionService } from '../src';
+import {
+  PubSubService,
+  SubscriptionService,
+  SubscriberTuple,
+} from '@honestfoodcompany/pubsub';
 import GooglePubSubAdapter from '../src/client/googlePubSub';
 
 process.env.PUBSUB_DRIVER = 'google';
@@ -39,32 +41,35 @@ jest.mock('@google-cloud/pubsub', () => {
         subscribe: mockSubscribe(config),
         topic: jest.fn(() => ({
           get: mockGet,
+          getSubscriptions: jest.fn(() => ['dummySub']),
         })),
       };
     }),
   };
 });
 
-jest.mock('google-gax');
-
-describe('Google Pub Sub', (): void => {
-  let subscriptions: Subscribers;
+describe('With Project Credentials', (): void => {
+  let subscriptions: SubscriberTuple[];
   let subscription: SubscriberTuple;
+
   beforeAll(() => {
     subscriptions = SubscriptionService.getSubscribers();
     subscription = subscriptions.find((sub) => {
       const [, { subscriptionName }] = sub;
-      return subscriptionName === 'test.v3_withProjectCredentials';
+      return (
+        subscriptionName ===
+        'test-topic.example.with-custom-credentials.subscription'
+      );
     }) as SubscriberTuple;
   });
 
   it('should call subscribe to the right project and cache subscription', async (): Promise<void> => {
     expect(subscription).toBeDefined();
-
     const subscribe = jest.spyOn(GooglePubSubAdapter.prototype, 'subscribe');
     const getProject = jest.spyOn(GooglePubSubAdapter.prototype, 'getProject');
     const createClient = jest.spyOn(GooglePubSubAdapter, 'createClient');
     await PubSubService.getInstance().subscribe(subscription);
+
     expect(subscribe).toBeCalled();
     expect(getProject).toBeCalledWith(subscription[1].options);
     expect(createClient.mock.calls[1]).toEqual([

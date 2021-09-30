@@ -39,7 +39,7 @@ $ npx subscriptions list
 
  Google Pub/Sub Subscriptions
 Topic name   Subscription name                                Description
-simple.topic simple.topic.console-log.subscriptionWithOptions Will console log messages published on test.topic
+simple.topic simple.topic.console-log.subscription-with-options Will console log messages published on test.topic
 test.topic   test.topic.console-log                           Will console log messages published on test.topic
 test.topic   test.topic.console-log.v2                        Will console log messages published on test.topic
 ```
@@ -56,8 +56,8 @@ Starting Google Pub/Sub Subscriptions Server
 [2021-08-27 10:16:26.824 +0530] INFO: Connecting to DB
 [2021-08-27 10:16:27.829 +0530] INFO: Connected to DB
 [2021-08-27 10:16:27.830 +0530] INFO: ***** INIT CALLED *****
-[2021-08-27 10:16:29.515 +0530] INFO:    ✔️      simple.topic.console-log.subscriptionWithOptions already exists.
-[2021-08-27 10:16:43.766 +0530] INFO:    📭     simple.topic.console-log.subscriptionWithOptions is ready to receive messages at a controlled volume of 100 messages.
+[2021-08-27 10:16:29.515 +0530] INFO:    ✔️      simple.topic.console-log.subscription-with-options already exists.
+[2021-08-27 10:16:43.766 +0530] INFO:    📭     simple.topic.console-log.subscription-with-options is ready to receive messages at a controlled volume of 100 messages.
 [2021-08-27 10:16:44.887 +0530] INFO:    ✔️      test.topic.console-log already exists.
 [2021-08-27 10:16:49.395 +0530] INFO:    📭     test.topic.console-log is ready to receive messages at a controlled volume of 5 messages.
 [2021-08-27 10:16:51.349 +0530] INFO:    ✔️      test.topic.console-log.v2 already exists.

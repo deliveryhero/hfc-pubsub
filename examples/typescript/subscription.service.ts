@@ -1,5 +1,5 @@
 import { SubscriptionService as BaseSubscriptionService } from '@honestfoodcompany/pubsub';
-import SimpleTopicWithOptions from './subscriptions/simple.topic.console-log.subscriptionWithOptions';
+import SimpleTopicWithOptions from './subscriptions/simple.topic.console-log.subscription-with-options';
 
 export default class SubscriptionService extends BaseSubscriptionService {
   /**

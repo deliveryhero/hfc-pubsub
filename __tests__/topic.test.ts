@@ -3,10 +3,10 @@ import exampleTopic, { Payload } from './pubsub/topics/example.topic';
 
 const mockPublish = jest.fn().mockResolvedValue('testid');
 
-jest.mock('../src/service/pubsub', (): any => ({
+jest.mock('../src/service/pubsub', () => ({
   __esModule: true,
   default: class {
-    public static getInstance(): any {
+    public static getInstance() {
       return new this();
     }
     public publish(): Promise<string> {

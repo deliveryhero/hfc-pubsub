@@ -5,16 +5,16 @@ import { Topic, Payload as BasePayload } from '@honestfoodcompany/pubsub';
  */
 
 export default class TestRetryTopic extends Topic {
-  readonly name = 'test.topicRetryConfig';
+  readonly name = 'test.topic.with-retry-settings';
   retryConfig = {
     retryCodes: [
-      10, // 'ABORTED'
-      1, // 'CANCELLED',
-      4, // 'DEADLINE_EXCEEDED'
-      13, // 'INTERNAL'
-      8, // 'RESOURCE_EXHAUSTED'
-      14, // 'UNAVAILABLE'
-      2, // 'UNKNOWN'
+      10 as const, // 'ABORTED'
+      1 as const, // 'CANCELLED',
+      4 as const, // 'DEADLINE_EXCEEDED'
+      13 as const, // 'INTERNAL'
+      8 as const, // 'RESOURCE_EXHAUSTED'
+      14 as const, // 'UNAVAILABLE'
+      2 as const, // 'UNKNOWN'
     ],
     backoffSettings: {
       initialRetryDelayMillis: 100,

@@ -2,7 +2,7 @@ import { SubscriberObject, Message } from '@honestfoodcompany/pubsub'; // this i
 
 const subscriber: SubscriberObject = {
   topicName: 'simple.topic',
-  subscriptionName: 'simple.topic.console-log.subscriptionWithOptions',
+  subscriptionName: 'simple.topic.console-log.subscription-with-options',
   description: 'Will console log messages published on test.topic',
 
   options: {
@@ -11,7 +11,7 @@ const subscriber: SubscriberObject = {
       maxMessages: 100,
     },
     deadLetterPolicy: {
-      deadLetterTopic: 'example.test.deadletter',
+      deadLetterTopic: 'simple.topic.console-log.subscription-with-options.dlq',
       maxDeliveryAttempts: 6,
     },
     retryPolicy: {

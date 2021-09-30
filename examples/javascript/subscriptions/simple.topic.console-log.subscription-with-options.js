@@ -1,6 +1,9 @@
-exports.default = {
+/**
+ * @type {import('@honestfoodcompany/pubsub').SubscriberObject}
+ */
+const subscription = {
   topicName: 'simple.topic',
-  subscriptionName: 'simple.topic.console-log.subscriptionWithOptions',
+  subscriptionName: 'simple.topic.console-log.subscription-with-options',
   description: 'Will console log messages published on test.topic',
 
   options: {
@@ -16,3 +19,5 @@ exports.default = {
     message.ack();
   },
 };
+
+exports.default = subscription;

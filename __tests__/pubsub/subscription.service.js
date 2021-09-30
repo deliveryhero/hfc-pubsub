@@ -1,49 +1,47 @@
-'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
-const pubsub_1 = require('../../dist');
-const ExampleSubscription =
-  require('./subscriptions/example.subscription').default;
-const ExampleSubscriptionV2 =
-  require('./subscriptions/example.v2.subscription').default;
-const ExampleSubscriptionV3 =
-  require('./subscriptions/example.v3.subscription').default;
-const ExampleSubscriptionV3_2 =
-  require('./subscriptions/example.auto-load.subscription-2.sub').default;
-const ExampleSubscriptionV3_3 =
-  require('./subscriptions//example.v3_3.subscription').default;
-const ExampleSubscriptionV2Override =
-  require('./subscriptions//example.v2_overrideoptions.subscription').default;
-const ExampleSubscriptionV2RetryConfig =
-  require('./subscriptions/example.v2_retryconfig.subscription').default;
-const ExampleSubscriptionV3Override =
-  require('./subscriptions//example.v3_overrideoptions.subscription').default;
+const pubsub = require('@honestfoodcompany/pubsub');
+const {
+  default: ExampleSubscription,
+} = require('./subscriptions/test-topic.example.subscription');
+const {
+  default: ExampleSubscriptionOverride,
+} = require('./subscriptions/test-topic.example.override-options.subscription');
+const {
+  default: ExampleSubscriptionOverrideDLQ,
+} = require('./subscriptions/test-topic.example.override-options-with-deadletter.subscription');
+const {
+  default: ExampleSubscriptionWithCustomCredentials,
+} = require('./subscriptions/test-topic.example.with-custom-credentials.subscription');
 
-class SubscriptionService extends pubsub_1.SubscriptionService {}
-SubscriptionService.subscribers = [
-  ExampleSubscription,
-  ExampleSubscriptionV2,
-  ExampleSubscriptionV3,
-  ExampleSubscriptionV3_2,
-  ExampleSubscriptionV3_3,
-  ExampleSubscriptionV2Override,
-  ExampleSubscriptionV2RetryConfig,
-  ExampleSubscriptionV3Override,
-];
+class SubscriptionService extends pubsub.SubscriptionService {
+  static subscribers = [
+    ExampleSubscription,
+    ExampleSubscriptionOverride,
+    ExampleSubscriptionOverrideDLQ,
+    ExampleSubscriptionWithCustomCredentials,
+  ];
 
-SubscriptionService.defaultSubscriberOptions = {
-  ackDeadline: 145,
-  flowControl: {
-    maxMessages: 134,
-  },
-  deadLetterPolicy: {
-    deadletterTopic: 'global.deadletter',
-    maxRetryAttempts: 15,
-  },
-  retryPolicy: {
-    minimumBackoff: {
-      seconds: 40,
+  /**
+   * @type {pubsub.SubscriberOptions}
+   */
+  static defaultSubscriberOptions = {
+    ackDeadline: 145,
+    flowControl: {
+      maxMessages: 134,
     },
-  },
-};
+    deadLetterPolicy: {
+      deadLetterTopic: 'global.deadletter',
+      maxDeliveryAttempts: 15,
+    },
+    retryPolicy: {
+      minimumBackoff: {
+        seconds: 40,
+      },
+      maximumBackoff: {
+        seconds: 120,
+      },
+    },
+  };
+}
 
 exports.default = SubscriptionService;

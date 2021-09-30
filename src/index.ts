@@ -1,8 +1,9 @@
 require('dotenv').config({ path: require('find-config')('.env') });
 import Topic, { Payload } from './topic';
 import Subscriber, {
-  SubscriberObject,
   SubscriberV2,
+  SubscriberTuple,
+  SubscriberObject,
   SubscriberOptions,
 } from './subscriber';
 import SubscriptionService from './service/subscription';
@@ -13,14 +14,15 @@ import * as Interfaces from './interface';
 
 export {
   Interfaces,
-  Topic,
-  Payload,
   Subscriber,
-  SubscriptionService,
-  Message,
-  PubSubService,
   SubscriberObject,
   SubscriberV2,
+  SubscriberTuple,
   SubscriberOptions,
+  Topic,
+  Payload,
+  Message,
+  PubSubService,
+  SubscriptionService,
   setLogger,
 };

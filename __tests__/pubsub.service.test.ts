@@ -1,32 +1,35 @@
-import PubSub from '../src/service/pubsub';
-import MockSubService from './pubsub/subscription.service';
+import { PubSubService } from '@honestfoodcompany/pubsub';
+import SubService from './pubsub/subscription.service';
 
 jest.mock('@google-cloud/pubsub', () => ({
   __esModule: true,
   PubSub: jest.fn(),
 }));
 
-jest.mock('./pubsub/subscription.service', (): any => ({
+jest.mock('./pubsub/subscription.service', () => ({
   __esModule: true,
   default: {
     init: jest.fn().mockImplementation(() => {
       return this;
     }),
+    closeAll: jest.fn(),
     getSubscribers: jest.fn().mockImplementation(() => []),
   },
 }));
 
-describe('subscriptions init', () => {
+describe('@PubSub Service Init', () => {
   let originalCloseAll: () => Promise<void>;
+
   beforeAll(async () => {
-    originalCloseAll = MockSubService.closeAll;
-    await PubSub.getInstance().startSubscriptions();
+    originalCloseAll = SubService.closeAll;
+    await PubSubService.getInstance().startSubscriptions();
   });
+
   it('should call init', () => {
-    expect(MockSubService.init).toBeCalled();
+    expect(SubService.init).toBeCalled();
   });
 
   it('should override closeAll method', () => {
-    expect(MockSubService.closeAll).not.toEqual(originalCloseAll);
+    expect(SubService.closeAll).not.toEqual(originalCloseAll);
   });
 });

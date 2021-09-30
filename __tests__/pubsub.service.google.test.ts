@@ -1,7 +1,7 @@
-import PubSubService from '../src/service/pubsub';
+import { PubSubService } from '@honestfoodcompany/pubsub';
 import { RetryConfig } from '../src/interface';
 import ExampleTopic from './pubsub/topics/example.topic';
-import ExampleSubscriber from './pubsub/subscriptions/example.subscription-ts';
+import ExampleSubscriber from './pubsub/subscriptions/test-topic.example.subscription';
 
 process.env.PUBSUB_DRIVER = 'google';
 
@@ -18,35 +18,40 @@ const mockAllUsersList = [
 jest.mock('../src/client/googlePubSub', () => ({
   __esModule: true,
   default: class {
-    public static getInstance(): any {
+    public static getInstance() {
       return new this();
     }
-    public publish(...args: any[]): any {
+    public publish(...args: any[]) {
       return mockPublish(...args);
     }
-    public subscribe(...args: any[]): any {
+    public subscribe(...args: any[]) {
       return mockSubscribe(...args);
     }
-    public close(): any {
+    public close() {
       return mockClose();
     }
-    public async getAllSubscriptions(): Promise<any[]> {
+    public async getAllSubscriptions() {
       return mockAllUsersList;
     }
   },
 }));
 
-let service: PubSubService;
-let subscriber: any;
-let topic: any;
-
 describe('pubsub.service', () => {
+  let service: PubSubService;
+  let subscriber: ReturnType<PubSubService['getSubscribers']>[number];
+  let topic: ExampleTopic;
   const retryConfig = {} as RetryConfig;
+
   beforeAll(() => {
     service = PubSubService.getInstance();
-    subscriber = new ExampleSubscriber();
+    subscriber = PubSubService.getInstance()
+      .getSubscribers()
+      .find(
+        (sub) => sub[1].subscriptionName === ExampleSubscriber.subscriptionName,
+      )!;
     topic = new ExampleTopic();
   });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });

@@ -1,3 +1,3 @@
 export { default as GooglePubSubProject } from './GooglePubSubProject';
-export { default as pubSubClient } from './pubSubClient';
+export { PubSubClientV2 as pubSubClient } from './pubSubClient';
 export * from './publishOptions';

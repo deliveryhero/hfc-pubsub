@@ -1,6 +1,6 @@
-import PubSubService from '../src/service/pubsub';
+import { PubSubService, Subscriber } from '@honestfoodcompany/pubsub';
 import ExampleTopic from './pubsub/topics/example.topic';
-import ExampleSubscriber from './pubsub/subscriptions/example.subscription-ts';
+import ExampleSubscriber from './pubsub/subscriptions/test-topic.example.subscription';
 
 process.env.PUBSUB_DRIVER = 'synchronous';
 
@@ -20,16 +20,16 @@ jest.mock('@google-cloud/pubsub', () => ({
 jest.mock('../src/client/eventBus', () => ({
   __esModule: true,
   default: class {
-    public static getInstance(): any {
+    public static getInstance() {
       return new this();
     }
-    public publish(): any {
+    public publish() {
       return mockPublish();
     }
-    public subscribe(): any {
+    public subscribe() {
       return mockSubscribe();
     }
-    public async getAllSubscriptions(): Promise<any> {
+    public async getAllSubscriptions() {
       throw new Error(
         'This feature is not available with the synchronous driver',
       );
@@ -43,7 +43,7 @@ let topic: any;
 describe('pubsub.service - synchronous driver', () => {
   beforeAll(() => {
     service = PubSubService.getInstance();
-    subscriber = new ExampleSubscriber();
+    subscriber = new Subscriber(ExampleSubscriber);
     topic = new ExampleTopic();
   });
   beforeEach(() => {
