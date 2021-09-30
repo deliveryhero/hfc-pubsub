@@ -30,6 +30,22 @@ export default class SubscriberV2 extends Subscriber {
       this.subscriberObject?.handleMessage(message);
   }
 
+  public handleError(error: Error): void {
+    if (this.subscriberObject?.handleError) {
+      this.subscriberObject?.handleError(error);
+    } else {
+      // default error handling logic
+      Logger.Instance.error(
+        {
+          metadata: this.metadata,
+          error,
+        },
+        'Received Unexpected Error',
+      );
+      process.exit(1);
+    }
+  }
+
   /**
    * Returns a Subscriber class when given a SubscriberObject or a Subscriber (returns its own input if it's already a v2 class)
    * @param subscriber {SubscriberObject} | {typeof Subscriber}
@@ -122,6 +138,9 @@ export default class SubscriberV2 extends Subscriber {
           }
 
           metadata = subscriberObj.metadata;
+          handleError =
+            subscriberObj.handleError ||
+            subscriptionServiceDefaultOptions.handleError;
         };
 
       case 'v3':
@@ -200,6 +219,11 @@ export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
    *   any order.
    */
   enableMessageOrdering?: boolean;
+
+  /**
+   *   If passed, it would serve as the default error handler method for SubscriptionService
+   */
+  handleError?: (error: Error) => void;
 }
 
 export interface SubscriberMetadata {
@@ -219,6 +243,12 @@ export interface MessageHandler {
    * will run every time a message is received before the handleMessage function is called
    */
   init?: () => void;
+
+  /**
+   *   If passed, it would serve as the default error handler method in case
+   *   subscriber specific handler is not present
+   */
+  handleError?: (error: Error) => void;
 }
 
 export interface FlexibleObject {

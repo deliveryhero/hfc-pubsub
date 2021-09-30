@@ -38,6 +38,7 @@ export default class Subscriber {
   public constructor() {
     this.init = this.init.bind(this);
     this.handleMessage = this.handleMessage.bind(this);
+    this.handleError = this.handleError.bind(this);
   }
 
   /**
@@ -51,6 +52,13 @@ export default class Subscriber {
    * @deprecated
    */
   public async handleMessage(_message: Message): Promise<void> {
+    //
+  }
+
+  /**
+   * @deprecated
+   */
+  public handleError(_error: Error): void {
     //
   }
 }
