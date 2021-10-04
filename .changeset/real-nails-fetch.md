@@ -1,5 +1,5 @@
 ---
-'@honestfoodcompany/pubsub': patch
+'@honestfoodcompany/pubsub': minor
 ---
 
-Add Subscription level handleError method
+Add Subscription level handleError method - PUB-71

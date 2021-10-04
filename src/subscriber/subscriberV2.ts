@@ -3,6 +3,7 @@ import { SubscriberOptions as GoogleCloudSubscriberOptions } from '@google-cloud
 import { Logger } from '../service/logger';
 import { GooglePubSubProject } from '../interface/GooglePubSubProject';
 import Message from '../message';
+import SubscriptionService from '../service/subscription';
 import Subscriber from './subscriber';
 
 export type SubscriberVersion = 'v1' | 'v2' | 'v3';
@@ -34,15 +35,7 @@ export default class SubscriberV2 extends Subscriber {
     if (this.subscriberObject?.handleError) {
       this.subscriberObject?.handleError(error);
     } else {
-      // default error handling logic
-      Logger.Instance.error(
-        {
-          metadata: this.metadata,
-          error,
-        },
-        'Received Unexpected Error',
-      );
-      process.exit(1);
+      SubscriptionService.loadSubscriptionService().handleError(error);
     }
   }
 
@@ -93,6 +86,10 @@ export default class SubscriberV2 extends Subscriber {
             }, `Class style subscriptions have been deprecated: ${subscriber.subscriptionName}`)();
           }
 
+          public handleError(_error: Error): void {
+            throw _error;
+          }
+
           public static from(
             subscriberClass: SubscriberObject | typeof Subscriber,
             version: SubscriberVersion,
@@ -138,9 +135,6 @@ export default class SubscriberV2 extends Subscriber {
           }
 
           metadata = subscriberObj.metadata;
-          handleError =
-            subscriberObj.handleError ||
-            subscriptionServiceDefaultOptions.handleError;
         };
 
       case 'v3':
@@ -219,11 +213,6 @@ export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
    *   any order.
    */
   enableMessageOrdering?: boolean;
-
-  /**
-   *   If passed, it would serve as the default error handler method for SubscriptionService
-   */
-  handleError?: (error: Error) => void;
 }
 
 export interface SubscriberMetadata {

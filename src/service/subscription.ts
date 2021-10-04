@@ -43,6 +43,14 @@ export default class SubscriptionService {
   }
 
   /**
+   *   If passed, it would serve as the default error handler at SubscriptionService level
+   */
+  public static handleError(error: Error): void {
+    // default error handling logic
+    Logger.Instance.error({ error }, 'Received Unexpected Error');
+  }
+
+  /**
    * Call this function from a process exit handler to close all current subscriptions
    */
   public static async closeAll(): Promise<void> {
