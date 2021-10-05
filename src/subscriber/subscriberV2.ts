@@ -3,6 +3,7 @@ import { SubscriberOptions as GoogleCloudSubscriberOptions } from '@google-cloud
 import { Logger } from '../service/logger';
 import { GooglePubSubProject } from '../interface/GooglePubSubProject';
 import Message from '../message';
+import SubscriptionService from '../service/subscription';
 import Subscriber from './subscriber';
 
 export type SubscriberVersion = 'v1' | 'v2' | 'v3';
@@ -28,6 +29,14 @@ export default class SubscriberV2 extends Subscriber {
   public async handleMessage(message: Message): Promise<void> {
     this.subscriberObject?.handleMessage &&
       this.subscriberObject?.handleMessage(message);
+  }
+
+  public handleError(error: Error): void {
+    if (this.subscriberObject?.handleError) {
+      this.subscriberObject?.handleError(error);
+    } else {
+      SubscriptionService.loadSubscriptionService().handleError(error);
+    }
   }
 
   /**
@@ -75,6 +84,10 @@ export default class SubscriberV2 extends Subscriber {
                 'Class style subscriptions have been deprecated, please convert to objects. This will be removed in v2.x',
               );
             }, `Class style subscriptions have been deprecated: ${subscriber.subscriptionName}`)();
+          }
+
+          public handleError(_error: Error): void {
+            throw _error;
           }
 
           public static from(
@@ -219,6 +232,12 @@ export interface MessageHandler {
    * will run every time a message is received before the handleMessage function is called
    */
   init?: () => void;
+
+  /**
+   *   If passed, it would serve as the default error handler method in case
+   *   subscriber specific handler is not present
+   */
+  handleError?: (error: Error) => void;
 }
 
 export interface FlexibleObject {

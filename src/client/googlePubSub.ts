@@ -166,6 +166,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
           message.nack();
         });
     });
+
+    subscription.on('error', (error) => subscriberInstance.handleError(error));
   }
 
   private log(message: string, metadata?: SubscriberTuple[1]): void {
