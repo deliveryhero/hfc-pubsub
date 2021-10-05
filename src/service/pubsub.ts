@@ -98,6 +98,7 @@ export default class PubSubService {
     await subscriptionServiceClass.init();
 
     const subscribers = subscriptionServiceClass.getSubscribers();
+
     for (const subscription of subscribers) {
       try {
         await this.subscribe(subscription);
@@ -116,7 +117,11 @@ export default class PubSubService {
         throw error;
       }
     }
-
+    if (subscribers.length === 0) {
+      throw new Error(
+        `   ❌     No Subscribers were found at ${process.env.PUBSUB_ROOT_DIR}`,
+      );
+    }
     PubSubService.status = 'ready';
     Logger.Instance.info(`   ✅      All subscriptions started successfully.`);
   }
