@@ -7,7 +7,6 @@ import {
 } from '../subscriber';
 import SubscriberLoader from './subscriberLoader';
 import { ResourceResolver } from './resourceResolver';
-import { Logger } from './logger';
 
 export default class SubscriptionService {
   public static subscribers: SubscriberObject[] = [];
@@ -26,7 +25,7 @@ export default class SubscriptionService {
       !object.hasOwnProperty(property) ||
       (object.hasOwnProperty(property) && object[property] == '')
     ) {
-      Logger.Instance.warn(
+      throw new Error(
         `@honestfoodcompany/pubsub module requires ${property} to be defined in your .env`,
       );
     }

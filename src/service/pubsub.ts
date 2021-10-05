@@ -148,6 +148,7 @@ export default class PubSubService {
     await subscriptionServiceClass.init();
 
     const subscribers = subscriptionServiceClass.getSubscribers();
+
     for (const subscription of subscribers) {
       // @ts-expect-error weird const error
       if (PubSubService.status === 'closed') {
@@ -175,9 +176,16 @@ export default class PubSubService {
         throw error;
       }
     }
-
     PubSubService.status = 'ready';
-    Logger.Instance.info(`   ✅      All subscriptions started successfully.`);
+    if (subscribers.length === 0) {
+      Logger.Instance.warn(
+        `   ❌      No Subscribers were found at ${process.env.PUBSUB_ROOT_DIR}`,
+      );
+    } else {
+      Logger.Instance.info(
+        `   ✅      All subscriptions started successfully.`,
+      );
+    }
   }
 
   /**

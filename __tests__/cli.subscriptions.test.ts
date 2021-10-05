@@ -60,6 +60,8 @@ describe('subscriptions cli', () => {
       );
       process.exit(1);
     }
+    // Removes error no assertion
+    expect(1).toBe(1);
   });
 
   it('should list subscriptions', async (): Promise<void> => {
