@@ -1,4 +1,4 @@
-import SubscriptionService from '../src/service/subscription';
+import { SubscriptionService } from '@honestfoodcompany/pubsub';
 
 const mockPubSub = jest.fn();
 
@@ -8,37 +8,37 @@ jest.mock('@google-cloud/pubsub', () => ({
 }));
 
 const mockPublish = jest.fn();
-jest.mock('../src/service/pubsub', (): any => ({
+jest.mock('../src/service/pubsub', () => ({
   __esModule: true,
   default: class {
-    public static getInstance(): any {
+    public static getInstance() {
       console.log('getting instance');
       return new this();
     }
-    public publish(): any {
+    public publish() {
       return mockPublish();
     }
   },
 }));
 
-jest.mock('./pubsub/subscriptions/example.subscription', (): any => ({
+jest.mock('./pubsub/subscriptions/test-topic.example.subscription', () => ({
   __esModule: true,
-  default: jest.fn().mockImplementation((): any => ({
-    getTopicName: (): any => {
+  default: jest.fn().mockImplementation(() => ({
+    getTopicName: () => {
       return 'test-topic';
     },
-    setMongooseConnection: function (): any {
+    setMongooseConnection: function () {
       return this;
     },
-    init: function (): any {
+    init: function () {
       return this;
     },
     start: jest.fn(),
   })),
 }));
 
-describe('subscriptions cli', (): any => {
-  it('should load subscription service', async (): Promise<any> => {
+describe('subscriptions cli', () => {
+  it('should load subscription service', () => {
     const service = SubscriptionService.loadSubscriptionService();
     expect(typeof service).toBe('function');
   });

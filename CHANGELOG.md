@@ -1,4 +1,28 @@
-# HFC PubSub Framework
+# Changelog
+
+## 1.10.4
+
+### Patch Changes
+
+- [PUB-60](https://honesttech.atlassian.net/browse/PUB-60) - Deprecate v1,v2 style Subscriber classes ([#64](https://github.com/deliveryhero/hfc-pubsub/pull/64) by [@rohit-gohri](https://github.com/rohit-gohri))
+
+* [PUB-66](https://honesttech.atlassian.net/browse/PUB-66) - Fix close method creating new subscription instance rather than closing existing one ([#63](https://github.com/deliveryhero/hfc-pubsub/pull/63) by [@rohit-gohri](https://github.com/rohit-gohri))
+
+## 1.10.3
+
+### Patch Changes
+
+- [PUB-52](https://honesttech.atlassian.net/browse/PUB-52) - Deprecate native grpc usage ([#58](https://github.com/deliveryhero/hfc-pubsub/pull/58) by [@rohit-gohri](https://github.com/rohit-gohri))
+
+* Allows setting up env variables through CLI args ([#61](https://github.com/deliveryhero/hfc-pubsub/pull/61) by [@ishan123456789](https://github.com/ishan123456789))
+
+- [PUB-50](https://honesttech.atlassian.net/browse/PUB-50) - Update documentation ([#60](https://github.com/deliveryhero/hfc-pubsub/pull/60) by [@rohit-gohri](https://github.com/rohit-gohri))
+
+## 1.10.2
+
+### Patch Changes
+
+- Update google-cloud/pubsub package version ([#55](https://github.com/deliveryhero/hfc-pubsub/pull/55) by [@ketan-saxena](https://github.com/ketan-saxena))
 
 ## 1.10.1
 
@@ -6,7 +30,7 @@
 
 - Undoes logger changes for list cli ([#48](https://github.com/deliveryhero/hfc-pubsub/pull/48) by [@ishan123456789](https://github.com/ishan123456789))
 
-* Upgrade dependencies ([#51](https://github.com/deliveryhero/hfc-pubsub/pull/51) by [@rohit-gohri](https://github.com/rohit-gohri))
+- Upgrade dependencies ([#51](https://github.com/deliveryhero/hfc-pubsub/pull/51) by [@rohit-gohri](https://github.com/rohit-gohri))
 
 ## 1.10.0
 

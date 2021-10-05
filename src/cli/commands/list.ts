@@ -4,11 +4,13 @@ import wrapAnsi = require('wrap-ansi');
 import { Logger } from '../../service/logger';
 import { PubSubService } from '../../index';
 import { SubscriberTuple } from '../../subscriber';
+import { setEnvFromArgs } from '../env.setup';
 
 export default {
   command: 'list',
   desc: 'Lists all subscriptions',
-  handler: async (): Promise<void> => {
+  handler: async (_argv: unknown): Promise<void> => {
+    setEnvFromArgs(_argv as any);
     Logger.Instance.info(
       chalk.white.bgBlue.bold('\n Google Pub/Sub Subscriptions'),
     );

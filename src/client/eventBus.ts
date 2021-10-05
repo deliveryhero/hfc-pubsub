@@ -1,10 +1,19 @@
 import EventEmitter from 'events';
-import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
+import {
+  AllSubscriptions,
+  IsOpenTuple,
+  PubSubClientV2,
+} from '../interface/pubSubClient';
 import Message from '../message';
 import { Topic, Payload } from '../index';
 import { SubscriberTuple } from '../subscriber';
 
 export default class EventBus extends EventEmitter implements PubSubClientV2 {
+  getAllSubscriptionsState(): IsOpenTuple[] {
+    throw new Error(
+      'Not available for synchronous driver Please set env variable PUBSUB_HEALTH_SERVER=false',
+    );
+  }
   protected static instance: EventBus;
   protected static status: 'pending' | 'ready' = 'pending';
 

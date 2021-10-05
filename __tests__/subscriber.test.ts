@@ -1,5 +1,4 @@
-import Subscriber from '../src/subscriber';
-import Message from '../src/message';
+import { Subscriber, Message } from '@honestfoodcompany/pubsub';
 
 Message.from('test message');
 const mockMessage = jest.fn(() => new Message());

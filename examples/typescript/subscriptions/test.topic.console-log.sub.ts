@@ -10,7 +10,18 @@ const subscriber: SubscriberObject = {
   topicName: 'test.topic',
   subscriptionName: 'test.topic.console-log',
   description: 'Will console log messages published on test.topic',
-
+  options: {
+    deadLetterPolicy: {
+      deadLetterTopic: 'test.topic.console-log.dlq',
+      maxDeliveryAttempts: 6,
+      createDefaultSubscription: true,
+    },
+    retryPolicy: {
+      minimumBackoff: { seconds: 102, nanos: 32 },
+      maximumBackoff: { seconds: 500 },
+    },
+    enableMessageOrdering: true,
+  },
   handleMessage: function (message: Message): void {
     console.log(`received a message on ${this.subscriptionName}`);
     console.log(message.data.toString());

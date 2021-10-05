@@ -1,3 +1,4 @@
+import http from 'http';
 import Topic, { Payload } from '../topic';
 import { SubscriberTuple, Subscribers } from '../subscriber';
 import EventBus from '../client/eventBus';
@@ -11,12 +12,59 @@ export default class PubSubService {
   protected static client: PubSubClientV2;
   protected static instance: PubSubService;
   protected static driver: 'synchronous' | 'google';
-  private static status: 'ready' | 'pending' = 'pending';
+  private static status: 'ready' | 'pending' | 'closed' = 'pending';
 
   private constructor() {
     this.initDriver();
     this.initClient();
+    this.startServer();
     this.bind(this);
+  }
+
+  public startServer(): void {
+    if (process.env.PUBSUB_HEALTH_SERVER !== 'true') return;
+
+    const port = process.env.PUBSUB_SERVER_PORT || 8080;
+    //create a server object:
+    http
+      .createServer(function (_req, res) {
+        const isHealthy = PubSubService.isHealthy();
+        if (isHealthy) {
+          res.write(`is healthy`); //write a response to the client
+          res.end(); //end the response
+        } else {
+          res.statusCode = 500;
+          res.write(`Not healthy`); //write a response to the client
+          res.end(); //end the response
+        }
+      })
+      .listen(port, () => {
+        Logger.Instance.info(`Pubsub server running on port ${port}`);
+      }); //the server object listens on port 8080
+  }
+
+  public static isHealthy(): boolean {
+    if (PubSubService.status !== 'ready') {
+      Logger.Instance.warn('All subscriptions are not ready yet');
+      return false;
+    }
+
+    const subsState = PubSubService.client.getAllSubscriptionsState();
+    const allSubs = PubSubService.getInstance().getSubscribers();
+
+    const notOpenSubs = subsState
+      .filter((subState) => !subState[1])
+      .map((subState) => subState[0]);
+    if (subsState.length !== allSubs.length) {
+      Logger.Instance.warn("Some subs aren't active");
+    }
+    if (notOpenSubs.length) {
+      Logger.Instance.warn(
+        { subscriptions: notOpenSubs },
+        "These subs aren't open yet",
+      );
+    }
+    return !(notOpenSubs.length || subsState.length !== allSubs.length);
   }
 
   private bind(instance: PubSubService): void {
@@ -85,10 +133,12 @@ export default class PubSubService {
     for (const subscription of subscribers) {
       await this.getClient().close(subscription);
     }
+    PubSubService.status = 'closed';
   }
 
   public async startSubscriptions(): Promise<void> {
     if (PubSubService.status === 'ready') return;
+    PubSubService.status = 'pending';
 
     const subscriptionServiceClass =
       SubscriptionService.loadSubscriptionService();
@@ -100,6 +150,15 @@ export default class PubSubService {
     const subscribers = subscriptionServiceClass.getSubscribers();
 
     for (const subscription of subscribers) {
+      // @ts-expect-error weird const error
+      if (PubSubService.status === 'closed') {
+        Logger.Instance.warn(
+          `   ❌      closeAll called and subscriptions closed, not continuing with startup process`,
+        );
+
+        return;
+      }
+
       try {
         await this.subscribe(subscription);
       } catch (err) {
@@ -112,7 +171,7 @@ export default class PubSubService {
           originalError?: Error;
           metadata?: typeof metadata;
         } = new Error('Error while initializing subscription.');
-        error.originalError = err;
+        error.originalError = err as Error;
         error.metadata = metadata;
         throw error;
       }
