@@ -176,13 +176,16 @@ export default class PubSubService {
         throw error;
       }
     }
+    PubSubService.status = 'ready';
     if (subscribers.length === 0) {
-      throw new Error(
-        `   ❌     No Subscribers were found at ${process.env.PUBSUB_ROOT_DIR}`,
+      Logger.Instance.warn(
+        `   ❌      No Subscribers were found at ${process.env.PUBSUB_ROOT_DIR}`,
+      );
+    } else {
+      Logger.Instance.info(
+        `   ✅      All subscriptions started successfully.`,
       );
     }
-    PubSubService.status = 'ready';
-    Logger.Instance.info(`   ✅      All subscriptions started successfully.`);
   }
 
   /**
