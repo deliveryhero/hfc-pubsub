@@ -14,10 +14,7 @@ export default class SubscriptionService {
 
   public static defaultSubscriberOptions: SubscriberOptions;
 
-  public static instance: SubscriptionService;
-
   public constructor() {
-    SubscriptionService.instance = new SubscriptionService();
     this.checkExistence(process.env, 'PUBSUB_ROOT_DIR');
   }
 
