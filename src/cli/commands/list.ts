@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { cli } from 'cli-ux';
-import wrapAnsi = require('wrap-ansi');
+import wrapAnsi from 'wrap-ansi';
 import { Logger } from '../../service/logger';
 import { PubSubService } from '../../index';
 import { SubscriberTuple } from '../../subscriber';
