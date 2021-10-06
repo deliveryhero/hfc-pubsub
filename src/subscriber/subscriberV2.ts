@@ -1,5 +1,6 @@
 import { SubscriberOptions as GoogleCloudSubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber';
 import { GooglePubSubProject } from '../interface/GooglePubSubProject';
+import SubscriptionService from '../service/subscription';
 import Message from '../message';
 
 const defaultSubscriberOptions = {
@@ -22,6 +23,14 @@ export default class SubscriberV2 {
   public async handleMessage(message: Message): Promise<void> {
     this.subscriberObject?.handleMessage &&
       this.subscriberObject?.handleMessage(message);
+  }
+
+  public handleError(error: Error): void {
+    if (this.subscriberObject?.handleError) {
+      this.subscriberObject?.handleError(error);
+    } else {
+      SubscriptionService.loadSubscriptionService().handleError(error);
+    }
   }
 
   /**
@@ -99,6 +108,12 @@ export interface MessageHandler {
    * will run every time a message is received before the handleMessage function is called
    */
   init?: () => void;
+
+  /**
+   *   If passed, it would serve as the default error handler method in case
+   *   subscriber specific handler is not present
+   */
+  handleError?: (error: Error) => void;
 }
 
 export interface FlexibleObject {

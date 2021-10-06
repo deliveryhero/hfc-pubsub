@@ -27,6 +27,9 @@ const subscriber: SubscriberObject = {
     console.log(message.data.toString());
     message.ack();
   },
+  handleError: function (error: Error): void {
+    console.log('custom error handler added for test', error);
+  },
 };
 
 export default subscriber;
