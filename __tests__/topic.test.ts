@@ -1,5 +1,6 @@
 import PubSubService from '../src/service/pubsub';
 import exampleTopic, { Payload } from './pubsub/topics/example.topic';
+import ExampleTopicNoTimeStamp from './pubsub/topics/example.topic.noTimeStamp';
 
 const mockPublish = jest.fn().mockResolvedValue('testid');
 
@@ -56,10 +57,26 @@ describe('topics', (): void => {
     expect(data).toBe('testid');
     expect(spy).toBeCalledWith(
       expect.any(Object),
-      expect.any(Object),
+      expect.objectContaining({
+        _timestamp: expect.stringContaining(':'),
+      }),
       expect.objectContaining({
         ...defaultRetrySettings,
       }),
+    );
+  });
+
+  it('Should Not add timestamp', async (): Promise<void> => {
+    const spy = jest.spyOn(PubSubService.prototype, 'publish');
+    const topic = new ExampleTopicNoTimeStamp();
+    const data = await topic.publish<Payload>({ data: 'test' });
+    expect(data).toBe('testid');
+    expect(spy).toBeCalledWith(
+      expect.any(Object),
+      expect.not.objectContaining({
+        _timestamp: expect.stringContaining(':'),
+      }),
+      expect.any(Object),
     );
   });
 
