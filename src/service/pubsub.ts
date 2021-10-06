@@ -107,7 +107,6 @@ export default class PubSubService {
     message: P,
     options: PublishOptions,
   ): Promise<string> {
-    this.validate(topic, message);
     if (this.shouldStartSynchronousSubscriptions()) {
       await this.startSubscriptions();
     }
@@ -186,19 +185,6 @@ export default class PubSubService {
         `   ✅      All subscriptions started successfully.`,
       );
     }
-  }
-
-  /**
-   * Validates Topic and Message according to validation rules set in Topic class
-   * @param topic Topic
-   * @param message Message
-   */
-  protected validate<T extends Topic, P extends Payload>(
-    topic: T,
-    message: P,
-  ): void {
-    topic.validateTopic(topic.getName());
-    topic.validateMessage(message);
   }
 
   /**

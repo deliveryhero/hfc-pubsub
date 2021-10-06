@@ -30,6 +30,7 @@ export interface TopicWithCustomProject {
 
 export default class Topic implements NamedTopic, TopicWithCustomProject {
   public readonly name: string = '';
+  public addTimeStamp = true;
   public project?: GooglePubSubProject;
 
   public retryConfig: RetryConfig = {
@@ -62,12 +63,11 @@ export default class Topic implements NamedTopic, TopicWithCustomProject {
     options?: TopicPublishOptions,
   ): Promise<string> {
     this.validateTopic(this.getName());
-    this.validateMessage(message);
     return this.mq.publish(
       this,
       {
         ...message,
-        _timestamp: new Date().toISOString(),
+        ...(this.addTimeStamp && { _timestamp: new Date().toISOString() }),
       },
       {
         ...this.retryConfig,
