@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import { cli } from 'cli-ux';
-import wrapAnsi = require('wrap-ansi');
+import Table from 'cli-table';
+import wrapAnsi from 'wrap-ansi';
 import { Logger } from '../../service/logger';
 import { PubSubService } from '../../index';
 import { SubscriberTuple } from '../../subscriber';
@@ -17,25 +17,20 @@ export default {
     if (PubSubService.getInstance().getSubscribers().length == 0) {
       Logger.Instance.warn(chalk.white.bold('\n No subscriptions found'));
     } else {
-      cli.table(
-        PubSubService.getInstance().getSubscribers(),
-        {
-          'Topic Name': {
-            get: (row: SubscriberTuple): string => row[1].topicName,
-          },
-          'Subscription Name': {
-            get: (row: SubscriberTuple): string => row[1].subscriptionName,
-          },
-          Description: {
-            get: (row: SubscriberTuple): string =>
-              wrapAnsi(row[1].description || '', 100),
-          },
-        },
-        {
-          printLine: console.log,
-        },
+      const table = new Table({
+        head: ['Topic Name', 'Subscription Name', 'Description'],
+      });
+      table.push(
+        ...PubSubService.getInstance()
+          .getSubscribers()
+          .map((row: SubscriberTuple) => [
+            row[1].topicName,
+            row[1].subscriptionName,
+            wrapAnsi(row[1].description || '', 100),
+          ]),
       );
-      console.log('\n');
+
+      console.log(`${table.toString()}\n`);
       process.exit(0);
     }
   },

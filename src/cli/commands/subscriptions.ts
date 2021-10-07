@@ -1,6 +1,6 @@
 require('dotenv').config({ path: require('find-config')('.env') });
 import chalk from 'chalk';
-import { cli } from 'cli-ux';
+import Table from 'cli-table';
 import { Logger } from '../../service/logger';
 import { PubSubService } from '../../index';
 
@@ -14,21 +14,16 @@ export default {
     if (subscriptions.length == 0) {
       Logger.Instance.warn(chalk.white.bold('\n No subscriptions found'));
     } else {
-      cli.table(
-        subscriptions,
-        {
-          'Topic Name': {
-            get: (row): string => row.topicName || '',
-          },
-          'Subscription Name': {
-            get: (row): string => row.subscriptionName,
-          },
-        },
-        {
-          printLine: Logger.Instance.info,
-        },
+      const table = new Table({
+        head: ['Topic Name', 'Subscription Name'],
+      });
+      table.push(
+        ...PubSubService.getInstance()
+          .getSubscribers()
+          .map((row: any) => [row.topicName, row.subscriptionName]),
       );
-      Logger.Instance.info('\n');
+
+      console.log(`${table.toString()}\n`);
     }
   },
 };
