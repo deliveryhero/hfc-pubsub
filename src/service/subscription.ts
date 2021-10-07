@@ -5,6 +5,7 @@ import {
   SubscriberTuple,
   SubscriberOptions,
 } from '../subscriber';
+import { Logger } from './logger';
 import SubscriberLoader from './subscriberLoader';
 import { ResourceResolver } from './resourceResolver';
 
