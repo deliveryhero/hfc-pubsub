@@ -25,7 +25,9 @@ const subscriber: SubscriberObject<Payload> = {
   },
 
   handleMessage: (message) => {
-    console.log(message.json.x);
+    console.log(message.toJSON(), typeof message.toJSON());
+    const x = message.toJSON();
+    console.log(x?.x);
     message.ack();
   },
 };

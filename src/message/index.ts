@@ -3,7 +3,14 @@ import { Message as GCloudMessage } from '@google-cloud/pubsub';
 export default class Message<T = unknown> {
   public data: Buffer = Buffer.from('');
   public gCloudMessage?: GCloudMessage;
-  public json: T = '' as unknown as T;
+
+  public toJSON(): T | undefined {
+    try {
+      return JSON.parse(this.data.toString());
+    } catch (e) {
+      return;
+    }
+  }
   /**
    * Builds a new message object in the synchronous driver.
    * Used by the eventBus.
@@ -11,7 +18,6 @@ export default class Message<T = unknown> {
    */
   public static from<M>(message: M): Message<M> {
     const instance = new Message<M>();
-    instance.json = message;
     instance.data = Buffer.from(JSON.stringify(message));
     return instance;
   }
@@ -24,11 +30,6 @@ export default class Message<T = unknown> {
     // Static member can't access class argument so keeping it any
     const instance = new Message();
     instance.data = message.data;
-    try {
-      instance.json = JSON.parse(message.data.toString());
-    } catch {
-      instance.json = '' as unknown;
-    }
     instance.gCloudMessage = message;
     return instance;
   }
