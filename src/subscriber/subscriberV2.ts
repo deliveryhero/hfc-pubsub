@@ -19,7 +19,12 @@ export default class SubscriberV2 {
     this.subscriberObject?.init && this.subscriberObject?.init();
   }
 
-  public async handleMessage(message: Message): Promise<void> {
+  public async handleJSON(message: Message): Promise<void> {
+    this.subscriberObject?.handleJSON &&
+      this.subscriberObject?.handleJSON(message);
+  }
+
+  public async handleMessage<T>(message: Message<T>): Promise<void> {
     this.subscriberObject?.handleMessage &&
       this.subscriberObject?.handleMessage(message);
   }
@@ -93,7 +98,7 @@ export interface MessageHandler {
   /**
    * will run every time a message is received
    */
-  handleMessage: (message: Message) => void;
+  handleMessage: <T = any>(message: Message<T>) => void;
 
   /**
    * will run every time a message is received before the handleMessage function is called

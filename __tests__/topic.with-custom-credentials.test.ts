@@ -10,6 +10,7 @@ const mockGet = jest.fn(() => {
     resolve([
       {
         publish: mockPublish,
+        publishJSON: mockPublish,
       },
     ]);
   });

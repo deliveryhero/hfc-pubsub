@@ -91,8 +91,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       project: topic.project,
     });
     // FIXME: PUB-49 retryConfig not being considered, see https://github.com/googleapis/nodejs-pubsub/blob/master/samples/publishWithRetrySettings.js for how to use it
-    const messageId = await pubSubTopic.publish(
-      Buffer.from(JSON.stringify(message)),
+    const messageId = await pubSubTopic.publishJSON(
+      message,
       options.attributes,
     );
     return messageId;
@@ -135,11 +135,13 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const subscriberInstance = new subscriberClass();
     await subscriberInstance.init();
     subscription.on('message', (message: GoogleCloudMessage): void => {
-      subscriberInstance
-        .handleMessage(Message.fromGCloud(message))
-        .catch(() => {
-          message.nack();
-        });
+      if (subscriberInstance.handleMessage) {
+        subscriberInstance
+          .handleMessage(Message.fromGCloud(message))
+          .catch(() => {
+            message.nack();
+          });
+      }
     });
   }
 
