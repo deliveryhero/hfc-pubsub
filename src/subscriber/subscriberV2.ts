@@ -94,11 +94,11 @@ export interface SubscriberMetadata {
   options?: SubscriberOptions;
 }
 
-export interface MessageHandler {
+export interface MessageHandler<T = unknown> {
   /**
    * will run every time a message is received
    */
-  handleMessage: <T = any>(message: Message<T>) => void;
+  handleMessage: (message: Message<T>) => void;
 
   /**
    * will run every time a message is received before the handleMessage function is called
@@ -111,7 +111,7 @@ export interface FlexibleObject {
   [key: string]: any;
 }
 
-export interface SubscriberObject
+export interface SubscriberObject<T = unknown>
   extends SubscriberMetadata,
-    MessageHandler,
+    MessageHandler<T>,
     FlexibleObject {}
