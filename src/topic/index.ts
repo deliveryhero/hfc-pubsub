@@ -62,7 +62,7 @@ export default class Topic implements NamedTopic, TopicWithCustomProject {
     message: T,
     options?: TopicPublishOptions,
   ): Promise<string> {
-    this.validateTopic(this.getName());
+    this.validateTopic(this.name);
     return this.mq.publish(
       this,
       {
@@ -80,10 +80,6 @@ export default class Topic implements NamedTopic, TopicWithCustomProject {
         }),
       } as PublishOptions,
     );
-  }
-
-  public getName(): string {
-    return this.name;
   }
 
   public validateTopic(name: string): void {

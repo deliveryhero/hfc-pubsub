@@ -110,17 +110,13 @@ export default class PubSubService {
     if (this.shouldStartSynchronousSubscriptions()) {
       await this.startSubscriptions();
     }
-    return await this.getClient().publish(topic, message, options);
+    return await PubSubService.client.publish(topic, message, options);
   }
 
   private shouldStartSynchronousSubscriptions(): boolean {
     return (
       PubSubService.driver === 'synchronous' && PubSubService.status !== 'ready'
     );
-  }
-
-  private getClient(): PubSubClientV2 {
-    return PubSubService.client;
   }
 
   public getSubscribers(): Subscribers {
@@ -130,7 +126,7 @@ export default class PubSubService {
   public async closeAll(): Promise<void> {
     const subscribers = this.getSubscribers();
     for (const subscription of subscribers) {
-      await this.getClient().close(subscription);
+      await PubSubService.client.close(subscription);
     }
     PubSubService.status = 'closed';
   }
@@ -191,13 +187,13 @@ export default class PubSubService {
    * Subscribes to any given topic
    */
   public async subscribe(subscription: SubscriberTuple): Promise<void> {
-    return this.getClient().subscribe(subscription);
+    return PubSubService.client.subscribe(subscription);
   }
 
   /**
    * Retrieves a list of subscribers
    */
   public async getAllSubscriptions(): Promise<AllSubscriptions[]> {
-    return this.getClient().getAllSubscriptions();
+    return PubSubService.client.getAllSubscriptions();
   }
 }

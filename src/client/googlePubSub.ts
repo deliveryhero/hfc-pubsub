@@ -45,7 +45,7 @@ const DEFAULT_PROJECT = 'default';
 
 export default class GooglePubSubAdapter implements PubSubClientV2 {
   protected static instance: GooglePubSubAdapter;
-  protected projects: Projects = {};
+  public projects: Projects = {};
 
   public constructor(client: GooglePubSub) {
     this.projects[DEFAULT_PROJECT] = {
@@ -55,10 +55,6 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID || '',
     };
     this.createOrGetSubscription = this.createOrGetSubscription.bind(this);
-  }
-
-  public getProjects(): Projects {
-    return this.projects;
   }
 
   public static getInstance(): GooglePubSubAdapter {
@@ -87,7 +83,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     message: P,
     options: PublishOptions,
   ): Promise<string> {
-    const pubSubTopic = await this.createOrGetTopic(topic.getName(), {
+    const pubSubTopic = await this.createOrGetTopic(topic.name, {
       project: topic.project,
     });
     // FIXME: PUB-49 retryConfig not being considered, see https://github.com/googleapis/nodejs-pubsub/blob/master/samples/publishWithRetrySettings.js for how to use it

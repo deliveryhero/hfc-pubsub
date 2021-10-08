@@ -28,7 +28,7 @@ export default class EventBus extends EventEmitter implements PubSubClientV2 {
     topic: T,
     message: P,
   ): Promise<string> {
-    EventBus.getInstance().emit(topic.getName(), message);
+    EventBus.getInstance().emit(topic.name, message);
     return 'done';
   }
 
