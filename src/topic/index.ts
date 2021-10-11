@@ -22,6 +22,7 @@ export interface Payload {
 
 export interface NamedTopic {
   readonly name: string;
+  options?: { addTimeStamp?: boolean };
 }
 
 export interface TopicWithCustomProject {
@@ -30,6 +31,7 @@ export interface TopicWithCustomProject {
 
 export default class Topic implements NamedTopic, TopicWithCustomProject {
   public readonly name: string = '';
+  options = { addTimeStamp: true };
   public project?: GooglePubSubProject;
 
   public retryConfig: RetryConfig = {
@@ -61,14 +63,15 @@ export default class Topic implements NamedTopic, TopicWithCustomProject {
     message: T,
     options?: TopicPublishOptions,
   ): Promise<string> {
-    this.validateTopic(this.getName());
-    this.validateMessage(message);
+    this.validateTopic(this.name);
     return this.mq.publish(
       this,
-      {
-        ...message,
-        _timestamp: new Date().toISOString(),
-      },
+      this.options?.addTimeStamp
+        ? {
+            ...message,
+            _timestamp: new Date().toISOString(),
+          }
+        : message,
       {
         ...this.retryConfig,
         ...options,
@@ -80,10 +83,6 @@ export default class Topic implements NamedTopic, TopicWithCustomProject {
         }),
       } as PublishOptions,
     );
-  }
-
-  public getName(): string {
-    return this.name;
   }
 
   public validateTopic(name: string): void {

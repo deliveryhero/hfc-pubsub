@@ -10,6 +10,7 @@ const mockGet = jest.fn(() => {
     resolve([
       {
         publish: mockPublish,
+        publishJSON: mockPublish,
       },
     ]);
   });
@@ -60,7 +61,7 @@ describe('With Custom Credentials', (): void => {
     const topic = new ExampleTopicWithProjectCredentials();
     await topic.publish<any>({ data: 'test' });
     expect(
-      GooglePubSubAdapter.getInstance().getProjects()['custom-project-id'],
+      GooglePubSubAdapter.getInstance().projects['custom-project-id'],
     ).toBeDefined();
   });
 
@@ -68,7 +69,7 @@ describe('With Custom Credentials', (): void => {
     const topic = new ExampleTopicWithProjectCredentials();
     await topic.publish<any>({ data: 'test' });
     expect(
-      GooglePubSubAdapter.getInstance().getProjects()['custom-project-id'],
+      GooglePubSubAdapter.getInstance().projects['custom-project-id'],
     ).toBeDefined();
   });
 

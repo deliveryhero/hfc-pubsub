@@ -1,6 +1,9 @@
-import { SubscriberObject, Message } from '@honestfoodcompany/pubsub'; // this import is optional, it's provides the interfaces to use below
+import { SubscriberObject } from '@honestfoodcompany/pubsub'; // this import is optional, it's provides the interfaces to use below
+interface Payload {
+  x: string;
+}
 
-const subscriber: SubscriberObject = {
+const subscriber: SubscriberObject<Payload> = {
   topicName: 'simple.topic',
   subscriptionName: 'simple.topic.console-log.subscription-with-options',
   description: 'Will console log messages published on test.topic',
@@ -21,9 +24,10 @@ const subscriber: SubscriberObject = {
     enableMessageOrdering: true,
   },
 
-  handleMessage: function (message: Message) {
-    console.log(this.subscriptionName, 'received message');
-    console.log(message.data.toString());
+  handleMessage: (message) => {
+    console.log(message.toJSON(), typeof message.toJSON());
+    const x = message.toJSON();
+    console.log(x?.x);
     message.ack();
   },
 };

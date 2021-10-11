@@ -9,6 +9,7 @@ describe('@Message', () => {
 
   it('when synchronous driver is exposed, simply return a data object', () => {
     expect(message).toHaveProperty('data');
+    expect(message).toHaveProperty('toJSON');
     expect(Object.keys(message)).toHaveLength(1);
   });
 
