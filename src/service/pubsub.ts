@@ -13,6 +13,7 @@ export default class PubSubService {
   protected static instance: PubSubService;
   protected static driver: 'synchronous' | 'google';
   private static status: 'ready' | 'pending' | 'closed' = 'pending';
+  private server?: http.Server;
 
   private constructor() {
     this.initDriver();
@@ -21,12 +22,13 @@ export default class PubSubService {
     this.bind(this);
   }
 
-  public startServer(): void {
+  private startServer(): void {
     if (process.env.PUBSUB_HEALTH_SERVER !== 'true') return;
+    if (this.server) return;
 
     const port = process.env.PUBSUB_SERVER_PORT || 8080;
     //create a server object:
-    http
+    this.server = http
       .createServer(function (_req, res) {
         const isHealthy = PubSubService.isHealthy();
         if (isHealthy) {
@@ -134,6 +136,17 @@ export default class PubSubService {
       await this.getClient().close(subscription);
     }
     PubSubService.status = 'closed';
+    if (this.server) {
+      await new Promise((resolve, reject) => {
+        this.server?.close((err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(this.server);
+          }
+        });
+      });
+    }
   }
 
   public async startSubscriptions(): Promise<void> {

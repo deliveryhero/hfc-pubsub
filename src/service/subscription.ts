@@ -43,11 +43,14 @@ export default class SubscriptionService {
   }
 
   /**
-   *   If passed, it would serve as the default error handler at SubscriptionService level
+   * If passed, it would serve as the default error handler at SubscriptionService level
+   * Applications should override this with custom error handling
    */
   public static handleError(error: Error): void {
     // default error handling logic
     Logger.Instance.error({ error }, 'Received Unexpected Error');
+    // To keep backwards compatibility with no error handler
+    throw error;
   }
 
   /**

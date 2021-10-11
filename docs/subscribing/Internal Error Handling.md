@@ -29,6 +29,9 @@ export default: SubscriberObject = {
 
   handleError: function(error: Error): void {
     // internal error handling logic for subscriber
+    console.error(error);
+    // Close DB connections/etc here
+    process.exit(1);
   }
 };
 
@@ -49,6 +52,9 @@ exports.default = {
   },
   handleError: function (error) {
     // internal error handling logic for subscriber
+    console.error(error);
+    // Close DB connections/etc here
+    process.exit(1);
   },
 };
 ```
@@ -71,7 +77,10 @@ export default class SubscriptionService extends PubSub.SubscriptionService {
   static async init(): Promise<void> {}
 
   static handleError(error: Error): void {
-    // global error handling logic for all subscribers
+    // global default error handling logic for all subscribers
+    console.error(error);
+    // Close DB connections/etc here
+    process.exit(1);
   }
 }
 ```
@@ -90,7 +99,10 @@ SubscriptionService.defaultSubscriberOptions = {};
 SubscriptionService.init = () => {};
 
 SubscriptionService.handleError = (error) => {
-  // global error handling logic for all subscribers
+  // global default error handling logic for all subscribers
+  console.error(error);
+  // Close DB connections/etc here
+  process.exit(1);
 };
 
 exports.default = SubscriptionService;

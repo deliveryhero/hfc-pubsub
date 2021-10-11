@@ -1,4 +1,6 @@
 process.env.PUBSUB_ROOT_DIR = './__tests__/pubsub';
+process.env.PUBSUB_HEALTH_SERVER = 'false';
+
 const TEST_REGEX = '/__tests__/.*.test.(js|ts|tsx)?$';
 module.exports = {
   roots: ['<rootDir>'],
