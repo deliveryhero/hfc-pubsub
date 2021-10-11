@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.11.0
+
+### Minor Changes
+
+- Adds optional health check server to tell if all subs are open or not ([#73](https://github.com/deliveryhero/hfc-pubsub/pull/73) by [@ishan123456789](https://github.com/ishan123456789))
+
+* [PUB-71](https://honesttech.atlassian.net/browse/PUB-71) - Add Subscription level handleError method ([#75](https://github.com/deliveryhero/hfc-pubsub/pull/75) by [@ketan-saxena](https://github.com/ketan-saxena))
+
+### Patch Changes
+
+- [PUB-64](https://honesttech.atlassian.net/browse/PUB-64) - Update dependencies ([#78](https://github.com/deliveryhero/hfc-pubsub/pull/78) by [@rohit-gohri](https://github.com/rohit-gohri))
+
 ## 1.10.4
 
 ### Patch Changes

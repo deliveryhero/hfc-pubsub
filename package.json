@@ -1,6 +1,6 @@
 {
   "name": "@honestfoodcompany/pubsub",
-  "version": "1.10.4",
+  "version": "1.11.0",
   "description": "pubsub framework for managing topics and subscriptions",
   "main": "dist/index.js",
   "homepage": "https://deliveryhero.github.io/hfc-pubsub/",
