@@ -31,9 +31,11 @@ process.on('SIGTERM', () => {
   SubscriptionService.closeAll()
     .then(() => {
       // Then the databse so no new handlers are triggered
-      mongoose.disconnect(() => {
-        process.exit(0);
-      });
+      return mongoose.disconnect()
+        .then(() => {
+          // Then exit the process
+          process.exit(0);
+        });
     })
     .catch((err) => {
       console.error(err, 'Could not close subscriptions');
