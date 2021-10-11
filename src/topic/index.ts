@@ -66,12 +66,12 @@ export default class Topic implements NamedTopic, TopicWithCustomProject {
     this.validateTopic(this.name);
     return this.mq.publish(
       this,
-      {
-        ...message,
-        ...(this.options?.addTimeStamp && {
-          _timestamp: new Date().toISOString(),
-        }),
-      },
+      this.options?.addTimeStamp
+        ? {
+            ...message,
+            _timestamp: new Date().toISOString(),
+          }
+        : message,
       {
         ...this.retryConfig,
         ...options,
