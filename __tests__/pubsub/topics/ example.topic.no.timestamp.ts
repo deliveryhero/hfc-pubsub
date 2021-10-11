@@ -17,6 +17,6 @@ export interface Payload extends BasePayload {
 }
 
 export default class ExampleTopicNoTimeStamp extends Topic {
-  addTimeStamp = false;
+  options = { addTimeStamp: false };
   public readonly name = 'example.topic.no.timestamp';
 }

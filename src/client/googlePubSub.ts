@@ -131,13 +131,11 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const subscriberInstance = new subscriberClass();
     await subscriberInstance.init();
     subscription.on('message', (message: GoogleCloudMessage): void => {
-      if (subscriberInstance.handleMessage) {
-        subscriberInstance
-          .handleMessage(Message.fromGCloud(message))
-          .catch(() => {
-            message.nack();
-          });
-      }
+      subscriberInstance
+        .handleMessage(Message.fromGCloud(message))
+        .catch(() => {
+          message.nack();
+        });
     });
   }
 

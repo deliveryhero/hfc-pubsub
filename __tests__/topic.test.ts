@@ -1,6 +1,6 @@
 import PubSubService from '../src/service/pubsub';
 import exampleTopic, { Payload } from './pubsub/topics/example.topic';
-import ExampleTopicNoTimeStamp from './pubsub/topics/example.topic.noTimeStamp';
+import ExampleTopicNoTimeStamp from './pubsub/topics/ example.topic.no.timestamp';
 
 const mockPublish = jest.fn().mockResolvedValue('testid');
 

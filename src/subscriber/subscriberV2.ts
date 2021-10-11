@@ -19,11 +19,6 @@ export default class SubscriberV2 {
     this.subscriberObject?.init && this.subscriberObject?.init();
   }
 
-  public async handleJSON(message: Message): Promise<void> {
-    this.subscriberObject?.handleJSON &&
-      this.subscriberObject?.handleJSON(message);
-  }
-
   public async handleMessage<T>(message: Message<T>): Promise<void> {
     this.subscriberObject?.handleMessage &&
       this.subscriberObject?.handleMessage(message);

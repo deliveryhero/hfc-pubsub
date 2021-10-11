@@ -4,12 +4,8 @@ export default class Message<T = unknown> {
   public data: Buffer = Buffer.from('');
   public gCloudMessage?: GCloudMessage;
 
-  public toJSON(): T | undefined {
-    try {
-      return JSON.parse(this.data.toString());
-    } catch (e) {
-      return;
-    }
+  public toJSON(): T {
+    return JSON.parse(this.data.toString());
   }
   /**
    * Builds a new message object in the synchronous driver.
@@ -27,7 +23,6 @@ export default class Message<T = unknown> {
    * @param message A valid Google Cloud message
    */
   public static fromGCloud(message: GCloudMessage): Message {
-    // Static member can't access class argument so keeping it any
     const instance = new Message();
     instance.data = message.data;
     instance.gCloudMessage = message;

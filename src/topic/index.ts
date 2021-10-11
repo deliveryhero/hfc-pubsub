@@ -22,6 +22,7 @@ export interface Payload {
 
 export interface NamedTopic {
   readonly name: string;
+  options?: { addTimeStamp?: boolean };
 }
 
 export interface TopicWithCustomProject {
@@ -30,7 +31,7 @@ export interface TopicWithCustomProject {
 
 export default class Topic implements NamedTopic, TopicWithCustomProject {
   public readonly name: string = '';
-  public addTimeStamp = true;
+  options = { addTimeStamp: true };
   public project?: GooglePubSubProject;
 
   public retryConfig: RetryConfig = {
@@ -67,7 +68,9 @@ export default class Topic implements NamedTopic, TopicWithCustomProject {
       this,
       {
         ...message,
-        ...(this.addTimeStamp && { _timestamp: new Date().toISOString() }),
+        ...(this.options?.addTimeStamp && {
+          _timestamp: new Date().toISOString(),
+        }),
       },
       {
         ...this.retryConfig,
