@@ -74,6 +74,7 @@ export default class Topic<P extends Payload = Payload>
     message: PayloadInput<P>,
     options?: TopicPublishOptions,
   ): Promise<string> {
+    this.validateMessage(message);
     return this.mq.publish(
       this.constructor as typeof Topic,
       this.options?.addTimeStamp
