@@ -51,14 +51,13 @@ export default class Topic<P extends Payload = Payload>
     this.mq = PubSubService.getInstance();
   }
   /**
-   * @todo implement message validation logic. tried to link Topic and Message using static name methods, but hit a wall with subclass static inheritance typescript issues
-   * @param message Message
+   * @param message Message to be published
    */
-  public validateMessage(message: P): void {
+  public validateMessage(message: Omit<P, keyof Payload>): void {
     message;
   }
 
-  public async publish<T = P>(
+  public async publish<T = Omit<P, keyof Payload>>(
     message: T,
     options?: TopicPublishOptions,
   ): Promise<string> {
