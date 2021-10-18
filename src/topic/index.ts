@@ -20,16 +20,15 @@ export interface Payload {
   _timestamp?: string;
 }
 
-export interface NamedTopic {
+export interface TopicOptions {
   readonly name: string;
   options?: { addTimeStamp?: boolean };
-}
-
-export interface TopicWithCustomProject {
   project?: GooglePubSubProject;
 }
 
-export default class Topic implements NamedTopic, TopicWithCustomProject {
+export default class Topic<P extends Payload = Payload>
+  implements TopicOptions
+{
   public readonly name: string = '';
   options = { addTimeStamp: true };
   public project?: GooglePubSubProject;
@@ -55,11 +54,11 @@ export default class Topic implements NamedTopic, TopicWithCustomProject {
    * @todo implement message validation logic. tried to link Topic and Message using static name methods, but hit a wall with subclass static inheritance typescript issues
    * @param message Message
    */
-  public validateMessage(message: Payload): void {
+  public validateMessage(message: P): void {
     message;
   }
 
-  public async publish<T extends Payload>(
+  public async publish<T = P>(
     message: T,
     options?: TopicPublishOptions,
   ): Promise<string> {
