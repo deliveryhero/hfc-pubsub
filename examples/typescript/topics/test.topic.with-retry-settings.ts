@@ -4,8 +4,13 @@ import { Topic, Payload as BasePayload } from '@honestfoodcompany/pubsub';
  * Defining a topic and payload:
  */
 
-export default class TestRetryTopic extends Topic {
-  readonly name = 'test.topic.with-retry-settings';
+export interface Payload extends BasePayload {
+  testPayload: any;
+}
+
+export default class TestRetryTopic extends Topic<Payload> {
+  static readonly topicName = 'test.topic.with-retry-settings';
+
   retryConfig = {
     retryCodes: [
       10 as const, // 'ABORTED'
@@ -26,8 +31,4 @@ export default class TestRetryTopic extends Topic {
       totalTimeoutMillis: 600000,
     },
   };
-}
-
-export interface Payload extends BasePayload {
-  testPayload: any;
 }

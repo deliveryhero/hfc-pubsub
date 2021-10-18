@@ -20,19 +20,23 @@ export interface Payload {
   _timestamp?: string;
 }
 
+export type PayloadInput<P extends Payload> = Omit<P, keyof Payload>;
 export interface TopicOptions {
-  readonly name: string;
   options?: { addTimeStamp?: boolean };
+}
+
+export interface TopicProperties {
+  topicName: string;
   project?: GooglePubSubProject;
 }
 
 export default class Topic<P extends Payload = Payload>
   implements TopicOptions
 {
-  public readonly name: string = '';
-  options = { addTimeStamp: true };
-  public project?: GooglePubSubProject;
+  public static readonly topicName: string;
+  public static project?: GooglePubSubProject;
 
+  public options = { addTimeStamp: true };
   public retryConfig: RetryConfig = {
     retryCodes: [10, 1, 4, 13, 8, 14, 2],
     backoffSettings: {
@@ -49,21 +53,29 @@ export default class Topic<P extends Payload = Payload>
 
   public constructor() {
     this.mq = PubSubService.getInstance();
+    (this.constructor as typeof Topic).validateTopic(
+      (this.constructor as typeof Topic).topicName,
+    );
   }
+  public static validateTopic(name: string): void {
+    if (!name || name.length <= 6) {
+      throw new Error('Invalid Topic Name!');
+    }
+  }
+
   /**
    * @param message Message to be published
    */
-  public validateMessage(message: Omit<P, keyof Payload>): void {
+  public validateMessage(message: PayloadInput<P>): void {
     message;
   }
 
-  public async publish<T = Omit<P, keyof Payload>>(
-    message: T,
+  public async publish(
+    message: PayloadInput<P>,
     options?: TopicPublishOptions,
   ): Promise<string> {
-    this.validateTopic(this.name);
     return this.mq.publish(
-      this,
+      this.constructor as typeof Topic,
       this.options?.addTimeStamp
         ? {
             ...message,
@@ -81,11 +93,5 @@ export default class Topic<P extends Payload = Payload>
         }),
       } as PublishOptions,
     );
-  }
-
-  public validateTopic(name: string): void {
-    if (!name || name.length <= 6) {
-      throw new Error('Invalid Topic Name!');
-    }
   }
 }

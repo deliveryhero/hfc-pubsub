@@ -1,6 +1,6 @@
 import PubSubService from '../src/service/pubsub';
-import exampleTopic, { Payload } from './pubsub/topics/example.topic';
-import ExampleTopicNoTimeStamp from './pubsub/topics/ example.topic.no.timestamp';
+import TestTopic from './pubsub/topics/test-topic';
+import TestTopicNoTimeStamp from './pubsub/topics/test-topic.no.timestamp';
 
 const mockPublish = jest.fn().mockResolvedValue('testid');
 
@@ -33,18 +33,19 @@ describe('topics', (): void => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+
   it('should publish to pubsub', async (): Promise<void> => {
     const spy = jest.spyOn(PubSubService, 'getInstance');
-    const topic = new exampleTopic();
-    await topic.publish<Payload>({ data: 'test' });
+    const topic = new TestTopic();
+    await topic.publish({ data: 'test' });
     expect(spy).toBeCalledTimes(1);
     expect(mockPublish).toBeCalledTimes(1);
   });
 
   it('Expect publish to return a string with the messageId', async (): Promise<void> => {
     const spy = jest.spyOn(PubSubService, 'getInstance');
-    const topic = new exampleTopic();
-    const data = await topic.publish<Payload>({ data: 'test' });
+    const topic = new TestTopic();
+    const data = await topic.publish({ data: 'test' });
     expect(spy).toBeCalledTimes(1);
     expect(data).toBe('testid');
     expect(mockPublish).toBeCalledTimes(1);
@@ -52,8 +53,8 @@ describe('topics', (): void => {
 
   it('Should test retry config to be the default one', async (): Promise<void> => {
     const spy = jest.spyOn(PubSubService.prototype, 'publish');
-    const topic = new exampleTopic();
-    const data = await topic.publish<Payload>({ data: 'test' });
+    const topic = new TestTopic();
+    const data = await topic.publish({ data: 'test' });
     expect(data).toBe('testid');
     expect(spy).toBeCalledWith(
       expect.any(Object),
@@ -68,8 +69,8 @@ describe('topics', (): void => {
 
   it('Should Not add timestamp', async (): Promise<void> => {
     const spy = jest.spyOn(PubSubService.prototype, 'publish');
-    const topic = new ExampleTopicNoTimeStamp();
-    const data = await topic.publish<Payload>({ data: 'test' });
+    const topic = new TestTopicNoTimeStamp();
+    const data = await topic.publish({ data: 'test' });
     expect(data).toBe('testid');
     expect(spy).toBeCalledWith(
       expect.any(Object),
@@ -82,8 +83,8 @@ describe('topics', (): void => {
 
   it('Should test retry config to be the updated retry config one', async (): Promise<void> => {
     const spy = jest.spyOn(PubSubService.prototype, 'publish');
-    const topic = new exampleTopic();
-    const data = await topic.publish<Payload>(
+    const topic = new TestTopic();
+    const data = await topic.publish(
       { data: 'test' },
       { backoffSettings: { initialRetryDelayMillis: 500 } },
     );
@@ -108,8 +109,8 @@ describe('topics', (): void => {
 
   it('Should forward attributes to the publish method', async (): Promise<void> => {
     const spy = jest.spyOn(PubSubService.prototype, 'publish');
-    const topic = new exampleTopic();
-    const data = await topic.publish<Payload>(
+    const topic = new TestTopic();
+    const data = await topic.publish(
       { data: 'test' },
       { attributes: { test: 'filter' } },
     );
