@@ -107,7 +107,7 @@ export default class PubSubService {
   public async publish<T extends TopicProperties>(
     topic: T,
     message: Record<string, unknown>,
-    options: PublishOptions,
+    options?: PublishOptions,
   ): Promise<string> {
     if (this.shouldStartSynchronousSubscriptions()) {
       await this.startSubscriptions();

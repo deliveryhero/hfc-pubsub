@@ -10,7 +10,7 @@ import SubscriberLoader from './subscriberLoader';
 import { ResourceResolver } from './resourceResolver';
 
 export default class SubscriptionService {
-  public static subscribers: SubscriberObject[] = [];
+  public static subscribers: SubscriberObject<any>[] = [];
   private static _subscribers: Subscribers = [];
 
   public static defaultSubscriberOptions: SubscriberOptions;

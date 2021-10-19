@@ -1,5 +1,4 @@
 import { PubSubService } from '@honestfoodcompany/pubsub';
-import { RetryConfig } from '../src/interface';
 import TestTopic from './pubsub/topics/test-topic';
 import ExampleSubscriber from './pubsub/subscriptions/test-topic.example.subscription';
 
@@ -42,7 +41,6 @@ jest.mock('../src/client/googlePubSub', () => ({
 describe('pubsub.service', () => {
   let service: PubSubService;
   let subscriber: ReturnType<PubSubService['getSubscribers']>[number];
-  const retryConfig = {} as RetryConfig;
 
   beforeAll(() => {
     service = PubSubService.getInstance();
@@ -63,7 +61,7 @@ describe('pubsub.service', () => {
   });
 
   it('should handle publishing', async () => {
-    await service.publish(TestTopic, { data: 1 }, retryConfig);
+    await service.publish(TestTopic, { data: 1 });
     expect(mockPublish.mock.calls.length).toBe(1);
   });
 
@@ -72,7 +70,6 @@ describe('pubsub.service', () => {
       TestTopic,
       { data: 1 },
       {
-        ...retryConfig,
         attributes: {
           filter: 'test',
         },
@@ -81,7 +78,6 @@ describe('pubsub.service', () => {
     expect(mockPublish.mock.calls.length).toBe(1);
     expect(mockPublish.mock.calls[0][1]).toMatchObject({
       data: 1,
-      _timestamp: 'test',
     });
     expect(mockPublish.mock.calls[0][2]).toMatchObject({
       attributes: {

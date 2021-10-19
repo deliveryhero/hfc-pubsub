@@ -18,16 +18,18 @@ jest.mock('../src/service/pubsub', () => ({
 
 describe('topics', (): void => {
   const defaultRetrySettings = {
-    backoffSettings: {
-      initialRetryDelayMillis: 100,
-      initialRpcTimeoutMillis: 5000,
-      maxRetryDelayMillis: 60000,
-      maxRpcTimeoutMillis: 600000,
-      retryDelayMultiplier: 1.3,
-      rpcTimeoutMultiplier: 1,
-      totalTimeoutMillis: 600000,
+    retryConfig: {
+      backoffSettings: {
+        initialRetryDelayMillis: 100,
+        initialRpcTimeoutMillis: 5000,
+        maxRetryDelayMillis: 60000,
+        maxRpcTimeoutMillis: 600000,
+        retryDelayMultiplier: 1.3,
+        rpcTimeoutMultiplier: 1,
+        totalTimeoutMillis: 600000,
+      },
+      retryCodes: [10, 1, 4, 13, 8, 14, 2],
     },
-    retryCodes: [10, 1, 4, 13, 8, 14, 2],
   };
 
   beforeEach(() => {
@@ -57,7 +59,7 @@ describe('topics', (): void => {
     const data = await topic.publish({ data: 'test' });
     expect(data).toBe('testid');
     expect(spy).toBeCalledWith(
-      expect.any(Object),
+      TestTopic,
       expect.objectContaining({
         _timestamp: expect.stringContaining(':'),
       }),
@@ -73,11 +75,11 @@ describe('topics', (): void => {
     const data = await topic.publish({ data: 'test' });
     expect(data).toBe('testid');
     expect(spy).toBeCalledWith(
-      expect.any(Object),
+      TestTopicNoTimeStamp,
       expect.not.objectContaining({
         _timestamp: expect.stringContaining(':'),
       }),
-      expect.any(Object),
+      undefined,
     );
   });
 
@@ -86,23 +88,29 @@ describe('topics', (): void => {
     const topic = new TestTopic();
     const data = await topic.publish(
       { data: 'test' },
-      { backoffSettings: { initialRetryDelayMillis: 500 } },
+      {
+        retryConfig: {
+          backoffSettings: { initialRetryDelayMillis: 500 },
+        },
+      },
     );
     expect(data).toBe('testid');
     expect(spy).toBeCalledWith(
-      expect.any(Object),
+      TestTopic,
       expect.any(Object),
       expect.objectContaining({
-        backoffSettings: {
-          initialRetryDelayMillis: 500,
-          initialRpcTimeoutMillis: 5000,
-          maxRetryDelayMillis: 60000,
-          maxRpcTimeoutMillis: 600000,
-          retryDelayMultiplier: 1.3,
-          rpcTimeoutMultiplier: 1,
-          totalTimeoutMillis: 600000,
+        retryConfig: {
+          backoffSettings: {
+            initialRetryDelayMillis: 500,
+            initialRpcTimeoutMillis: 5000,
+            maxRetryDelayMillis: 60000,
+            maxRpcTimeoutMillis: 600000,
+            retryDelayMultiplier: 1.3,
+            rpcTimeoutMultiplier: 1,
+            totalTimeoutMillis: 600000,
+          },
+          retryCodes: [10, 1, 4, 13, 8, 14, 2],
         },
-        retryCodes: [10, 1, 4, 13, 8, 14, 2],
       }),
     );
   });
@@ -116,7 +124,7 @@ describe('topics', (): void => {
     );
     expect(data).toBe('testid');
     expect(spy).toBeCalledWith(
-      expect.any(Object),
+      TestTopic,
       expect.any(Object),
       expect.objectContaining({
         ...defaultRetrySettings,

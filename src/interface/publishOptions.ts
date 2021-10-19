@@ -47,14 +47,16 @@ export interface RetryConfig {
  * This is the user facing type where things are optional
  * and fields are overrides to base config in Topic
  */
-export interface TopicPublishOptions extends RecursivePartial<RetryConfig> {
+export interface TopicPublishOptions {
   attributes?: Attributes;
+  retryConfig?: RecursivePartial<RetryConfig>;
 }
 
 /**
  * This is the the actual type for use in the driver
  */
-export interface PublishOptions extends RetryConfig {
+export interface PublishOptions {
+  retryConfig?: RetryConfig;
   attributes?: Attributes;
 }
 

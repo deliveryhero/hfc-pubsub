@@ -81,7 +81,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   public async publish<T extends TopicProperties>(
     topic: T,
     message: Record<string, unknown>,
-    options: PublishOptions,
+    options?: PublishOptions,
   ): Promise<string> {
     const pubSubTopic = await this.createOrGetTopic(topic.topicName, {
       project: topic.project,
@@ -89,7 +89,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     // FIXME: PUB-49 retryConfig not being considered, see https://github.com/googleapis/nodejs-pubsub/blob/master/samples/publishWithRetrySettings.js for how to use it
     const messageId = await pubSubTopic.publishJSON(
       message,
-      options.attributes,
+      options?.attributes,
     );
     return messageId;
   }

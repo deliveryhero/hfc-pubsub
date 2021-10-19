@@ -13,7 +13,7 @@ export interface PubSubClientV2 {
   publish<T extends TopicProperties>(
     topic: T,
     message: Record<string, unknown>,
-    options: PublishOptions,
+    options?: PublishOptions,
   ): Promise<string>;
   subscribe(subscriber: SubscriberTuple): void;
   close(subscriber: SubscriberTuple): void;
