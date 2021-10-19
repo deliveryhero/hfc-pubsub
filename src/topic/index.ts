@@ -20,7 +20,10 @@ export interface Payload {
   _timestamp?: string;
 }
 
-export type PayloadInput<P extends Payload> = Omit<P, keyof Payload>;
+/**
+ * Remove properties not required when publishing but only available when processing messages
+ */
+type PayloadInput<P extends Payload> = Omit<P, keyof Payload>;
 export interface TopicOptions {
   options?: { addTimeStamp?: boolean };
 }

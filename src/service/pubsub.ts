@@ -1,5 +1,5 @@
 import http from 'http';
-import Topic, { Payload } from '../topic';
+import { TopicProperties } from '../topic';
 import { SubscriberTuple, Subscribers } from '../subscriber';
 import EventBus from '../client/eventBus';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
@@ -104,9 +104,9 @@ export default class PubSubService {
   /**
    * Publishes new orders to PubSub.
    */
-  public async publish<T extends Topic, P extends Payload>(
+  public async publish<T extends TopicProperties>(
     topic: T,
-    message: P,
+    message: Record<string, unknown>,
     options: PublishOptions,
   ): Promise<string> {
     if (this.shouldStartSynchronousSubscriptions()) {
