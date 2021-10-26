@@ -5,10 +5,10 @@ sidebar_label: Different GCP project
 sidebar_position: 3
 ---
 
-```ts title="/pubsub/topics/example-topic-with-customCredentials.ts"
+```ts title="/pubsub/topics/example-topic-with-custom-credentials.ts"
 export default class ExampleTopic extends Topic {
-  public readonly name = 'example-topic-with-customCredentials';
-  public project: GooglePubSubProject = {
+  static readonly topicName = 'example-topic-with-custom-credentials';
+  static project: GooglePubSubProject = {
     id: 'custom-project-id',
     credentials: {
       // eslint-disable-next-line

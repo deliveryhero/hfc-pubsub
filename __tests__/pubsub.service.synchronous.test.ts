@@ -1,5 +1,5 @@
 import { PubSubService, Subscriber } from '@honestfoodcompany/pubsub';
-import ExampleTopic from './pubsub/topics/example.topic';
+import TestTopic from './pubsub/topics/test-topic';
 import ExampleSubscriber from './pubsub/subscriptions/test-topic.example.subscription';
 
 process.env.PUBSUB_DRIVER = 'synchronous';
@@ -44,7 +44,7 @@ describe('pubsub.service - synchronous driver', () => {
   beforeAll(() => {
     service = PubSubService.getInstance();
     subscriber = new Subscriber(ExampleSubscriber);
-    topic = new ExampleTopic();
+    topic = new TestTopic();
   });
   beforeEach(() => {
     jest.clearAllMocks();

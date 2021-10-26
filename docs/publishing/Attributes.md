@@ -8,10 +8,11 @@ sidebar_position: 2
 See: <https://cloud.google.com/pubsub/docs/publisher#using_attributes>
 
 ```ts title="client.example.ts"
-import SimpleTopic, { Payload } from 'pubsub/topics/simple.topic.name';
+import SimpleTopic from 'pubsub/topics/simple.topic.name';
 
 let topic = new SimpleTopic();
-topic.publish<Payload>(
+
+topic.publish(
   { id: 1, data: 'My first message' },
   {
     attributes: {

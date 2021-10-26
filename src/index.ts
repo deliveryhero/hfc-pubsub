@@ -1,5 +1,5 @@
 require('dotenv').config({ path: require('find-config')('.env') });
-import Topic, { Payload } from './topic';
+import Topic, { Payload, TopicOptions } from './topic';
 import Subscriber, {
   SubscriberV2,
   SubscriberTuple,
@@ -20,6 +20,7 @@ export {
   SubscriberTuple,
   SubscriberOptions,
   Topic,
+  TopicOptions,
   Payload,
   Message,
   PubSubService,

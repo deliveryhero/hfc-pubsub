@@ -1,10 +1,7 @@
 const { Topic } = require('@honestfoodcompany/pubsub');
 
 class SimpleTopic extends Topic {
-  constructor() {
-    super();
-    this.name = 'simple.topic';
-  }
+  static topicName = 'simple.topic';
 }
 
 exports.default = SimpleTopic;

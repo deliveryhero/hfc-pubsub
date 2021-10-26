@@ -1,6 +1,5 @@
 import { PubSubService } from '@honestfoodcompany/pubsub';
-import { RetryConfig } from '../src/interface';
-import ExampleTopic from './pubsub/topics/example.topic';
+import TestTopic from './pubsub/topics/test-topic';
 import ExampleSubscriber from './pubsub/subscriptions/test-topic.example.subscription';
 
 process.env.PUBSUB_DRIVER = 'google';
@@ -11,8 +10,11 @@ const mockPublish = jest.fn();
 const mockSubscribe = jest.fn();
 const mockClose = jest.fn();
 
-const mockAllUsersList = [
-  { topicName: 'test.topic', subscriptionName: 'test.subscription' },
+const mockAllSubscriptionList = [
+  {
+    topicName: 'test-topic',
+    subscriptionName: 'test-topic.example.subscription',
+  },
 ];
 
 jest.mock('../src/client/googlePubSub', () => ({
@@ -31,7 +33,7 @@ jest.mock('../src/client/googlePubSub', () => ({
       return mockClose();
     }
     public async getAllSubscriptions() {
-      return mockAllUsersList;
+      return mockAllSubscriptionList;
     }
   },
 }));
@@ -39,8 +41,6 @@ jest.mock('../src/client/googlePubSub', () => ({
 describe('pubsub.service', () => {
   let service: PubSubService;
   let subscriber: ReturnType<PubSubService['getSubscribers']>[number];
-  let topic: ExampleTopic;
-  const retryConfig = {} as RetryConfig;
 
   beforeAll(() => {
     service = PubSubService.getInstance();
@@ -49,7 +49,6 @@ describe('pubsub.service', () => {
       .find(
         (sub) => sub[1].subscriptionName === ExampleSubscriber.subscriptionName,
       )!;
-    topic = new ExampleTopic();
   });
 
   beforeEach(() => {
@@ -62,20 +61,15 @@ describe('pubsub.service', () => {
   });
 
   it('should handle publishing', async () => {
-    await service.publish<ExampleTopic, { data: number; _timestamp: string }>(
-      topic,
-      { data: 1, _timestamp: 'test' },
-      retryConfig,
-    );
+    await service.publish(TestTopic, { data: 1 });
     expect(mockPublish.mock.calls.length).toBe(1);
   });
 
   it('should handle publishing with attributes', async () => {
-    await service.publish<ExampleTopic, { data: number; _timestamp: string }>(
-      topic,
-      { data: 1, _timestamp: 'test' },
+    await service.publish(
+      TestTopic,
+      { data: 1 },
       {
-        ...retryConfig,
         attributes: {
           filter: 'test',
         },
@@ -84,7 +78,6 @@ describe('pubsub.service', () => {
     expect(mockPublish.mock.calls.length).toBe(1);
     expect(mockPublish.mock.calls[0][1]).toMatchObject({
       data: 1,
-      _timestamp: 'test',
     });
     expect(mockPublish.mock.calls[0][2]).toMatchObject({
       attributes: {
@@ -95,7 +88,7 @@ describe('pubsub.service', () => {
 
   it('should return an array from getAllSubscriptions', async () => {
     const data = await service.getAllSubscriptions();
-    expect(data).toBe(mockAllUsersList);
+    expect(data).toBe(mockAllSubscriptionList);
   });
 
   it('should handle closeAll', async () => {

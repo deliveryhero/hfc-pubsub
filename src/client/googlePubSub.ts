@@ -10,7 +10,7 @@ import { CredentialBody } from 'google-auth-library';
 import chalk from 'chalk';
 import Bluebird from 'bluebird';
 
-import { Topic, Payload } from '../index';
+import { TopicProperties } from '../topic';
 import { PublishOptions } from '../interface/publishOptions';
 import {
   AllSubscriptions,
@@ -78,18 +78,18 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     });
   }
 
-  public async publish<T extends Topic, P extends Payload>(
+  public async publish<T extends TopicProperties>(
     topic: T,
-    message: P,
-    options: PublishOptions,
+    message: Record<string, unknown>,
+    options?: PublishOptions,
   ): Promise<string> {
-    const pubSubTopic = await this.createOrGetTopic(topic.name, {
+    const pubSubTopic = await this.createOrGetTopic(topic.topicName, {
       project: topic.project,
     });
     // FIXME: PUB-49 retryConfig not being considered, see https://github.com/googleapis/nodejs-pubsub/blob/master/samples/publishWithRetrySettings.js for how to use it
     const messageId = await pubSubTopic.publishJSON(
       message,
-      options.attributes,
+      options?.attributes,
     );
     return messageId;
   }

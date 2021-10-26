@@ -20,74 +20,86 @@ export interface Payload {
   _timestamp?: string;
 }
 
-export interface NamedTopic {
-  readonly name: string;
-  options?: { addTimeStamp?: boolean };
+/**
+ * Remove properties not required when publishing but only available when processing messages
+ */
+type PayloadInput<P extends Payload> = Omit<P, keyof Payload>;
+export interface TopicOptions {
+  addTimeStamp?: boolean;
+  retryConfig?: RetryConfig;
 }
 
-export interface TopicWithCustomProject {
+export interface TopicProperties {
+  topicName: string;
   project?: GooglePubSubProject;
 }
 
-export default class Topic implements NamedTopic, TopicWithCustomProject {
-  public readonly name: string = '';
-  options = { addTimeStamp: true };
-  public project?: GooglePubSubProject;
+export default class Topic<P extends Payload = Payload> {
+  public static readonly topicName: string;
+  public static project?: GooglePubSubProject;
 
-  public retryConfig: RetryConfig = {
-    retryCodes: [10, 1, 4, 13, 8, 14, 2],
-    backoffSettings: {
-      initialRetryDelayMillis: 100,
-      retryDelayMultiplier: 1.3,
-      maxRetryDelayMillis: 60000,
-      initialRpcTimeoutMillis: 5000,
-      rpcTimeoutMultiplier: 1.0,
-      maxRpcTimeoutMillis: 600000,
-      totalTimeoutMillis: 600000,
+  public options: TopicOptions = {
+    addTimeStamp: true,
+    retryConfig: {
+      retryCodes: [10, 1, 4, 13, 8, 14, 2],
+      backoffSettings: {
+        initialRetryDelayMillis: 100,
+        retryDelayMultiplier: 1.3,
+        maxRetryDelayMillis: 60000,
+        initialRpcTimeoutMillis: 5000,
+        rpcTimeoutMultiplier: 1.0,
+        maxRpcTimeoutMillis: 600000,
+        totalTimeoutMillis: 600000,
+      },
     },
   };
-  protected mq: PubSubService;
 
+  private mq: PubSubService;
   public constructor() {
     this.mq = PubSubService.getInstance();
+    (this.constructor as typeof Topic).validateTopic(
+      (this.constructor as typeof Topic).topicName,
+    );
   }
+  public static validateTopic(name: string): void {
+    if (!name || name.length <= 6) {
+      throw new Error('Invalid Topic Name!');
+    }
+  }
+
   /**
-   * @todo implement message validation logic. tried to link Topic and Message using static name methods, but hit a wall with subclass static inheritance typescript issues
-   * @param message Message
+   * @param message Message to be published
    */
-  public validateMessage(message: Payload): void {
+  public validateMessage(message: PayloadInput<P>): void {
     message;
   }
 
-  public async publish<T extends Payload>(
-    message: T,
+  public async publish(
+    message: PayloadInput<P>,
     options?: TopicPublishOptions,
   ): Promise<string> {
-    this.validateTopic(this.name);
+    this.validateMessage(message);
     return this.mq.publish(
-      this,
-      this.options?.addTimeStamp
+      this.constructor as typeof Topic,
+      this.options?.addTimeStamp !== false
         ? {
             ...message,
             _timestamp: new Date().toISOString(),
           }
         : message,
-      {
-        ...this.retryConfig,
-        ...options,
-        ...(options?.backoffSettings && {
-          backoffSettings: {
-            ...this.retryConfig.backoffSettings,
-            ...options?.backoffSettings,
-          },
-        }),
-      } as PublishOptions,
+      (this.options?.retryConfig
+        ? {
+            ...options,
+            retryConfig: {
+              ...this.options?.retryConfig,
+              ...options?.retryConfig,
+              backoffSettings: {
+                ...this.options?.retryConfig?.backoffSettings,
+                ...options?.retryConfig?.backoffSettings,
+              },
+            },
+          }
+        : options) as PublishOptions,
     );
-  }
-
-  public validateTopic(name: string): void {
-    if (!name || name.length <= 6) {
-      throw new Error('Invalid Topic Name!');
-    }
   }
 }

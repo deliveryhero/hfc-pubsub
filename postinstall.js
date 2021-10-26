@@ -1,4 +1,6 @@
 #!/bin/node
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 const fs = require('fs');
 const { resolve } = require('path');
 

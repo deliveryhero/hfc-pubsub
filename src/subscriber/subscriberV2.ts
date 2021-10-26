@@ -13,7 +13,7 @@ const defaultSubscriberOptions = {
 export default class SubscriberV2 {
   public metadata?: SubscriberMetadata;
 
-  public constructor(private subscriberObject?: SubscriberObject) {
+  public constructor(private subscriberObject?: SubscriberObject<any>) {
     this.metadata = subscriberObject;
   }
   public async init(): Promise<void> {

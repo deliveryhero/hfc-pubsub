@@ -1,5 +1,5 @@
 /**
- * @type {import('@honestfoodcompany/pubsub').SubscriberObject}
+ * @type {import('@honestfoodcompany/pubsub').SubscriberObject<import('../topics/test-topic').Payload>}
  */
 const subscription = {
   topicName: 'test-topic',
