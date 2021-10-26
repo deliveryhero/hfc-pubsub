@@ -1,7 +1,7 @@
 ---
 id: drivers
 title: PubSub Drivers
-sidebar_position: 5
+sidebar_position: 2
 ---
 
 ## Google PubSub Driver

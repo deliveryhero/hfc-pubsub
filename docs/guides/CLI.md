@@ -1,7 +1,7 @@
 ---
 id: cli
 title: CLI
-sidebar_position: 5
+sidebar_position: 1
 ---
 
 :::note
