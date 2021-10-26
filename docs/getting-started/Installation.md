@@ -91,4 +91,4 @@ GOOGLE_CLOUD_PUB_SUB_PROJECT_ID=gcp-project-id
 1. Once the directory structure has been defined and environment variables set
 2. Then you can create [subscriptions](../subscribing/Subscriptions.md) and [topics](../publishing/Topics.md)
 3. Initialize your database connection, define project-level subscription defaults, and register subscriptions in the [Subscription Service](../server/Service.md).
-4. After a service has been created, use the [CLI](./CLI.md) to start the subscriptions server.
+4. After a service has been created, use the [CLI](./guides/CLI.md) to start the subscriptions server.

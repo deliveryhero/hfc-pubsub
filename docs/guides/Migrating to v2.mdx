@@ -84,7 +84,7 @@ export interface Payload extends BasePayload {
 
 // highlight-next-line
 export default class SimpleTopic extends Topic {
-  name = 'simple.topic.name';
+  name = 'simple.topic';
 }
 
 // highlight-next-line
@@ -103,7 +103,7 @@ export interface Payload extends BasePayload {
 
 // highlight-next-line
 export default class SimpleTopic extends Topic<Payload> {
-  static readonly topicName = 'simple.topic.name';
+  static readonly topicName = 'simple.topic';
 }
 
 // highlight-next-line
@@ -196,16 +196,13 @@ export default class TestRetryTopic extends Topic<Payload> {
 ```ts title="v1-subscription.ts"
 import { Subscriber, Message } from '@honestfoodcompany/pubsub';
 
-// highlight-next-line
-export default class NewBuildSubscription extends Subscriber {
-  public static topicName = 'cloud-builds';
-  public static subscriptionName =
-    'cloud-buids.gfs-kitchen-screens.update-build';
-  public static description = 'Subscribes to cloud builds';
+export default class TestSubscriptions extends Subscriber {
+  public static topicName = 'simple.topic';
+  public static subscriptionName = 'simple.topic.test.subscription';
+  public static description = 'Subscribes to test data';
 
   public async handleMessage(message: Message): Promise<void> {
-    console.log(this.subscriptionName, 'received message');
-    // highlight-next-line
+    console.log(TestSubscriptions.subscriptionName, 'received message');
     const payload = JSON.parse(message.data.toString());
     console.log(payload.data);
     message.ack();
@@ -245,3 +242,58 @@ export default: SubscriberObject<Payload> = {
 
 </TabItem>
 </Tabs>
+
+## Typescript Changes
+
+Since most of the classes/interfaces now accept generics for Payload types, the typescript workflow is considerably better. This is how the you would reuse types across topics/subscriptions:
+
+### Declare Payload Type with Topic
+
+```ts title="simple.topic.ts"
+export interface Payload extends BasePayload {
+  id: number;
+  data: string;
+}
+
+// highlight-next-line
+export default class SimpleTopic extends Topic<Payload> {
+  static readonly topicName = 'simple.topic';
+}
+```
+
+```ts
+import SimpleTopic from '../topics/simple.topic.ts';
+
+// this is already typed with Payload
+new SimpleTopic().publish({
+  data: 'test',
+  id: 3,
+});
+```
+
+### Reuse Payload Type in SubscriberObject
+
+```ts title="v2-subscription.ts"
+import { SubscriberObject, Message } from "@honestfoodcompany/pubsub";
+import { Payload } from '../topic/simple.topic.ts';
+
+// highlight-next-line
+export default: SubscriberObject<Payload> = {
+  topicName: 'simple.topic',
+  subscriptionName: 'simple.topic.console-log.sub',
+  description: 'Will console log messages published on test.topic',
+
+  handleMessage: function(message): void {
+    console.log(this.subscriptionName, 'received message');
+    // highlight-next-line
+    const payload = message.toJson();
+    console.log(payload.data);
+    message.ack();
+  },
+
+  handleError: function(error: Error): void {
+    console.error(error);
+    process.exit(1);
+  }
+};
+```

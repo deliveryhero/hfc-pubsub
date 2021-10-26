@@ -1882,7 +1882,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docusaurus/core@npm:2.0.0-beta.ff31de0ff, @docusaurus/core@npm:^2.0.0-beta.ff31de0ff":
+"@docusaurus/core@npm:2.0.0-beta.ff31de0ff, @docusaurus/core@npm:^2.0.0-beta.8":
   version: 2.0.0-beta.ff31de0ff
   resolution: "@docusaurus/core@npm:2.0.0-beta.ff31de0ff"
   dependencies:
@@ -2147,7 +2147,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docusaurus/preset-classic@npm:^2.0.0-beta.ff31de0ff":
+"@docusaurus/preset-classic@npm:^2.0.0-beta.8":
   version: 2.0.0-beta.ff31de0ff
   resolution: "@docusaurus/preset-classic@npm:2.0.0-beta.ff31de0ff"
   dependencies:
@@ -2461,8 +2461,8 @@ __metadata:
   dependencies:
     "@changesets/cli": ^2.17.0
     "@changesets/get-github-info": ^0.5.0
-    "@docusaurus/core": ^2.0.0-beta.ff31de0ff
-    "@docusaurus/preset-classic": ^2.0.0-beta.ff31de0ff
+    "@docusaurus/core": ^2.0.0-beta.8
+    "@docusaurus/preset-classic": ^2.0.0-beta.8
     "@google-cloud/pubsub": ^2.18.1
     "@google-cloud/resource": ^1.2.1
     "@types/bluebird": ^3.5.36
