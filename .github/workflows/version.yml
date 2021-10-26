@@ -30,7 +30,7 @@ jobs:
           node-version: 12.x
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: yarn install --immutable
 
       - name: Create Release Pull Request
         uses: changesets/action@master

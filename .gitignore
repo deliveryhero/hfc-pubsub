@@ -71,3 +71,14 @@ typedoc-sidebar.js
 .DS_Store
 .vscode/*
 !.vscode/settings.json
+
+
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*

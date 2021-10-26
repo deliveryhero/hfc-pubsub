@@ -19,7 +19,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: yarn install --immutable
 
       - name: 🚀 Publish
         run: npm publish
@@ -41,7 +41,7 @@ jobs:
           sed -i 's,@honestfoodcompany/pubsub,@deliveryhero/pubsub,' package-lock.json
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: yarn install --immutable
 
       - name: 🚀 Publish
         run: npm publish
