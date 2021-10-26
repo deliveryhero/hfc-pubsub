@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-      - chore/PUB-50-docs
+      - docs/PUB-76-migration-guide
 
 env:
   CI: 'true'
