@@ -21,6 +21,7 @@ const config = {
       '@docusaurus/preset-classic',
       {
         debug: Boolean(process.env.DEBUG || process.env.CI),
+        customCss: [require.resolve('./docs/custom.css')],
         docs: {
           routeBasePath: '/',
           editUrl: 'https://github.com/deliveryhero/hfc-pubsub/edit/main/',

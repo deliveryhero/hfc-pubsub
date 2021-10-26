@@ -285,6 +285,7 @@ export default: SubscriberObject<Payload> = {
 
   handleMessage: function(message): void {
     console.log(this.subscriptionName, 'received message');
+    // This is already typed as Payload
     // highlight-next-line
     const payload = message.toJson();
     console.log(payload.data);
