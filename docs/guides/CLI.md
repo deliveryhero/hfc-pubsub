@@ -39,7 +39,7 @@ This will output a table of all subscriptions and their descriptions. Example ou
 ```sh
 $ npx subscriptions list
 
- Google Pub/Sub Subscriptions
+Google Pub/Sub Subscriptions
 Topic name   Subscription name                                Description
 simple.topic simple.topic.console-log.subscription-with-options Will console log messages published on test.topic
 test.topic   test.topic.console-log                           Will console log messages published on test.topic

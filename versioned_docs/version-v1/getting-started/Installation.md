@@ -39,7 +39,7 @@ The framework expects that you've created a pubsub directory in your project wit
 
 ```
 ├── .env                <-- this should be in your project root directory and will be autoloaded
-├── pubsub/             <-- this can be anywhere and named enything (defined in .env as PUBSUB_ROOT_DIR)
+├── pubsub/             <-- this can be anywhere and named anything (defined in .env as PUBSUB_ROOT_DIR)
 │   ├── subscriptions/  <-- any files ending with a `.sub.js` ext will be autoloaded from here
 │   ├── topics/
 │   └── subscription.service.js <-- this is the entrypoint for the service
