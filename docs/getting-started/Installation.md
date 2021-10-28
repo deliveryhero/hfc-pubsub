@@ -78,7 +78,7 @@ The framework expects the following environment variables. They can be added to 
 | `server-port`                    | `PUBSUB_SERVER_PORT`              | PORT at which the pubsub should run the server at                                                                                  |
 | `health-server`                  | `PUBSUB_HEALTH_SERVER`            | If value assigned is true this would run a server showing health state and return 500 if not healthy                               |
 
-Read more in [CLI docs](../Guides/CLI.md)
+Read more in [CLI docs](../guides/CLI.md)
 
 ## What next?
 

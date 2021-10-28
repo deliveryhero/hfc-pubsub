@@ -25,6 +25,13 @@ const config = {
         docs: {
           routeBasePath: '/',
           editUrl: 'https://github.com/deliveryhero/hfc-pubsub/edit/main/',
+          lastVersion: 'current',
+          versions: {
+            current: {
+              label: 'v2',
+              // path: '2.x',
+            },
+          },
         },
       },
     ],
@@ -50,6 +57,10 @@ const config = {
         {
           label: 'API',
           to: '/api',
+        },
+        {
+          type: 'docsVersionDropdown',
+          position: 'right',
         },
       ],
     },
