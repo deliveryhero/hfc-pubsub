@@ -18,6 +18,7 @@
     "test": "jest",
     "test-with-coverage": "yarn test --coverage",
     "watch": "yarn build -w",
+    "prepack": "yarn build",
     "prepare": "yarn build",
     "prepublishOnly": "yarn build",
     "postinstall": "node postinstall.js",
