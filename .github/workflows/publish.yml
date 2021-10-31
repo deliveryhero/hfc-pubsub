@@ -17,12 +17,13 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
+          cache: 'yarn'
 
       - name: 📦 Install dependencies
         run: yarn install --immutable
 
       - name: 🚀 Publish
-        run: npm publish
+        run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_PUBLISH__HFC_BOT}}
 
@@ -44,6 +45,6 @@ jobs:
         run: yarn install --immutable
 
       - name: 🚀 Publish
-        run: npm publish
+        run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
