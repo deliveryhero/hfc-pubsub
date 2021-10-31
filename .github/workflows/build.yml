@@ -67,5 +67,5 @@ jobs:
         run: |
           # Checkout PR head commit instead of merge commit
           # See: https://github.com/atlassian/changesets/issues/517#issuecomment-813282523
-          git checkout ${{ github.event.pull_request.head.sha }}
+          git checkout  ${{ github.event.pull_request.head.sha }}
           yarn changeset status --since=origin/main
