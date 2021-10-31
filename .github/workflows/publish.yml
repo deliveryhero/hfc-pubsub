@@ -23,7 +23,7 @@ jobs:
         run: yarn install --immutable
 
       - name: 🚀 Publish
-        run: yarn publish
+        run: yarn npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_PUBLISH__HFC_BOT}}
 
@@ -45,6 +45,6 @@ jobs:
         run: yarn install --immutable
 
       - name: 🚀 Publish
-        run: yarn publish
+        run: yarn npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
