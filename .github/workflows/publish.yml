@@ -39,7 +39,6 @@ jobs:
       - name: Change package name
         run: |
           sed -i 's,@honestfoodcompany/pubsub,@deliveryhero/pubsub,' package.json
-          sed -i 's,@honestfoodcompany/pubsub,@deliveryhero/pubsub,' package-lock.json
 
       - name: 📦 Install dependencies
         run: yarn install --immutable
