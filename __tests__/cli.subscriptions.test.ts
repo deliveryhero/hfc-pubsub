@@ -32,7 +32,7 @@ const findSubscriber = (name: string) => {
 function cli(args: any, cwd: string | undefined = undefined): any {
   return new Promise((resolve): any => {
     exec(
-      `npm run subscriptions -- ${args.join(' ')}`,
+      `yarn run subscriptions ${args.join(' ')}`,
       { cwd },
       (error: any, stdout: any, stderr: any): any => {
         resolve({

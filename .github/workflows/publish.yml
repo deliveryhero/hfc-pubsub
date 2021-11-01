@@ -16,15 +16,16 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 12
-          registry-url: https://registry.npmjs.org/
+          cache: 'yarn'
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: yarn install --immutable
 
       - name: 🚀 Publish
-        run: npm publish
+        run: yarn npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_PUBLISH__HFC_BOT}}
+          YARN_NPM_AUTH_TOKEN: ${{secrets.NPM_TOKEN_PUBLISH__HFC_BOT}}
+          YARN_NPM_PUBLISH_REGISTRY: https://registry.npmjs.org/
 
   publish-gpr:
     runs-on: ubuntu-latest
@@ -33,17 +34,16 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 12
-          registry-url: https://npm.pkg.github.com/
+
+      - name: 📦 Install dependencies
+        run: yarn install --immutable
 
       - name: Change package name
         run: |
           sed -i 's,@honestfoodcompany/pubsub,@deliveryhero/pubsub,' package.json
-          sed -i 's,@honestfoodcompany/pubsub,@deliveryhero/pubsub,' package-lock.json
-
-      - name: 📦 Install dependencies
-        run: npm ci
 
       - name: 🚀 Publish
-        run: npm publish
+        run: yarn npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          YARN_NPM_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          YARN_NPM_PUBLISH_REGISTRY: https://npm.pkg.github.com/

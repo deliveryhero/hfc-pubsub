@@ -5,23 +5,24 @@
   "main": "dist/index.js",
   "homepage": "https://deliveryhero.github.io/hfc-pubsub/",
   "scripts": {
-    "prebuild": "rimraf dist",
+    "prebuild": "yarn rimraf dist",
     "build": "tsc -p tsconfig.build.json",
     "check-types": "tsc",
-    "docs": "docusaurus build",
-    "docs-start": "docusaurus start",
-    "lint": "eslint src examples __tests__ --ignore-path .gitignore --ext .js,.ts",
-    "lint-fix": "npm run lint -- --fix",
-    "list": "npm run subscriptions -- list",
-    "start": "npm run subscriptions -- start",
-    "subscriptions": "ts-node -r tsconfig-paths/register src/cli/subscriptions.ts",
+    "docs": "yarn docusaurus build",
+    "docs-start": "yarn docusaurus start",
+    "lint": "yarn eslint src examples __tests__ --ignore-path .gitignore --ext .js,.ts",
+    "lint-fix": "yarn lint --fix",
+    "list": "yarn subscriptions list",
+    "start": "yarn subscriptions start",
+    "subscriptions": "yarn ts-node -r tsconfig-paths/register src/cli/subscriptions.ts",
     "test": "jest",
-    "test-with-coverage": "npm run test -- --coverage",
-    "watch": "npm run build -- -w",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm run build",
+    "test-with-coverage": "yarn test --coverage",
+    "watch": "yarn build -w",
+    "prepack": "yarn build",
+    "prepare": "yarn build",
+    "prepublishOnly": "yarn build",
     "postinstall": "node postinstall.js",
-    "serve": "docusaurus serve"
+    "serve": "yarn docusaurus serve"
   },
   "keywords": [
     "google pubsub",
@@ -98,12 +99,13 @@
   },
   "lint-staged": {
     "*.{ts,js}": [
-      "./node_modules/.bin/eslint --ignore-path .gitignore --ext .js,.ts --fix"
+      "yarn eslint --ignore-path .gitignore --ext .js,.ts --fix"
     ]
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npx lint-staged"
+      "pre-commit": "yarn lint-staged"
     }
-  }
+  },
+  "packageManager": "yarn@3.0.2"
 }

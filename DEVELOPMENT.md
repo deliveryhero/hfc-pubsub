@@ -10,7 +10,7 @@ GOOGLE_CLOUD_PUB_SUB_PROJECT_ID=<your-project-id>
 GOOGLE_APPLICATION_CREDENTIALS=./creds/<your-project-id-credentials-file>.json
 ```
 
-And you'll be able to use these npm commands directly:
+And you'll be able to use these yarn commands directly:
 
-- `npm run list`
-- `npm run start`
+- `yarn list`
+- `yarn start`
