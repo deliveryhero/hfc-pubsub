@@ -19,6 +19,12 @@ sidebar_position: 1
 npm i --save @honestfoodcompany/pubsub
 ```
 
+Or
+
+```sh
+yarn add @honestfoodcompany/pubsub
+```
+
 ### From Github Package Repository
 
 We also publish to Github Package Repository as `@deliveryhero/pubsub`. To install from there, first add this to your `.npmrc`:
@@ -27,10 +33,24 @@ We also publish to Github Package Repository as `@deliveryhero/pubsub`. To insta
 @deliveryhero:registry="https://npm.pkg.github.com/"
 ```
 
+Or for `.yarnrc`:
+
+```
+npmScopes:
+  deliveryhero:
+    npmRegistryServer: 'https://npm.pkg.github.com/'
+```
+
 And then install the package.
 
 ```sh
 npm i --save @deliveryhero/pubsub
+```
+
+OR
+
+```sh
+yarn add @deliveryhero/pubsub
 ```
 
 ## Project structure

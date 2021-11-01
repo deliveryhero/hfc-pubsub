@@ -33,6 +33,6 @@ jobs:
           sed -i 's/"version": "[0-9][0-9]*.[0-9][0-9]*.[0-9][0-9]*"/"version": "${{ steps.get_version.outputs.VERSION }}"/' package-lock.json
 
       - name: 🚀 Publish
-        run: npm publish --tag next
+        run: yarn npm publish --tag next
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_PUBLISH__HFC_BOT}}
