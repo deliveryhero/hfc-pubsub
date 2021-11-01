@@ -34,4 +34,4 @@ jobs:
       - name: 🚀 Publish
         run: yarn npm publish --tag next
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_PUBLISH__HFC_BOT}}
+          YARN_NPM_AUTH_TOKEN: ${{secrets.NPM_TOKEN_PUBLISH__HFC_BOT}}

@@ -25,7 +25,7 @@ jobs:
       - name: 🚀 Publish
         run: yarn npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_PUBLISH__HFC_BOT}}
+          YARN_NPM_AUTH_TOKEN: ${{secrets.NPM_TOKEN_PUBLISH__HFC_BOT}}
 
   publish-gpr:
     runs-on: ubuntu-latest
@@ -46,4 +46,4 @@ jobs:
       - name: 🚀 Publish
         run: yarn npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          YARN_NPM_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
