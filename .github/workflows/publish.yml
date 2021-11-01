@@ -16,7 +16,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 12
-          registry-url: https://registry.npmjs.org/
           cache: 'yarn'
 
       - name: 📦 Install dependencies
@@ -26,6 +25,7 @@ jobs:
         run: yarn npm publish
         env:
           YARN_NPM_AUTH_TOKEN: ${{secrets.NPM_TOKEN_PUBLISH__HFC_BOT}}
+          YARN_NPM_PUBLISH_REGISTRY: https://registry.npmjs.org/
 
   publish-gpr:
     runs-on: ubuntu-latest
@@ -34,7 +34,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 12
-          registry-url: https://npm.pkg.github.com/
 
       - name: Change package name
         run: |
@@ -47,3 +46,4 @@ jobs:
         run: yarn npm publish
         env:
           YARN_NPM_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          YARN_NPM_PUBLISH_REGISTRY: https://npm.pkg.github.com/
