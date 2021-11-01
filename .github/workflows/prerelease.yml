@@ -21,7 +21,11 @@ jobs:
 
       - name: Get the version
         id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+        run: |
+          # Remove the "v"
+          echo ${GITHUB_REF#refs/tags/} | cut -c 2-100 > app_version.tmp
+          export VERSION_TAG="$(cat app_version.tmp)"
+          echo ::set-output name=VERSION::$VERSION_TAG
 
       - name: 📦 Install dependencies
         run: yarn install --immutable

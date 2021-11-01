@@ -65,6 +65,9 @@ coverage/
 .DS_Store
 .vscode
 
+# Yarn
+.yarn/*
+
 # Docs
 examples/
 docs/
@@ -93,3 +96,4 @@ docusaurus.config.js
 typedoc-sidebar.js
 DEVELOPMENT.md
 CHANGELOG.md
+*.tmp

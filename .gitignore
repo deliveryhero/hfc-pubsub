@@ -72,7 +72,7 @@ typedoc-sidebar.js
 .vscode/*
 !.vscode/settings.json
 
-
+*.tmp
 
 # Yarn
 .yarn/*

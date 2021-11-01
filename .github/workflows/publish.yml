@@ -35,12 +35,12 @@ jobs:
         with:
           node-version: 12
 
+      - name: 📦 Install dependencies
+        run: yarn install --immutable
+
       - name: Change package name
         run: |
           sed -i 's,@honestfoodcompany/pubsub,@deliveryhero/pubsub,' package.json
-
-      - name: 📦 Install dependencies
-        run: yarn install --immutable
 
       - name: 🚀 Publish
         run: yarn npm publish
