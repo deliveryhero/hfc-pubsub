@@ -29,8 +29,15 @@ The `PUBSUBS_USE_GRPC` option is removed.
 
 #### Topic `name` and `project` are now static properties:
 
-<Tabs>
-<TabItem value="v1" label="v1 Topic">
+<Tabs 
+  groupId="versions"
+  defaultValue="v2"
+  values={[
+    {label: "v1 Topic", value: "v1"},
+    {label: "v2 Topic", value: "v2"},
+  ]}>
+
+<TabItem value="v1">
 
 ```ts title="v1-topic.ts"
 export default class ExampleTopic extends Topic {
@@ -49,7 +56,7 @@ export default class ExampleTopic extends Topic {
 
 </TabItem>
 
-<TabItem value="v2" label="v2 Topic">
+<TabItem value="v2">
 
 ```ts title="v2-topic.ts"
 export default class ExampleTopic extends Topic {
@@ -67,14 +74,22 @@ export default class ExampleTopic extends Topic {
 ```
 
 </TabItem>
+
 </Tabs>
 
 #### Topic class now accepts generic type arguments
 
 Rather than the publish method previously.
 
-<Tabs>
-<TabItem value="v1" label="v1 Topic">
+<Tabs 
+  groupId="versions"
+  defaultValue="v2"
+  values={[
+    {label: "v1 Topic", value: "v1"},
+    {label: "v2 Topic", value: "v2"},
+  ]}>
+
+<TabItem value="v1">
 
 ```ts title="v1-topic.ts"
 export interface Payload extends BasePayload {
@@ -93,7 +108,7 @@ new SimpleTopic().publish<Payload>({ data: 'test', id: 1 });
 
 </TabItem>
 
-<TabItem value="v2" label="v2 Topic">
+<TabItem value="v2">
 
 ```ts title="v2-topic.ts"
 export interface Payload extends BasePayload {
@@ -111,12 +126,20 @@ new SimpleTopic().publish({ data: 'test', id: 2 });
 ```
 
 </TabItem>
+
 </Tabs>
 
 #### Retry Config is now under options field
 
-<Tabs>
-<TabItem value="v1" label="v1 Topic">
+<Tabs
+  groupId="versions"
+  defaultValue="v2"
+  values={[
+    {label: "v1 Topic", value: "v1"},
+    {label: "v2 Topic", value: "v2"},
+  ]}>
+
+<TabItem value="v1">
 
 ```ts title="v1-topic.ts"
 export default class TestRetryTopic extends Topic {
@@ -148,7 +171,7 @@ export default class TestRetryTopic extends Topic {
 
 </TabItem>
 
-<TabItem value="v2" label="v2 Topic">
+<TabItem value="v2">
 
 ```ts title="v2-topic.ts"
 export default class TestRetryTopic extends Topic<Payload> {
@@ -181,6 +204,7 @@ export default class TestRetryTopic extends Topic<Payload> {
 ```
 
 </TabItem>
+
 </Tabs>
 
 ## Subscribing
@@ -190,8 +214,15 @@ export default class TestRetryTopic extends Topic<Payload> {
   - This type is also picked up by the `Message` param and the `toJson` returns this type
 - **`Message` wrapper has a `toJson` utility now**
 
-<Tabs>
-<TabItem value="v1" label="v1 Subscription">
+<Tabs
+  groupId="versions"
+  defaultValue="v2"
+  values={[
+    {label: "v1 Subscription", value: "v1"},
+    {label: "v2 Subscription", value: "v2"},
+  ]}>
+
+<TabItem value="v1">
 
 ```ts title="v1-subscription.ts"
 import { Subscriber, Message } from '@honestfoodcompany/pubsub';
@@ -212,7 +243,7 @@ export default class TestSubscriptions extends Subscriber {
 
 </TabItem>
 
-<TabItem value="v2" label="v2 Subscription">
+<TabItem value="v2">
 
 ```ts title="v2-subscription.ts"
 import { SubscriberObject, Message } from "@honestfoodcompany/pubsub";
@@ -241,6 +272,7 @@ export default: SubscriberObject<Payload> = {
 ```
 
 </TabItem>
+
 </Tabs>
 
 ## Typescript Changes
