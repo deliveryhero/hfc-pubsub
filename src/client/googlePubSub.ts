@@ -48,9 +48,8 @@ const DEFAULT_PROJECT = '__default__';
  *
  * @returns This is dynamic because we set env vars dynamically from cli args
  */
-const getDefaultProjectFromEnvVar = () =>
-  process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID ||
-  process.env.GOOGLE_CLOUD_PROJECT;
+const getDefaultProjectFromEnvVar = () => process.env.GOOGLE_CLOUD_PROJECT;
+
 export default class GooglePubSubAdapter implements PubSubClientV2 {
   protected static instance: GooglePubSubAdapter;
   public projects: Projects = {};
