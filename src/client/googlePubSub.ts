@@ -268,20 +268,17 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   private async mergeDeadLetterPolicy(
     options: SubscriberOptions | undefined,
   ): Promise<SubscriberOptions | undefined> {
-    if (!options) return;
-    if (options.deadLetterPolicy) {
-      return {
-        ...options,
-        deadLetterPolicy: {
-          ...options.deadLetterPolicy,
-          deadLetterTopic: await this.createDeadLetterTopic(
-            options.deadLetterPolicy,
-            options,
-          ),
-        },
-      };
-    }
-    return;
+    if (!options?.deadLetterPolicy) return;
+    return {
+      ...options,
+      deadLetterPolicy: {
+        ...options.deadLetterPolicy,
+        deadLetterTopic: await this.createDeadLetterTopic(
+          options.deadLetterPolicy,
+          options,
+        ),
+      },
+    };
   }
 
   private async createDeadLetterTopic(
@@ -297,10 +294,14 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const client = this.getProject(metadata.options).client;
     const options = this.getSubscriberOptions(subscriber);
     const deadLetterTopic = options?.deadLetterPolicy?.deadLetterTopic;
-    if (!deadLetterTopic) return;
+    if (!deadLetterTopic) {
+      return;
+    }
+
     const [subscriptions] = await client
       .topic(deadLetterTopic)
       .getSubscriptions();
+
     if (subscriptions.length === 0) {
       Logger.Instance.warn(
         { metadata },
@@ -314,18 +315,19 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   ) {
     const [, metadata] = subscriber;
     const options = this.getSubscriberOptions(subscriber);
-    if (options?.deadLetterPolicy) {
-      await this.bindPolicyToSubscriber(metadata);
-      await this.bindPolicyToDeadLetterTopic(
-        options.deadLetterPolicy.deadLetterTopic,
-        options,
-        metadata,
-      );
-      if (options?.deadLetterPolicy?.createDefaultSubscription) {
-        await this.createDeadLetterDefaultSubscriber(subscriber);
-      } else {
-        await this.checkDeadLetterConfiguration(subscriber);
-      }
+    if (!options?.deadLetterPolicy) {
+      return;
+    }
+    await this.bindPolicyToSubscriber(metadata);
+    await this.bindPolicyToDeadLetterTopic(
+      options.deadLetterPolicy.deadLetterTopic,
+      options,
+      metadata,
+    );
+    if (options?.deadLetterPolicy?.createDefaultSubscription) {
+      await this.createDeadLetterDefaultSubscriber(subscriber);
+    } else {
+      await this.checkDeadLetterConfiguration(subscriber);
     }
   }
 
