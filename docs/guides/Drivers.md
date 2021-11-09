@@ -8,13 +8,17 @@ sidebar_position: 2
 
 This is the default driver. It uses [Google Cloud PubSub](https://cloud.google.com/pubsub) to send messages.
 
-It requires the env vars `GOOGLE_APPLICATION_CREDENTIALS` and `GOOGLE_CLOUD_PUB_SUB_PROJECT_ID` to function correctly.
+The GCP project-id can be set via the env var and `GOOGLE_CLOUD_PROJECT` and service account via `GOOGLE_APPLICATION_CREDENTIALS` to function correctly. If not provided then the sdk will automatically try to get the values from home directory/service account.
+
+:::note
+We still support the legacy(v1) env var for project id : `GOOGLE_CLOUD_PUB_SUB_PROJECT_ID`
+:::
+
+The role assigned to the service account in the credentials should be [`roles/pubsub.admin`](https://cloud.google.com/pubsub/docs/access-control)
 
 :::note
  **NOTE:** Make sure the service account is assigned the correct roles
 :::
-
-The role assigned to the service account in the credentials should be [`roles/pubsub.admin`](https://cloud.google.com/pubsub/docs/access-control)
 
 This is required because we require the below permissions:
 

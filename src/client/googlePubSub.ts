@@ -41,8 +41,15 @@ export interface CreateClientOptions {
   credentials?: CredentialBody;
 }
 
-const DEFAULT_PROJECT = 'default';
+const DEFAULT_PROJECT = '__default__';
 
+/**
+ *
+ * @returns This is dynamic because we set env vars dynamically from cli args
+ */
+const getDefaultProjectFromEnvVar = () =>
+  process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID || process.env.GCLOUD_PROJECT;
+GOOGLE_CLOUD_PROJECT
 export default class GooglePubSubAdapter implements PubSubClientV2 {
   protected static instance: GooglePubSubAdapter;
   public projects: Projects = {};
@@ -50,26 +57,24 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   public constructor(client: GooglePubSub) {
     this.projects[DEFAULT_PROJECT] = {
       client,
+      projectId: getDefaultProjectFromEnvVar() || client.projectId,
       topics: new Map(),
       subscriptions: new Map(),
-      projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID || '',
     };
     this.createOrGetSubscription = this.createOrGetSubscription.bind(this);
   }
 
-  public static getInstance(): GooglePubSubAdapter {
+  static getInstance(): GooglePubSubAdapter {
     if (!GooglePubSubAdapter.instance) {
       GooglePubSubAdapter.instance = new GooglePubSubAdapter(
-        GooglePubSubAdapter.createClient(
-          process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID || '',
-        ),
+        GooglePubSubAdapter.createClient(getDefaultProjectFromEnvVar()),
       );
     }
     return GooglePubSubAdapter.instance;
   }
 
-  public static createClient(
-    projectId: string,
+  static createClient(
+    projectId?: string,
     options?: CreateClientOptions,
   ): GooglePubSub {
     return new GooglePubSub({
@@ -186,6 +191,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     }
     return this.getSubscription(subscriber);
   }
+
   private async createDeadLetterDefaultSubscriber(
     subscriber: SubscriberTuple,
   ): Promise<void> {
@@ -439,7 +445,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   }
 
   public getProject(options?: { project?: GooglePubSubProject }): Project {
-    if (!options || !options.project?.id) {
+    if (!options?.project?.id) {
       return this.projects[DEFAULT_PROJECT];
     }
     if (this.projects[options.project?.id]) {

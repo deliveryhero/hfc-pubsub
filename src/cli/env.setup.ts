@@ -1,9 +1,8 @@
 const envMapping: any = {
-  projectId: 'GOOGLE_CLOUD_PUB_SUB_PROJECT_ID',
-  rootDir: 'PUBSUB_ROOT_DIR',
-  projectNumber: 'PROJECT_NUMBER',
-  driver: 'PUBSUB_DRIVER',
+  projectId: 'GOOGLE_CLOUD_PROJECT',
   googleApplicationCredentials: 'GOOGLE_APPLICATION_CREDENTIALS',
+  rootDir: 'PUBSUB_ROOT_DIR',
+  driver: 'PUBSUB_DRIVER',
   healthServer: 'PUBSUB_HEALTH_SERVER',
   serverPort: 'PUBSUB_SERVER_PORT',
 };
