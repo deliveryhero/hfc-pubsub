@@ -114,9 +114,8 @@ export default class SubscriptionService {
 
     const [subscriptionService] = ResourceResolver.getFiles();
     try {
-      SubscriptionService._service = require(resolve(
-        subscriptionService,
-      )).default;
+      const file = resolve(subscriptionService);
+      SubscriptionService._service = require(file).default; // nosemgrep;
     } catch (e) {
       SubscriptionService._service = SubscriptionService;
       Logger.Instance.warn(
