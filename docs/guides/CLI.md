@@ -25,7 +25,6 @@ Options:
   --version                         Show version number                                         [boolean]
   --project-id                      Google project id                                           [string]
   --root-dir                        Path where pubsub folder resides                            [string]
-  --project-number                  (Optional) project number for the project                   [string]
   --driver                          Use value `synchronous` or leave it to default              [string]
   --google-application-credentials  Path to exported credentials file                           [string]
   --server-port                     Port at which http health server would run (default:8080)   [number]                                                                      [string]

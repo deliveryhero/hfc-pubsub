@@ -14,25 +14,18 @@ require('yargs')
       describe: 'Path where pubsub folder resides',
       type: 'string',
     },
-    'project-number': {
-      describe: '(Optional) project number for the project',
-      type: 'string',
-    },
     driver: {
       describe: 'Use value synchronous or leave it to default async',
       type: 'string',
     },
-
     'google-application-credentials': {
       describe: 'Path to exported credentials file',
       type: 'string',
     },
-
     'server-port': {
       describe: 'Port at which server would run default 8080',
       type: 'string',
     },
-
     'health-server': {
       describe: 'If true runs server telling health state of subscriptions',
       type: 'string',
