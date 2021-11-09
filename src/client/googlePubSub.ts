@@ -31,6 +31,7 @@ export interface Project {
   topics: Map<GoogleCloudTopic['name'], GoogleCloudTopic>;
   subscriptions: Map<GoogleCloudSubscription['name'], GoogleCloudSubscription>;
   projectId: string;
+  projectNumber?: string;
   credentials?: CredentialBody;
 }
 export interface Projects {
@@ -328,23 +329,22 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     }
   }
 
-  private async getProjectNumber() {
+  private async getProjectNumber(options?: { project?: GooglePubSubProject }) {
+    const project = this.getProject(options);
+    if (project.projectNumber) {
+      return project.projectNumber;
+    }
+
     try {
-      if (process.env.PROJECT_NUMBER) {
-        return process.env.PROJECT_NUMBER;
-      }
-      const projectId = process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID;
-      if (!projectId) {
-        return '';
-      }
       const resource = new Resource();
-      const project = resource.project(projectId);
-      const projectInfo = await project.get();
+      const projectResource = resource.project(project.projectId);
+      const projectInfo = await projectResource.get();
       // project.info return [_, projectInfoIncludingProjectNumber]
-      return (projectInfo as any)[1]?.projectNumber;
+      project.projectNumber = (projectInfo as any)[1]?.projectNumber;
+      return project.projectNumber;
     } catch (err) {
       Logger.Instance.error({ err }, 'Error while getting project number');
-      return '';
+      return null;
     }
   }
 
@@ -356,32 +356,36 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       subscriptionName,
       options,
     } = metadata;
-    const projectNumber = await this.getProjectNumber();
+    const projectNumber = await this.getProjectNumber(options);
 
-    if (projectNumber) {
-      try {
-        const pubSubTopic = this.getProject(options).client.topic(
-          subscriptionTopicName,
-        );
-        const myPolicy = {
-          bindings: [
-            {
-              role: 'roles/pubsub.subscriber',
-              members: [
-                `serviceAccount:service-${projectNumber}@gcp-sa-pubsub.iam.gserviceaccount.com`,
-              ],
-            },
-          ],
-        };
-        await pubSubTopic
-          .subscription(subscriptionName)
-          .iam.setPolicy(myPolicy);
-      } catch (err) {
-        Logger.Instance.error(
-          { metadata, err },
-          `   ❌      Error while binding policy for "${metadata.subscriptionName}" subscription.`,
-        );
-      }
+    if (!projectNumber) {
+      Logger.Instance.warn(
+        { metadata },
+        `   ❌      Could not bind policy for "${subscriptionName}" subscriber due to no project number`,
+      );
+      return;
+    }
+
+    try {
+      const pubSubTopic = this.getProject(options).client.topic(
+        subscriptionTopicName,
+      );
+      const myPolicy = {
+        bindings: [
+          {
+            role: 'roles/pubsub.subscriber',
+            members: [
+              `serviceAccount:service-${projectNumber}@gcp-sa-pubsub.iam.gserviceaccount.com`,
+            ],
+          },
+        ],
+      };
+      await pubSubTopic.subscription(subscriptionName).iam.setPolicy(myPolicy);
+    } catch (err) {
+      Logger.Instance.error(
+        { metadata, err },
+        `   ❌      Error while binding policy for "${subscriptionName}" subscription.`,
+      );
     }
   }
 
@@ -390,29 +394,34 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     options: { project?: GooglePubSubProject },
     metadata: SubscriberMetadata,
   ): Promise<void> {
-    const projectNumber = await this.getProjectNumber();
+    const projectNumber = await this.getProjectNumber(options);
+    if (!projectNumber) {
+      Logger.Instance.warn(
+        { metadata },
+        `   ❌      Could not bind policy for "${deadLetterTopicName}" DLQ topic due to no project number`,
+      );
+      return;
+    }
 
-    if (projectNumber) {
-      try {
-        const pubSubTopic =
-          this.getProject(options).client.topic(deadLetterTopicName);
-        const myPolicy = {
-          bindings: [
-            {
-              role: 'roles/pubsub.publisher',
-              members: [
-                `serviceAccount:service-${projectNumber}@gcp-sa-pubsub.iam.gserviceaccount.com`,
-              ],
-            },
-          ],
-        };
-        await pubSubTopic.iam.setPolicy(myPolicy);
-      } catch (err) {
-        Logger.Instance.error(
-          { metadata, err },
-          `   ❌      Error while binding policy for "${deadLetterTopicName}" DLQ topic.`,
-        );
-      }
+    try {
+      const pubSubTopic =
+        this.getProject(options).client.topic(deadLetterTopicName);
+      const myPolicy = {
+        bindings: [
+          {
+            role: 'roles/pubsub.publisher',
+            members: [
+              `serviceAccount:service-${projectNumber}@gcp-sa-pubsub.iam.gserviceaccount.com`,
+            ],
+          },
+        ],
+      };
+      await pubSubTopic.iam.setPolicy(myPolicy);
+    } catch (err) {
+      Logger.Instance.error(
+        { metadata, err },
+        `   ❌      Error while binding policy for "${deadLetterTopicName}" DLQ topic.`,
+      );
     }
   }
 

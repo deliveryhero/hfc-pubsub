@@ -12,6 +12,7 @@ import { ResourceResolver } from './resourceResolver';
 export default class SubscriptionService {
   public static subscribers: SubscriberObject<any>[] = [];
   private static _subscribers: Subscribers = [];
+  private static _service: typeof SubscriptionService;
 
   /**
    * All subscriptions will inherit from this default options object
@@ -61,15 +62,10 @@ export default class SubscriptionService {
   }
 
   public static getSubscribers(): Subscribers {
-    if (SubscriptionService._subscribers.length > 0) {
+    if (SubscriptionService._subscribers?.length > 0) {
       return SubscriptionService._subscribers as Subscribers;
     }
-    SubscriptionService.loadSubscribers();
 
-    return SubscriptionService._subscribers as Subscribers;
-  }
-
-  private static loadSubscribers(): Subscribers {
     const [subscriptionService, pubsubSubscriptionsDir] =
       ResourceResolver.getFiles();
 
@@ -110,12 +106,22 @@ export default class SubscriptionService {
   }
 
   public static loadSubscriptionService(): typeof SubscriptionService {
+    if (SubscriptionService._service) return SubscriptionService._service;
+
     const [subscriptionService] = ResourceResolver.getFiles();
     try {
-      const service = require(resolve(subscriptionService)).default;
-      return service;
+      SubscriptionService._service = require(resolve(
+        subscriptionService,
+      )).default;
     } catch (e) {
-      return SubscriptionService;
+      SubscriptionService._service = SubscriptionService;
+      Logger.Instance.warn(
+        {
+          err: e,
+        },
+        'Could not load custom subscription service',
+      );
     }
+    return SubscriptionService._service;
   }
 }
