@@ -228,10 +228,11 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       );
     }
   }
-  private async getMergedSubscriptionOptions(subscriber: SubscriberTuple) {
+  private async getMergedSubscriptionOptions(
+    subscriber: SubscriberTuple,
+  ): Promise<GoogleSubscriptionMetadata> {
     const subscriberOptions = this.getSubscriberOptions(subscriber);
-    const ackDeadlineSeconds =
-      subscriberOptions?.ackDeadlineSeconds || subscriberOptions?.ackDeadline;
+    const ackDeadlineSeconds = subscriberOptions?.ackDeadline;
     return {
       ...subscriberOptions,
       ackDeadlineSeconds,

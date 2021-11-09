@@ -59,7 +59,6 @@ export default class SubscriberV2 {
 }
 
 export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
-  ackDeadlineSeconds?: number;
   project?: GooglePubSubProject;
   deadLetterPolicy?: {
     deadLetterTopic: string;
