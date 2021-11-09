@@ -28,18 +28,10 @@ As a convention, the name of the topic file should match the name of the topic n
 
 If a topic does not exist, it will be created before a message is published.
 
-#### Typescript example
+#### Example
 
 ```ts title="client.example.ts"
 import SimpleTopic from 'PUBSUB_ROOT_DIR/topics/simple.topic.name';
-
-new SimpleTopic().publish({ id: 1, data: 'My first message' });
-```
-
-#### Javascript example
-
-```ts title="client.example.js"
-const SimpleTopic = require('PUBSUB_ROOT_DIR/topics/simple.topic.name');
 
 new SimpleTopic().publish({ id: 1, data: 'My first message' });
 ```

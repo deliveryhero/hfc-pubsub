@@ -105,13 +105,12 @@ export interface MessageHandler<T = unknown> {
   handleMessage: (message: Message<T>) => void;
 
   /**
-   * will run every time a message is received before the handleMessage function is called
+   * will run before the message handler is attached to the subscription
    */
   init?: () => void;
 
   /**
-   *   If passed, it would serve as the default error handler method in case
-   *   subscriber specific handler is not present
+   * If passed, it would serve as the error handler method for internal google pubsub errors
    */
   handleError?: (error: Error) => void;
 }

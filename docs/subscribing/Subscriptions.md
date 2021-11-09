@@ -9,7 +9,7 @@ Create a `Subscriber` to define a message handler for messages that are publishe
 Subscribers are contained in `PUBSUB_ROOT_DIR/subscriptions`.
 
 :::tip
-Files ending in `.sub.js` or `.sub.ts` in `PUBSUB_ROOT_DIR/subscriptions` will be autoloaded by the subscription server.
+Files ending in `.sub.js` or `.sub.ts` in `PUBSUB_ROOT_DIR/subscriptions` will be auto-loaded by the subscription server.
 :::
 
 ## Examples

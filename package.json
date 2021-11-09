@@ -55,9 +55,9 @@
     "@types/cli-table": "^0.3.0",
     "@types/jest": "^27.0.2",
     "@types/node": "^16",
-    "@types/react": "^17.0.27",
+    "@types/react": "^17.0.34",
     "@types/wrap-ansi": "^8.0.1",
-    "@types/yargs": "^17.0.3",
+    "@types/yargs": "^17.0.5",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "clsx": "^1.1.1",
@@ -78,7 +78,7 @@
     "ts-jest": "^27.0.5",
     "ts-node": "^10.2.1",
     "tsconfig-paths": "^3.11.0",
-    "typedoc": "^0.22.5",
+    "typedoc": "^0.22.7",
     "typedoc-plugin-markdown": "^3.11.3",
     "typescript": "^4.4.3"
   },
@@ -107,5 +107,5 @@
       "pre-commit": "yarn lint-staged"
     }
   },
-  "packageManager": "yarn@3.0.2"
+  "packageManager": "yarn@3.1.0"
 }

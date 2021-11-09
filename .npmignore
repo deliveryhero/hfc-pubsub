@@ -71,6 +71,9 @@ coverage/
 # Docs
 examples/
 docs/
+versioned_docs/
+versioned_sidebars/
+versions.json
 static/
 .docusaurus/
 build/

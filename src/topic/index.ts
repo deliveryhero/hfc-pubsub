@@ -61,6 +61,11 @@ export default class Topic<P extends Payload = Payload> {
       (this.constructor as typeof Topic).topicName,
     );
   }
+
+  /**
+   * This is run once when Topic is init to verify topic name
+   * @param name topicName
+   */
   public static validateTopic(name: string): void {
     if (!name || name.length <= 6) {
       throw new Error('Invalid Topic Name!');
@@ -68,6 +73,8 @@ export default class Topic<P extends Payload = Payload> {
   }
 
   /**
+   * This is run before publishing any messages, it is a no-op by default.
+   * Can overwrite to perform checks against payload before publishing
    * @param message Message to be published
    */
   public validateMessage(message: PayloadInput<P>): void {
