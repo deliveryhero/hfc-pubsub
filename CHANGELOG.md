@@ -1,5 +1,35 @@
 # Changelog
 
+## 2.0.0
+
+### Major Changes
+
+- [PUB-68](https://honesttech.atlassian.net/browse/PUB-68) - Set min supported node version as 12.22 ([#72](https://github.com/deliveryhero/hfc-pubsub/pull/72) by [@rohit-gohri](https://github.com/rohit-gohri))
+
+* [PUB-52](https://honesttech.atlassian.net/browse/PUB-52) - Remove grpc ([#57](https://github.com/deliveryhero/hfc-pubsub/pull/57) by [@rohit-gohri](https://github.com/rohit-gohri))
+
+- [PUB-48](https://honesttech.atlassian.net/browse/PUB-48) - Redo Topic class with static properties and generics ([#81](https://github.com/deliveryhero/hfc-pubsub/pull/81) by [@rohit-gohri](https://github.com/rohit-gohri))
+
+* [PUB-77](https://honesttech.atlassian.net/browse/PUB-77) - Change project id env var to GOOGLE_CLOUD_PROJECT, don't export private methods, refactor internals, and remove ackDeadlineSeconds ([#84](https://github.com/deliveryhero/hfc-pubsub/pull/84) by [@rohit-gohri](https://github.com/rohit-gohri))
+
+- [PUB-65](https://honesttech.atlassian.net/browse/PUB-65) - Remove deprecated code ([#66](https://github.com/deliveryhero/hfc-pubsub/pull/66) by [@rohit-gohri](https://github.com/rohit-gohri))
+
+### Minor Changes
+
+- 1. Allows to make \_timestamp optional ([#79](https://github.com/deliveryhero/hfc-pubsub/pull/79) by [@ishan123456789](https://github.com/ishan123456789))
+  2. Removes double validation of topic names.
+  3. Use publishJSON instead of buffering the payload.
+  4. Adds `.toJSON` method to get parsed message/
+  5. Remove useless getters (like getProjects, getName, getClient) and just use this.projects, this.name, etc directly.
+
+* Changed init position for SubscriptionService.instance ([#77](https://github.com/deliveryhero/hfc-pubsub/pull/77) by [@ishan123456789](https://github.com/ishan123456789))
+
+### Patch Changes
+
+- Using yarn instead of npm ([#83](https://github.com/deliveryhero/hfc-pubsub/pull/83) by [@ishan123456789](https://github.com/ishan123456789))
+
+* Throws error in case no subs found or wrong PUBSUB_ROOT_DIR env defined ([#76](https://github.com/deliveryhero/hfc-pubsub/pull/76) by [@ishan123456789](https://github.com/ishan123456789))
+
 ## 1.11.0
 
 ### Minor Changes
