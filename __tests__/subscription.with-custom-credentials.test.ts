@@ -1,8 +1,5 @@
-import {
-  PubSubService,
-  SubscriptionService,
-  SubscriberTuple,
-} from '@honestfoodcompany/pubsub';
+import { PubSubService, SubscriptionService } from '@honestfoodcompany/pubsub';
+import { SubscriberTuple } from '../src/subscriber';
 import GooglePubSubAdapter from '../src/client/googlePubSub';
 
 process.env.PUBSUB_DRIVER = 'google';
@@ -42,6 +39,19 @@ jest.mock('@google-cloud/pubsub', () => {
         topic: jest.fn(() => ({
           get: mockGet,
           getSubscriptions: jest.fn(() => ['dummySub']),
+        })),
+      };
+    }),
+  };
+});
+
+jest.mock('@google-cloud/resource', () => {
+  return {
+    __esModule: true,
+    Resource: jest.fn().mockImplementation(() => {
+      return {
+        project: jest.fn(() => ({
+          get: jest.fn(() => Promise.resolve('dummyProjectNum')),
         })),
       };
     }),

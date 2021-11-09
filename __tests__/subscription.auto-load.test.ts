@@ -1,7 +1,5 @@
-import {
-  SubscriberTuple,
-  SubscriptionService,
-} from '@honestfoodcompany/pubsub';
+import { SubscriptionService } from '@honestfoodcompany/pubsub';
+import { SubscriberTuple } from '../src/subscriber';
 import generateMockMessage from './helpers/generateMockMessage';
 
 const mockPubSub = jest.fn();
@@ -52,9 +50,7 @@ describe('@auto-load subscription tests', () => {
     );
     expect(subscriberTuple).toBeDefined();
     if (!subscriberTuple) throw new Error('Invalid subscriber');
-    const subscriberClass = subscriberTuple[0];
-    const metadata = subscriberTuple[1];
-    const subscriber = new subscriberClass();
+    const [subscriber, metadata] = subscriberTuple;
     expect(() =>
       subscriber.handleMessage(generateMockMessage({ subscriber: metadata })),
     ).not.toThrow();

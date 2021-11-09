@@ -30,7 +30,7 @@ Acknowledge deadline in seconds. If left
 unset the initial value will be 10 seconds, but it will evolve into the
 99th percentile time it takes to acknowledge a message
 
-**`deprecated`** in favor of SubscriberV2.metadata.options.ackDeadlineSeconds
+**`deprecated`** in favor of SubscriberV2.metadata.options.ackDeadline
 
 #### Defined in
 

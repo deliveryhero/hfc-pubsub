@@ -11,10 +11,15 @@ const defaultSubscriberOptions = {
 };
 
 export default class SubscriberV2 {
-  public metadata?: SubscriberMetadata;
+  public metadata: SubscriberMetadata;
 
-  public constructor(private subscriberObject?: SubscriberObject<any>) {
-    this.metadata = subscriberObject;
+  public constructor(private subscriberObject: SubscriberObject<any>) {
+    const { topicName, subscriptionName, options } = subscriberObject;
+    this.metadata = {
+      topicName,
+      subscriptionName,
+      options,
+    };
   }
   public async init(): Promise<void> {
     this.subscriberObject?.init && this.subscriberObject?.init();
@@ -29,33 +34,31 @@ export default class SubscriberV2 {
     if (this.subscriberObject?.handleError) {
       this.subscriberObject?.handleError(error);
     } else {
-      SubscriptionService.loadSubscriptionService().handleError(error);
+      SubscriptionService.loadSubscriptionService().handleError(
+        error,
+        this.metadata,
+      );
     }
   }
 
   /**
-   * Returns a Subscriber class when given a SubscriberObject or a Subscriber (returns its own input if it's already a v2 class)
+   * Returns a SubscriberV2 instance with merged options
    */
   public static from(
     subscriber: SubscriberObject,
     subscriptionServiceDefaultOptions: SubscriberOptions,
-  ): typeof SubscriberV2 {
-    const subscriberObject = subscriber as unknown as SubscriberObject;
+  ): SubscriberV2 {
+    const subscriberObject: SubscriberObject = { ...subscriber };
     subscriberObject.options = {
       ...defaultSubscriberOptions,
       ...subscriptionServiceDefaultOptions,
       ...subscriberObject.options,
     };
-    return class extends SubscriberV2 {
-      constructor() {
-        super(subscriberObject);
-      }
-    };
+    return new SubscriberV2(subscriberObject);
   }
 }
 
 export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
-  ackDeadlineSeconds?: number;
   project?: GooglePubSubProject;
   deadLetterPolicy?: {
     deadLetterTopic: string;

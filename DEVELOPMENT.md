@@ -6,7 +6,7 @@ Create a `.env` file like this:
 
 ```env
 PUBSUB_ROOT_DIR=./examples/typescript
-GOOGLE_CLOUD_PUB_SUB_PROJECT_ID=<your-project-id>
+GOOGLE_CLOUD_PROJECT=<your-project-id>
 GOOGLE_APPLICATION_CREDENTIALS=./creds/<your-project-id-credentials-file>.json
 ```
 

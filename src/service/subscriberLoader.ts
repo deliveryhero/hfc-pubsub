@@ -2,7 +2,6 @@ import { resolve, join } from 'path';
 import fs from 'fs';
 import { SubscriberV2, Subscribers, SubscriberTuple } from '../subscriber';
 import {
-  SubscriberMetadata,
   SubscriberObject,
   SubscriberOptions,
 } from '../subscriber/subscriberV2';
@@ -76,8 +75,7 @@ export default class SubscriberLoader {
     subscriber: SubscriberObject,
     defaultOptions: SubscriberOptions,
   ): SubscriberTuple {
-    const v2SubscriberClass = SubscriberV2.from(subscriber, defaultOptions);
-    const instance = new v2SubscriberClass();
-    return [v2SubscriberClass, instance.metadata as SubscriberMetadata];
+    const instance = SubscriberV2.from(subscriber, defaultOptions);
+    return [instance, instance.metadata];
   }
 }

@@ -61,11 +61,12 @@ exports.default = {
 
 ## SubscriptionService handleError Examples
 
+You can also setup a global error handler that will act as the default for all subscriptions, this though also receives the subscription metadat for which the error happens.
+
 ### Typescript subscription example
 
 ```ts title="/pubsub/subscription.service.ts"
-import * as PubSub from '@honestfoodcompany/pubsub';
-import { SubscriberOptions } from '@honestfoodcompany/pubsub';
+import { SubscriptionService, SubscriberOptions, SubscriberMetadata } from '@honestfoodcompany/pubsub';
 
 export default class SubscriptionService extends PubSub.SubscriptionService {
   static subscribers = [
@@ -76,9 +77,9 @@ export default class SubscriptionService extends PubSub.SubscriptionService {
 
   static async init(): Promise<void> {}
 
-  static handleError(error: Error): void {
+  static handleError(error: Error, metadata: SubscriberMetadata): void {
     // global default error handling logic for all subscribers
-    console.error(error);
+    console.error({err, metadata}, 'Default error handler');
     // Close DB connections/etc here
     process.exit(1);
   }
@@ -98,9 +99,9 @@ SubscriptionService.defaultSubscriberOptions = {};
 
 SubscriptionService.init = () => {};
 
-SubscriptionService.handleError = (error) => {
+SubscriptionService.handleError = (error, metadata) => {
   // global default error handling logic for all subscribers
-  console.error(error);
+  console.error({err, metadata}, 'Default error handler');
   // Close DB connections/etc here
   process.exit(1);
 };

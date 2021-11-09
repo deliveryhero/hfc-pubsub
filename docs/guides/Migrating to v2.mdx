@@ -15,13 +15,23 @@ These are the changes made for 2.0.0 that are breaking or just important to know
 
 Minimum supported node version is v12.22.0.
 
-## Native `grpc` module support is removed
+## API Changes
+
+We stopped exporting pubsub internals from the index file, for more details compare the [v1 API](/v1/api/) and [v2 API docs](../api/).
+
+## Configuration Changes
+
+### `GOOGLE_CLOUD_PUB_SUB_PROJECT_ID` is now `GOOGLE_CLOUD_PROJECT`
+
+To follow similar pattern to Google's [automatic injected env vars](https://cloud.google.com/functions/docs/configuring/env-var#runtime_environment_variables_set_automatically).
+
+### Native `grpc` module support is removed
 
 The `PUBSUBS_USE_GRPC` option is removed.
 
-## Throws error on no subscriptions found
+### Throws error on no subscriptions found
 
-`PUBSUB_ROOT_DIR` if is not found or if the directory doesn't have any subscriptions then service will not start and exit with error.
+If `PUBSUB_ROOT_DIR` or the CLI arg (`--root-dir`) is not found or if the directory doesn't have any subscriptions then service will not start and instead exit with error.
 
 ## Publishing
 
@@ -274,6 +284,10 @@ export default: SubscriberObject<Payload> = {
 </TabItem>
 
 </Tabs>
+
+### `ackDeadlineSeconds` is now `ackDeadline`
+
+Previously we supported both options, but now only `ackDeadline` is accepted.
 
 ## Typescript Changes
 

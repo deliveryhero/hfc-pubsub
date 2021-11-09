@@ -4,6 +4,7 @@ import {
   SubscriberObject,
   SubscriberTuple,
   SubscriberOptions,
+  SubscriberMetadata,
 } from '../subscriber';
 import { Logger } from './logger';
 import SubscriberLoader from './subscriberLoader';
@@ -12,6 +13,7 @@ import { ResourceResolver } from './resourceResolver';
 export default class SubscriptionService {
   public static subscribers: SubscriberObject<any>[] = [];
   private static _subscribers: Subscribers = [];
+  private static _service: typeof SubscriptionService;
 
   /**
    * All subscriptions will inherit from this default options object
@@ -46,9 +48,12 @@ export default class SubscriptionService {
    * Applications should override this with custom error handling: log error, cleanup resources and exit the process.
    * Default logs the error and **rethrows**
    */
-  public static handleError(error: Error): void {
+  public static handleError(error: Error, metadata: SubscriberMetadata): void {
     // default error handling logic
-    Logger.Instance.error({ error }, 'Received Unexpected Error');
+    Logger.Instance.error(
+      { error, metadata },
+      'Received unexpected error in subscription',
+    );
     // To keep backwards compatibility with no error handler
     throw error;
   }
@@ -61,15 +66,10 @@ export default class SubscriptionService {
   }
 
   public static getSubscribers(): Subscribers {
-    if (SubscriptionService._subscribers.length > 0) {
+    if (SubscriptionService._subscribers?.length > 0) {
       return SubscriptionService._subscribers as Subscribers;
     }
-    SubscriptionService.loadSubscribers();
 
-    return SubscriptionService._subscribers as Subscribers;
-  }
-
-  private static loadSubscribers(): Subscribers {
     const [subscriptionService, pubsubSubscriptionsDir] =
       ResourceResolver.getFiles();
 
@@ -110,12 +110,21 @@ export default class SubscriptionService {
   }
 
   public static loadSubscriptionService(): typeof SubscriptionService {
+    if (SubscriptionService._service) return SubscriptionService._service;
+
     const [subscriptionService] = ResourceResolver.getFiles();
     try {
-      const service = require(resolve(subscriptionService)).default;
-      return service;
+      const file = resolve(subscriptionService);
+      SubscriptionService._service = require(file).default; // nosemgrep;
     } catch (e) {
-      return SubscriptionService;
+      SubscriptionService._service = SubscriptionService;
+      Logger.Instance.warn(
+        {
+          err: e,
+        },
+        'Could not load custom subscription service',
+      );
     }
+    return SubscriptionService._service;
   }
 }
