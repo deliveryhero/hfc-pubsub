@@ -261,7 +261,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         { metadata, err },
         `   ❌      There was an error creating "${metadata.subscriptionName}" subscription.`,
       );
-      // FIXME: PUB-70 Should throw error here
+      throw err;
     }
   }
 
