@@ -9,10 +9,8 @@ import SubscriptionService from './service/subscription';
 import PubSubService from './service/pubsub';
 import { setLogger } from './service/logger';
 import Message from './message';
-import * as Interfaces from './interface';
 
 export {
-  Interfaces,
   SubscriberObject,
   SubscriberMetadata,
   SubscriberOptions,
