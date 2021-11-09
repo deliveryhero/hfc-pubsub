@@ -33,8 +33,7 @@ export default class EventBus extends EventEmitter implements PubSubClientV2 {
   }
 
   public async subscribe(subscriber: SubscriberTuple): Promise<void> {
-    const [subscriberClass, metadata] = subscriber;
-    const instance = new subscriberClass();
+    const [instance, metadata] = subscriber;
     await instance.init();
     EventBus.getInstance().addListener(
       metadata.topicName,

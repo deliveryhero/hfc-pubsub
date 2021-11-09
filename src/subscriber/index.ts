@@ -6,7 +6,12 @@ import SubscriberV2, {
 
 export default SubscriberV2;
 
-export type SubscriberTuple = [typeof SubscriberV2, SubscriberMetadata];
+export type SubscriberTuple = [SubscriberV2, SubscriberMetadata];
 export type Subscribers = SubscriberTuple[];
 
-export { SubscriberOptions, SubscriberObject, SubscriberV2 };
+export {
+  SubscriberOptions,
+  SubscriberObject,
+  SubscriberMetadata,
+  SubscriberV2,
+};

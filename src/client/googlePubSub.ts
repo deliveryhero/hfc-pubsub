@@ -133,8 +133,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     subscriber: SubscriberTuple,
     subscription: GoogleCloudSubscription,
   ): Promise<void> {
-    const [subscriberClass] = subscriber;
-    const subscriberInstance = new subscriberClass();
+    const [subscriberInstance] = subscriber;
     await subscriberInstance.init();
     subscription.on('message', (message: GoogleCloudMessage): void => {
       subscriberInstance
