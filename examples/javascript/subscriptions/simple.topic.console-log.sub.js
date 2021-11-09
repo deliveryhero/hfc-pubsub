@@ -1,6 +1,9 @@
-// this file will be autoloaded because of the .sub.js suffix
+// NOTE: this file will be autoloaded because of the .sub.js suffix
 
-exports.default = {
+/**
+ * @type {import('@honestfoodcompany/pubsub').SubscriberObject}
+ */
+const subscription = {
   topicName: 'simple.topic',
   subscriptionName: 'simple.topic.console-log.sub',
   description: 'Will console log messages published on test.topic',
@@ -11,3 +14,5 @@ exports.default = {
     message.ack();
   },
 };
+
+exports.default = subscription;

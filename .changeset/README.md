@@ -12,7 +12,7 @@ We have a quick list of common questions to get you started engaging with this p
 Just run the below in your local branch and answer the questions that follow, it will create a new commit with the changes that you can push as part of your PR.
 
 ```sh
-npx changeset
+yarn changeset
 ```
 
 ### Selecting what kind of change it is

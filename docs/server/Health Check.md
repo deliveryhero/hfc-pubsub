@@ -4,7 +4,7 @@ title: Health Checks
 sidebar_position: 4
 ---
 
-For health checks and readyness probes you can enable the inbuilt health check http server by setting the following environemnt variables (or corresponding [CLI option](../CLI.md)) :
+For health checks and readiness probes you can enable the inbuilt health check http server by setting the following environment variables (or corresponding [CLI option](../guides/CLI.md)) :
 
 ```sh
 PUBSUB_HEALTH_SERVER=true

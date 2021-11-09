@@ -1,0 +1,346 @@
+---
+id: migrating-to-v2
+title: Migrating to v2
+sidebar_position: 3
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+We simplified and improved the experience of using PubSub Framework (especially for Typescript users) in v2, that meant changing the way we do a few things.
+
+These are the changes made for 2.0.0 that are breaking or just important to know:
+
+## Min node version is v12.22.0
+
+Minimum supported node version is v12.22.0.
+
+## API Changes
+
+We stopped exporting pubsub internals from the index file, for more details compare the [v1 API](/v1/api/) and [v2 API docs](../api/).
+
+## Configuration Changes
+
+### `GOOGLE_CLOUD_PUB_SUB_PROJECT_ID` is now `GOOGLE_CLOUD_PROJECT`
+
+To follow similar pattern to Google's [automatic injected env vars](https://cloud.google.com/functions/docs/configuring/env-var#runtime_environment_variables_set_automatically).
+
+### Native `grpc` module support is removed
+
+The `PUBSUBS_USE_GRPC` option is removed.
+
+### Throws error on no subscriptions found
+
+If `PUBSUB_ROOT_DIR` or the CLI arg (`--root-dir`) is not found or if the directory doesn't have any subscriptions then service will not start and instead exit with error.
+
+## Publishing
+
+### Topic Class
+
+#### Topic `name` and `project` are now static properties:
+
+<Tabs 
+  groupId="versions"
+  defaultValue="v2"
+  values={[
+    {label: "v1 Topic", value: "v1"},
+    {label: "v2 Topic", value: "v2"},
+  ]}>
+
+<TabItem value="v1">
+
+```ts title="v1-topic.ts"
+export default class ExampleTopic extends Topic {
+  // highlight-next-line
+  name = 'example-topic-with-custom-credentials';
+  // highlight-next-line
+  project: GooglePubSubProject = {
+    id: 'custom-project-id',
+    credentials: {
+      client_email: 'client@google-auth.google.com',
+      private_key: 'private_key_goes_here',
+    },
+  };
+}
+```
+
+</TabItem>
+
+<TabItem value="v2">
+
+```ts title="v2-topic.ts"
+export default class ExampleTopic extends Topic {
+  // highlight-next-line
+  static readonly topicName = 'example-topic-with-custom-credentials';
+  // highlight-next-line
+  static project: GooglePubSubProject = {
+    id: 'custom-project-id',
+    credentials: {
+      client_email: 'client@google-auth.google.com',
+      private_key: 'private_key_goes_here',
+    },
+  };
+}
+```
+
+</TabItem>
+
+</Tabs>
+
+#### Topic class now accepts generic type arguments
+
+Rather than the publish method previously.
+
+<Tabs 
+  groupId="versions"
+  defaultValue="v2"
+  values={[
+    {label: "v1 Topic", value: "v1"},
+    {label: "v2 Topic", value: "v2"},
+  ]}>
+
+<TabItem value="v1">
+
+```ts title="v1-topic.ts"
+export interface Payload extends BasePayload {
+  id: number;
+  data: string;
+}
+
+// highlight-next-line
+export default class SimpleTopic extends Topic {
+  name = 'simple.topic';
+}
+
+// highlight-next-line
+new SimpleTopic().publish<Payload>({ data: 'test', id: 1 });
+```
+
+</TabItem>
+
+<TabItem value="v2">
+
+```ts title="v2-topic.ts"
+export interface Payload extends BasePayload {
+  id: number;
+  data: string;
+}
+
+// highlight-next-line
+export default class SimpleTopic extends Topic<Payload> {
+  static readonly topicName = 'simple.topic';
+}
+
+// highlight-next-line
+new SimpleTopic().publish({ data: 'test', id: 2 });
+```
+
+</TabItem>
+
+</Tabs>
+
+#### Retry Config is now under options field
+
+<Tabs
+  groupId="versions"
+  defaultValue="v2"
+  values={[
+    {label: "v1 Topic", value: "v1"},
+    {label: "v2 Topic", value: "v2"},
+  ]}>
+
+<TabItem value="v1">
+
+```ts title="v1-topic.ts"
+export default class TestRetryTopic extends Topic {
+  name = 'test.topic.with-retry-settings';
+
+  // highlight-next-line
+  retryConfig = {
+    retryCodes: [
+      10 as const, // 'ABORTED'
+      1 as const, // 'CANCELLED',
+      4 as const, // 'DEADLINE_EXCEEDED'
+      13 as const, // 'INTERNAL'
+      8 as const, // 'RESOURCE_EXHAUSTED'
+      14 as const, // 'UNAVAILABLE'
+      2 as const, // 'UNKNOWN'
+    ],
+    backoffSettings: {
+      initialRetryDelayMillis: 100,
+      retryDelayMultiplier: 1.3,
+      maxRetryDelayMillis: 60000,
+      initialRpcTimeoutMillis: 5000,
+      rpcTimeoutMultiplier: 1.0,
+      maxRpcTimeoutMillis: 600000,
+      totalTimeoutMillis: 600000,
+    },
+  };
+}
+```
+
+</TabItem>
+
+<TabItem value="v2">
+
+```ts title="v2-topic.ts"
+export default class TestRetryTopic extends Topic<Payload> {
+  static readonly topicName = 'test.topic.with-retry-settings';
+
+  // highlight-next-line
+  options: TopicOptions = {
+    retryConfig: {
+      retryCodes: [
+        10 as const, // 'ABORTED'
+        1 as const, // 'CANCELLED',
+        4 as const, // 'DEADLINE_EXCEEDED'
+        13 as const, // 'INTERNAL'
+        8 as const, // 'RESOURCE_EXHAUSTED'
+        14 as const, // 'UNAVAILABLE'
+        2 as const, // 'UNKNOWN'
+      ],
+      backoffSettings: {
+        initialRetryDelayMillis: 100,
+        retryDelayMultiplier: 1.3,
+        maxRetryDelayMillis: 60000,
+        initialRpcTimeoutMillis: 5000,
+        rpcTimeoutMultiplier: 1.0,
+        maxRpcTimeoutMillis: 600000,
+        totalTimeoutMillis: 600000,
+      },
+    },
+  };
+}
+```
+
+</TabItem>
+
+</Tabs>
+
+## Subscribing
+
+- Class based subscriptions were already deprecated in [v1.10.4](https://github.com/deliveryhero/hfc-pubsub/releases/tag/v1.10.4) and have been removed. You can only use SubscriberObject to declare subscriptions now.
+- `SubscriberObject` accepts generic type argument for `Payload`
+  - This type is also picked up by the `Message` param and the `toJson` returns this type
+- **`Message` wrapper has a `toJson` utility now**
+
+<Tabs
+  groupId="versions"
+  defaultValue="v2"
+  values={[
+    {label: "v1 Subscription", value: "v1"},
+    {label: "v2 Subscription", value: "v2"},
+  ]}>
+
+<TabItem value="v1">
+
+```ts title="v1-subscription.ts"
+import { Subscriber, Message } from '@honestfoodcompany/pubsub';
+
+export default class TestSubscriptions extends Subscriber {
+  public static topicName = 'simple.topic';
+  public static subscriptionName = 'simple.topic.test.subscription';
+  public static description = 'Subscribes to test data';
+
+  public async handleMessage(message: Message): Promise<void> {
+    console.log(TestSubscriptions.subscriptionName, 'received message');
+    const payload = JSON.parse(message.data.toString());
+    console.log(payload.data);
+    message.ack();
+  }
+}
+```
+
+</TabItem>
+
+<TabItem value="v2">
+
+```ts title="v2-subscription.ts"
+import { SubscriberObject, Message } from "@honestfoodcompany/pubsub";
+import { Payload } from '../topic/simple.topic.ts';
+
+// highlight-next-line
+export default: SubscriberObject<Payload> = {
+  topicName: 'simple.topic',
+  subscriptionName: 'simple.topic.console-log.sub',
+  description: 'Will console log messages published on test.topic',
+
+  handleMessage: function(message): void {
+    console.log(this.subscriptionName, 'received message');
+    // highlight-next-line
+    const payload = message.toJson();
+    console.log(payload.data);
+    message.ack();
+  },
+
+  handleError: function(error: Error): void {
+    console.error(error);
+    process.exit(1);
+  }
+};
+
+```
+
+</TabItem>
+
+</Tabs>
+
+### `ackDeadlineSeconds` is now `ackDeadline`
+
+Previously we supported both options, but now only `ackDeadline` is accepted.
+
+## Typescript Changes
+
+Since most of the classes/interfaces now accept generics for Payload types, the typescript workflow is considerably better. This is how the you would reuse types across topics/subscriptions:
+
+### Declare Payload Type with Topic
+
+```ts title="simple.topic.ts"
+export interface Payload extends BasePayload {
+  id: number;
+  data: string;
+}
+
+// highlight-next-line
+export default class SimpleTopic extends Topic<Payload> {
+  static readonly topicName = 'simple.topic';
+}
+```
+
+```ts
+import SimpleTopic from '../topics/simple.topic.ts';
+
+// this is already typed with Payload
+new SimpleTopic().publish({
+  data: 'test',
+  id: 3,
+});
+```
+
+### Reuse Payload Type in SubscriberObject
+
+```ts title="v2-subscription.ts"
+import { SubscriberObject, Message } from "@honestfoodcompany/pubsub";
+import { Payload } from '../topic/simple.topic.ts';
+
+// highlight-next-line
+export default: SubscriberObject<Payload> = {
+  topicName: 'simple.topic',
+  subscriptionName: 'simple.topic.console-log.sub',
+  description: 'Will console log messages published on test.topic',
+
+  handleMessage: function(message): void {
+    console.log(this.subscriptionName, 'received message');
+    // This is already typed as Payload
+    // highlight-next-line
+    const payload = message.toJson();
+    console.log(payload.data);
+    message.ack();
+  },
+
+  handleError: function(error: Error): void {
+    console.error(error);
+    process.exit(1);
+  }
+};
+```

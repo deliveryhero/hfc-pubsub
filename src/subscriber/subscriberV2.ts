@@ -1,12 +1,7 @@
-import util from 'util';
 import { SubscriberOptions as GoogleCloudSubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber';
-import { Logger } from '../service/logger';
 import { GooglePubSubProject } from '../interface/GooglePubSubProject';
-import Message from '../message';
 import SubscriptionService from '../service/subscription';
-import Subscriber from './subscriber';
-
-export type SubscriberVersion = 'v1' | 'v2' | 'v3';
+import Message from '../message';
 
 const defaultSubscriberOptions = {
   ackDeadline: 30,
@@ -15,18 +10,22 @@ const defaultSubscriberOptions = {
   },
 };
 
-export default class SubscriberV2 extends Subscriber {
-  public metadata?: SubscriberMetadata;
+export default class SubscriberV2 {
+  public metadata: SubscriberMetadata;
 
-  public constructor(private subscriberObject?: SubscriberObject) {
-    super();
-    this.metadata = subscriberObject;
+  public constructor(private subscriberObject: SubscriberObject<any>) {
+    const { topicName, subscriptionName, options } = subscriberObject;
+    this.metadata = {
+      topicName,
+      subscriptionName,
+      options,
+    };
   }
   public async init(): Promise<void> {
     this.subscriberObject?.init && this.subscriberObject?.init();
   }
 
-  public async handleMessage(message: Message): Promise<void> {
+  public async handleMessage<T>(message: Message<T>): Promise<void> {
     this.subscriberObject?.handleMessage &&
       this.subscriberObject?.handleMessage(message);
   }
@@ -35,151 +34,31 @@ export default class SubscriberV2 extends Subscriber {
     if (this.subscriberObject?.handleError) {
       this.subscriberObject?.handleError(error);
     } else {
-      SubscriptionService.loadSubscriptionService().handleError(error);
+      SubscriptionService.loadSubscriptionService().handleError(
+        error,
+        this.metadata,
+      );
     }
   }
 
   /**
-   * Returns a Subscriber class when given a SubscriberObject or a Subscriber (returns its own input if it's already a v2 class)
-   * @param subscriber {SubscriberObject} | {typeof Subscriber}
-   * @param version {SubscriberVersion}
+   * Returns a SubscriberV2 instance with merged options
    */
   public static from(
-    subscriber: SubscriberObject | typeof Subscriber,
-    version: SubscriberVersion,
+    subscriber: SubscriberObject,
     subscriptionServiceDefaultOptions: SubscriberOptions,
-  ): typeof SubscriberV2 {
-    switch (version) {
-      case 'v1': {
-        // we're going to upgrade v1 subscriber to v2
-        const subscriberClass = subscriber as typeof Subscriber;
-        return class extends subscriberClass {
-          metadata = {
-            topicName: subscriber.topicName,
-            subscriptionName: subscriber.subscriptionName,
-            description: subscriber.description,
-            options: {
-              ackDeadline:
-                subscriber.ackDeadlineSeconds !== undefined
-                  ? subscriber.ackDeadlineSeconds
-                  : subscriptionServiceDefaultOptions.ackDeadline,
-              flowControl: {
-                maxMessages:
-                  subscriber.maxMessages !== undefined
-                    ? subscriber.maxMessages
-                    : subscriptionServiceDefaultOptions.flowControl
-                        ?.maxMessages,
-              },
-            },
-          };
-
-          constructor(...args: unknown[]) {
-            // @ts-expect-error no params in type
-            super(...args);
-            util.deprecate(() => {
-              Logger.Instance.warn(
-                {
-                  metadata: this.metadata,
-                },
-                'Class style subscriptions have been deprecated, please convert to objects. This will be removed in v2.x',
-              );
-            }, `Class style subscriptions have been deprecated: ${subscriber.subscriptionName}`)();
-          }
-
-          public handleError(_error: Error): void {
-            throw _error;
-          }
-
-          public static from(
-            subscriberClass: SubscriberObject | typeof Subscriber,
-            version: SubscriberVersion,
-          ): typeof SubscriberV2 {
-            return SubscriberV2.from(
-              subscriberClass,
-              version,
-              subscriptionServiceDefaultOptions,
-            );
-          }
-
-          public static getSubscriberVersion(
-            subscriberClass: typeof Subscriber,
-          ): SubscriberVersion {
-            return SubscriberV2.getSubscriberVersion(subscriberClass);
-          }
-        };
-      }
-      case 'v2':
-        const subscriberClass = subscriber as unknown as typeof SubscriberV2;
-        const subscriberObj = new subscriberClass();
-        if (!subscriberObj.metadata) {
-          throw new Error('A subscriber must contain a metadata property');
-        }
-
-        subscriberObj.metadata.options = {
-          ...defaultSubscriberOptions,
-          ...subscriptionServiceDefaultOptions,
-          ...subscriberObj.metadata.options,
-        };
-
-        return class extends subscriberClass {
-          constructor(...args: any[]) {
-            super(...args);
-            util.deprecate(() => {
-              Logger.Instance.warn(
-                {
-                  metadata: subscriberObj.metadata,
-                },
-                'Class style subscriptions have been deprecated, please convert to objects. This will be removed in v2.x',
-              );
-            }, `Class style subscriptions have been deprecated: ${subscriberObj.metadata?.subscriptionName}`)();
-          }
-
-          metadata = subscriberObj.metadata;
-        };
-
-      case 'v3':
-        const subscriberObject = subscriber as unknown as SubscriberObject;
-        subscriberObject.options = {
-          ...defaultSubscriberOptions,
-          ...subscriptionServiceDefaultOptions,
-          ...subscriberObject.options,
-        };
-        return class extends SubscriberV2 {
-          constructor() {
-            super(subscriberObject);
-          }
-        };
-      default:
-        return subscriber as unknown as typeof SubscriberV2;
-    }
-  }
-
-  public static getSubscriberVersion(subscriber: unknown): SubscriberVersion {
-    if (typeof subscriber === 'function') {
-      try {
-        const subscriberInstance = new (subscriber as typeof Subscriber)();
-        if (
-          Object.getOwnPropertyNames(subscriberInstance).includes('metadata')
-        ) {
-          return 'v2';
-        } else {
-          return 'v1';
-        }
-      } catch (e) {
-        return 'v1';
-      }
-    }
-    if (typeof subscriber === 'object') {
-      return 'v3';
-    }
-    throw new Error(
-      'Invalid Subscriber: Unable to determine Subscriber Version.',
-    );
+  ): SubscriberV2 {
+    const subscriberObject: SubscriberObject = { ...subscriber };
+    subscriberObject.options = {
+      ...defaultSubscriberOptions,
+      ...subscriptionServiceDefaultOptions,
+      ...subscriberObject.options,
+    };
+    return new SubscriberV2(subscriberObject);
   }
 }
 
 export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
-  ackDeadlineSeconds?: number;
   project?: GooglePubSubProject;
   deadLetterPolicy?: {
     deadLetterTopic: string;
@@ -222,20 +101,19 @@ export interface SubscriberMetadata {
   options?: SubscriberOptions;
 }
 
-export interface MessageHandler {
+export interface MessageHandler<T = unknown> {
   /**
    * will run every time a message is received
    */
-  handleMessage: (message: Message) => void;
+  handleMessage: (message: Message<T>) => void;
 
   /**
-   * will run every time a message is received before the handleMessage function is called
+   * will run before the message handler is attached to the subscription
    */
   init?: () => void;
 
   /**
-   *   If passed, it would serve as the default error handler method in case
-   *   subscriber specific handler is not present
+   * If passed, it would serve as the error handler method for internal google pubsub errors
    */
   handleError?: (error: Error) => void;
 }
@@ -245,7 +123,7 @@ export interface FlexibleObject {
   [key: string]: any;
 }
 
-export interface SubscriberObject
+export interface SubscriberObject<T = unknown>
   extends SubscriberMetadata,
-    MessageHandler,
+    MessageHandler<T>,
     FlexibleObject {}

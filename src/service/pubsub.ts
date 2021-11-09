@@ -1,5 +1,5 @@
 import http from 'http';
-import Topic, { Payload } from '../topic';
+import { TopicProperties } from '../topic';
 import { SubscriberTuple, Subscribers } from '../subscriber';
 import EventBus from '../client/eventBus';
 import { AllSubscriptions, PubSubClientV2 } from '../interface/pubSubClient';
@@ -104,26 +104,21 @@ export default class PubSubService {
   /**
    * Publishes new orders to PubSub.
    */
-  public async publish<T extends Topic, P extends Payload>(
+  public async publish<T extends TopicProperties>(
     topic: T,
-    message: P,
-    options: PublishOptions,
+    message: Record<string, unknown>,
+    options?: PublishOptions,
   ): Promise<string> {
-    this.validate(topic, message);
     if (this.shouldStartSynchronousSubscriptions()) {
       await this.startSubscriptions();
     }
-    return await this.getClient().publish(topic, message, options);
+    return await PubSubService.client.publish(topic, message, options);
   }
 
   private shouldStartSynchronousSubscriptions(): boolean {
     return (
       PubSubService.driver === 'synchronous' && PubSubService.status !== 'ready'
     );
-  }
-
-  private getClient(): PubSubClientV2 {
-    return PubSubService.client;
   }
 
   public getSubscribers(): Subscribers {
@@ -133,7 +128,7 @@ export default class PubSubService {
   public async closeAll(): Promise<void> {
     const subscribers = this.getSubscribers();
     for (const subscription of subscribers) {
-      await this.getClient().close(subscription);
+      await PubSubService.client.close(subscription);
     }
     PubSubService.status = 'closed';
     if (this.server) {
@@ -161,6 +156,7 @@ export default class PubSubService {
     await subscriptionServiceClass.init();
 
     const subscribers = subscriptionServiceClass.getSubscribers();
+
     for (const subscription of subscribers) {
       // @ts-expect-error weird const error
       if (PubSubService.status === 'closed') {
@@ -188,35 +184,29 @@ export default class PubSubService {
         throw error;
       }
     }
-
     PubSubService.status = 'ready';
-    Logger.Instance.info(`   ✅      All subscriptions started successfully.`);
-  }
-
-  /**
-   * Validates Topic and Message according to validation rules set in Topic class
-   * @param topic Topic
-   * @param message Message
-   */
-  protected validate<T extends Topic, P extends Payload>(
-    topic: T,
-    message: P,
-  ): void {
-    topic.validateTopic(topic.getName());
-    topic.validateMessage(message);
+    if (subscribers.length === 0) {
+      Logger.Instance.warn(
+        `   ❌      No Subscribers were found at ${process.env.PUBSUB_ROOT_DIR}`,
+      );
+    } else {
+      Logger.Instance.info(
+        `   ✅      All subscriptions started successfully.`,
+      );
+    }
   }
 
   /**
    * Subscribes to any given topic
    */
   public async subscribe(subscription: SubscriberTuple): Promise<void> {
-    return this.getClient().subscribe(subscription);
+    return PubSubService.client.subscribe(subscription);
   }
 
   /**
    * Retrieves a list of subscribers
    */
   public async getAllSubscriptions(): Promise<AllSubscriptions[]> {
-    return this.getClient().getAllSubscriptions();
+    return PubSubService.client.getAllSubscriptions();
   }
 }

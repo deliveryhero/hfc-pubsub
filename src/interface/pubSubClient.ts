@@ -1,4 +1,4 @@
-import { Topic, Payload, Subscriber } from '../index';
+import { TopicProperties } from '../topic';
 import { SubscriberTuple } from '../subscriber';
 import { PublishOptions } from './publishOptions';
 
@@ -7,21 +7,13 @@ export interface AllSubscriptions {
   subscriptionName: string;
 }
 
-export default interface PubSubClient {
-  publish<T extends Topic, P extends Payload>(
-    topic: T,
-    message: P,
-  ): Promise<string>;
-  subscribe(subscriber: typeof Subscriber): void;
-  getAllSubscriptions(): Promise<AllSubscriptions[]>;
-  //@todo: getAllTopics(): Promise<string[]>;
-}
 export type IsOpenTuple = [string, boolean];
+
 export interface PubSubClientV2 {
-  publish<T extends Topic, P extends Payload>(
+  publish<T extends TopicProperties>(
     topic: T,
-    message: P,
-    options: PublishOptions,
+    message: Record<string, unknown>,
+    options?: PublishOptions,
   ): Promise<string>;
   subscribe(subscriber: SubscriberTuple): void;
   close(subscriber: SubscriberTuple): void;

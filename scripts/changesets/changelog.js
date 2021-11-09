@@ -1,4 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 /**
  * @see https://github.com/atlassian/changesets/issues/538#issuecomment-799528504
  * @see https://github.com/atlassian/changesets/blob/c426035565cfac518238c8bf32f3c496c66c0657/packages/changelog-github/src/index.ts

@@ -1,0 +1,6 @@
+# Ignore git items
+.gitignore
+.git/
+:include .gitignore
+
+__tests__/

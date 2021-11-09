@@ -5,7 +5,7 @@ import {
   PubSubClientV2,
 } from '../interface/pubSubClient';
 import Message from '../message';
-import { Topic, Payload } from '../index';
+import { TopicProperties } from '../topic';
 import { SubscriberTuple } from '../subscriber';
 
 export default class EventBus extends EventEmitter implements PubSubClientV2 {
@@ -24,17 +24,16 @@ export default class EventBus extends EventEmitter implements PubSubClientV2 {
     return EventBus.instance;
   }
 
-  public async publish<T extends Topic, P extends Payload>(
+  public async publish<T extends TopicProperties>(
     topic: T,
-    message: P,
+    message: Record<string, unknown>,
   ): Promise<string> {
-    EventBus.getInstance().emit(topic.getName(), message);
+    EventBus.getInstance().emit(topic.topicName, message);
     return 'done';
   }
 
   public async subscribe(subscriber: SubscriberTuple): Promise<void> {
-    const [subscriberClass, metadata] = subscriber;
-    const instance = new subscriberClass();
+    const [instance, metadata] = subscriber;
     await instance.init();
     EventBus.getInstance().addListener(
       metadata.topicName,

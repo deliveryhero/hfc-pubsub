@@ -71,7 +71,7 @@ exports.default = SubscriptionService;
 
 ## Running the Service
 
-To run the service you can use the [CLI](../CLI.md) commands:
+To run the service you can use the [CLI](../guides/CLI.md) commands:
 
 ```sh
 npx subscriptions start

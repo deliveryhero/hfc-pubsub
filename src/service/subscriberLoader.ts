@@ -1,15 +1,8 @@
 import { resolve, join } from 'path';
-import fs = require('fs');
+import fs from 'fs';
+import { SubscriberV2, Subscribers, SubscriberTuple } from '../subscriber';
 import {
-  SubscriberV2,
-  Subscribers,
-  SubscriberTuple,
-  SubscriberV1,
-} from '../subscriber';
-import {
-  SubscriberMetadata,
   SubscriberObject,
-  SubscriberVersion,
   SubscriberOptions,
 } from '../subscriber/subscriberV2';
 import { SubscriptionServiceFile } from './resourceResolver';
@@ -59,13 +52,7 @@ export default class SubscriberLoader {
         file.nestedDir,
         file.fileName,
       )).default;
-      subscribers.push(
-        this.loadSubscriber(
-          subscriber,
-          SubscriberV2.getSubscriberVersion(subscriber),
-          defaultOptions,
-        ),
-      );
+      subscribers.push(this.loadSubscriber(subscriber, defaultOptions));
     }
     return subscribers;
   }
@@ -79,28 +66,16 @@ export default class SubscriberLoader {
     const subscribers = [];
     const service = require(resolve(subscriptionService)).default;
     for (const subscriber of service.subscribers) {
-      subscribers.push(
-        this.loadSubscriber(
-          subscriber,
-          SubscriberV2.getSubscriberVersion(subscriber),
-          defaultOptions,
-        ),
-      );
+      subscribers.push(this.loadSubscriber(subscriber, defaultOptions));
     }
     return subscribers;
   }
 
   private loadSubscriber(
-    subscriber: typeof SubscriberV1 | SubscriberObject,
-    version: SubscriberVersion,
+    subscriber: SubscriberObject,
     defaultOptions: SubscriberOptions,
   ): SubscriberTuple {
-    const v2SubscriberClass = SubscriberV2.from(
-      subscriber,
-      version,
-      defaultOptions,
-    );
-    const instance = new v2SubscriberClass();
-    return [v2SubscriberClass, instance.metadata as SubscriberMetadata];
+    const instance = SubscriberV2.from(subscriber, defaultOptions);
+    return [instance, instance.metadata];
   }
 }

@@ -58,7 +58,3 @@ Moved to [Service](https://deliveryhero.github.io/hfc-pubsub/server/service)
 ## Enabling Synchronous Driver
 
 Moved to [Drivers](https://deliveryhero.github.io/hfc-pubsub/drivers)
-
-## Enabling gRPC C++ bindings
-
-Moved to [Options](https://deliveryhero.github.io/hfc-pubsub/options)

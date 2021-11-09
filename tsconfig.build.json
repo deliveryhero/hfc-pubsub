@@ -19,6 +19,7 @@
   ],
   "include": ["src/**/*"],
   "typedocOptions": {
-    "readme": "none"
+    "readme": "none",
+    "excludePrivate": true
   }
 }

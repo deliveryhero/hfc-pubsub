@@ -21,9 +21,17 @@ const config = {
       '@docusaurus/preset-classic',
       {
         debug: Boolean(process.env.DEBUG || process.env.CI),
+        customCss: [require.resolve('./docs/custom.css')],
         docs: {
           routeBasePath: '/',
           editUrl: 'https://github.com/deliveryhero/hfc-pubsub/edit/main/',
+          lastVersion: 'current',
+          versions: {
+            current: {
+              label: 'v2',
+              // path: '2.x',
+            },
+          },
         },
       },
     ],
@@ -49,6 +57,10 @@ const config = {
         {
           label: 'API',
           to: '/api',
+        },
+        {
+          type: 'docsVersionDropdown',
+          position: 'right',
         },
       ],
     },

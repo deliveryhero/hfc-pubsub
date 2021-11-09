@@ -17,79 +17,96 @@ import { GooglePubSubProject } from '../interface/GooglePubSubProject';
  * ```
  */
 export interface Payload {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _timestamp?: string;
 }
 
-export interface NamedTopic {
-  readonly name: string;
+/**
+ * Remove properties not required when publishing but only available when processing messages
+ */
+type PayloadInput<P extends Payload> = Omit<P, keyof Payload>;
+export interface TopicOptions {
+  addTimeStamp?: boolean;
+  retryConfig?: RetryConfig;
 }
 
-export interface TopicWithCustomProject {
+export interface TopicProperties {
+  topicName: string;
   project?: GooglePubSubProject;
 }
 
-export default class Topic implements NamedTopic, TopicWithCustomProject {
-  public readonly name: string = '';
-  public project?: GooglePubSubProject;
+export default class Topic<P extends Payload = Payload> {
+  public static readonly topicName: string;
+  public static project?: GooglePubSubProject;
 
-  public retryConfig: RetryConfig = {
-    retryCodes: [10, 1, 4, 13, 8, 14, 2],
-    backoffSettings: {
-      initialRetryDelayMillis: 100,
-      retryDelayMultiplier: 1.3,
-      maxRetryDelayMillis: 60000,
-      initialRpcTimeoutMillis: 5000,
-      rpcTimeoutMultiplier: 1.0,
-      maxRpcTimeoutMillis: 600000,
-      totalTimeoutMillis: 600000,
+  public options: TopicOptions = {
+    addTimeStamp: true,
+    retryConfig: {
+      retryCodes: [10, 1, 4, 13, 8, 14, 2],
+      backoffSettings: {
+        initialRetryDelayMillis: 100,
+        retryDelayMultiplier: 1.3,
+        maxRetryDelayMillis: 60000,
+        initialRpcTimeoutMillis: 5000,
+        rpcTimeoutMultiplier: 1.0,
+        maxRpcTimeoutMillis: 600000,
+        totalTimeoutMillis: 600000,
+      },
     },
   };
-  protected mq: PubSubService;
 
+  private mq: PubSubService;
   public constructor() {
     this.mq = PubSubService.getInstance();
-  }
-  /**
-   * @todo implement message validation logic. tried to link Topic and Message using static name methods, but hit a wall with subclass static inheritance typescript issues
-   * @param message Message
-   */
-  public validateMessage(message: Payload): void {
-    message;
-  }
-
-  public async publish<T extends Payload>(
-    message: T,
-    options?: TopicPublishOptions,
-  ): Promise<string> {
-    this.validateTopic(this.getName());
-    this.validateMessage(message);
-    return this.mq.publish(
-      this,
-      {
-        ...message,
-        _timestamp: new Date().toISOString(),
-      },
-      {
-        ...this.retryConfig,
-        ...options,
-        ...(options?.backoffSettings && {
-          backoffSettings: {
-            ...this.retryConfig.backoffSettings,
-            ...options?.backoffSettings,
-          },
-        }),
-      } as PublishOptions,
+    (this.constructor as typeof Topic).validateTopic(
+      (this.constructor as typeof Topic).topicName,
     );
   }
 
-  public getName(): string {
-    return this.name;
-  }
-
-  public validateTopic(name: string): void {
+  /**
+   * This is run once when Topic is init to verify topic name
+   * @param name topicName
+   */
+  public static validateTopic(name: string): void {
     if (!name || name.length <= 6) {
       throw new Error('Invalid Topic Name!');
     }
+  }
+
+  /**
+   * This is run before publishing any messages, it is a no-op by default.
+   * Can overwrite to perform checks against payload before publishing
+   * @param message Message to be published
+   */
+  public validateMessage(message: PayloadInput<P>): void {
+    message;
+  }
+
+  public async publish(
+    message: PayloadInput<P>,
+    options?: TopicPublishOptions,
+  ): Promise<string> {
+    this.validateMessage(message);
+    return this.mq.publish(
+      this.constructor as typeof Topic,
+      this.options?.addTimeStamp !== false
+        ? {
+            ...message,
+            _timestamp: new Date().toISOString(),
+          }
+        : message,
+      (this.options?.retryConfig
+        ? {
+            ...options,
+            retryConfig: {
+              ...this.options?.retryConfig,
+              ...options?.retryConfig,
+              backoffSettings: {
+                ...this.options?.retryConfig?.backoffSettings,
+                ...options?.retryConfig?.backoffSettings,
+              },
+            },
+          }
+        : options) as PublishOptions,
+    );
   }
 }

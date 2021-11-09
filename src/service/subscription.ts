@@ -1,54 +1,59 @@
 import { resolve } from 'path';
 import {
   Subscribers,
-  SubscriberV1,
-  SubscriberV2,
   SubscriberObject,
   SubscriberTuple,
   SubscriberOptions,
+  SubscriberMetadata,
 } from '../subscriber';
+import { Logger } from './logger';
 import SubscriberLoader from './subscriberLoader';
 import { ResourceResolver } from './resourceResolver';
-import { Logger } from './logger';
 
 export default class SubscriptionService {
-  public static subscribers: (
-    | typeof SubscriberV1
-    | typeof SubscriberV2
-    | SubscriberObject
-  )[] = [];
+  public static subscribers: SubscriberObject<any>[] = [];
   private static _subscribers: Subscribers = [];
+  private static _service: typeof SubscriptionService;
 
+  /**
+   * All subscriptions will inherit from this default options object
+   */
   public static defaultSubscriberOptions: SubscriberOptions;
-
-  public static instance = new SubscriptionService();
 
   public constructor() {
     this.checkExistence(process.env, 'PUBSUB_ROOT_DIR');
   }
 
-  protected checkExistence(object: any, property: string): void {
+  private checkExistence(object: any, property: string): void {
     if (
       !object.hasOwnProperty(property) ||
       (object.hasOwnProperty(property) && object[property] == '')
     ) {
-      Logger.Instance.warn(
+      throw new Error(
         `@honestfoodcompany/pubsub module requires ${property} to be defined in your .env`,
       );
     }
   }
 
+  /**
+   * Can be used to initialize process level globals (like DB Connections).
+   * Default is a no-op
+   */
   public static async init(): Promise<void> {
     //
   }
 
   /**
-   * If passed, it would serve as the default error handler at SubscriptionService level
-   * Applications should override this with custom error handling
+   * If passed, it would serve as the default error handler for all subscriptions.
+   * Applications should override this with custom error handling: log error, cleanup resources and exit the process.
+   * Default logs the error and **rethrows**
    */
-  public static handleError(error: Error): void {
+  public static handleError(error: Error, metadata: SubscriberMetadata): void {
     // default error handling logic
-    Logger.Instance.error({ error }, 'Received Unexpected Error');
+    Logger.Instance.error(
+      { error, metadata },
+      'Received unexpected error in subscription',
+    );
     // To keep backwards compatibility with no error handler
     throw error;
   }
@@ -61,15 +66,10 @@ export default class SubscriptionService {
   }
 
   public static getSubscribers(): Subscribers {
-    if (SubscriptionService._subscribers.length > 0) {
+    if (SubscriptionService._subscribers?.length > 0) {
       return SubscriptionService._subscribers as Subscribers;
     }
-    SubscriptionService.loadSubscribers();
 
-    return SubscriptionService._subscribers as Subscribers;
-  }
-
-  private static loadSubscribers(): Subscribers {
     const [subscriptionService, pubsubSubscriptionsDir] =
       ResourceResolver.getFiles();
 
@@ -110,12 +110,21 @@ export default class SubscriptionService {
   }
 
   public static loadSubscriptionService(): typeof SubscriptionService {
+    if (SubscriptionService._service) return SubscriptionService._service;
+
     const [subscriptionService] = ResourceResolver.getFiles();
     try {
-      const service = require(resolve(subscriptionService)).default;
-      return service;
+      const file = resolve(subscriptionService);
+      SubscriptionService._service = require(file).default; // nosemgrep;
     } catch (e) {
-      return SubscriptionService;
+      SubscriptionService._service = SubscriptionService;
+      Logger.Instance.warn(
+        {
+          err: e,
+        },
+        'Could not load custom subscription service',
+      );
     }
+    return SubscriptionService._service;
   }
 }

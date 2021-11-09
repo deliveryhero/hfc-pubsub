@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-      - chore/PUB-50-docs
+      - docs/PUB-76-migration-guide
 
 env:
   CI: 'true'
@@ -23,13 +23,13 @@ jobs:
           node-version: '12'
 
       - name: 📦 Install dependencies
-        run: npm ci --also=dev
+        run: yarn install --immutable
 
       - name: Add changelog to docs
         run: cp CHANGELOG.md docs/changelog.md
 
       - name: Generate Docs 🔧
-        run: npm run docs
+        run: yarn run docs
 
       - name: Publish Github Pages 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.0

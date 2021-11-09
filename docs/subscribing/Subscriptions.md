@@ -9,7 +9,7 @@ Create a `Subscriber` to define a message handler for messages that are publishe
 Subscribers are contained in `PUBSUB_ROOT_DIR/subscriptions`.
 
 :::tip
-Files ending in `.sub.js` or `.sub.ts` in `PUBSUB_ROOT_DIR/subscriptions` will be autoloaded by the subscription server.
+Files ending in `.sub.js` or `.sub.ts` in `PUBSUB_ROOT_DIR/subscriptions` will be auto-loaded by the subscription server.
 :::
 
 ## Examples
@@ -17,16 +17,18 @@ Files ending in `.sub.js` or `.sub.ts` in `PUBSUB_ROOT_DIR/subscriptions` will b
 ### Typescript subscription example
 
 ```ts title="/pubsub/subscriptions/simple.topic.name.console-log.sub.ts"
-import { SubscriberObject, Message } from "@honestfoodcompany/pubsub"; // this import is optional, it's gives us the interfaces to use below
+import { SubscriberObject } from "@honestfoodcompany/pubsub"; 
+import { Payload } from '../topics/test-topic';
 
-export default: SubscriberObject = {
+export default: SubscriberObject<Payload> = {
   topicName: 'simple.topic',
   subscriptionName: 'simple.topic.console-log.sub',
   description: 'Will console log messages published on test.topic',
 
-  handleMessage: function(message: Message): void {
+  handleMessage: function(message): void {
     console.log(this.subscriptionName, 'received message');
     console.log(message.data.toString());
+    const payload = message.toJSON();
     message.ack();
   },
 

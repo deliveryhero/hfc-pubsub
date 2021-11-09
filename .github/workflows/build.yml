@@ -27,16 +27,16 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: yarn install --immutable
 
       - name: 🔨 Build Project
-        run: npm run build
+        run: yarn build
 
       - name: ✅ Run Tests
-        run: npm run test-with-coverage
+        run: yarn test-with-coverage
 
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@master
@@ -58,14 +58,14 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 12
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: yarn install --immutable
 
       - name: 📝 Check if changeset added in PR
         run: |
           # Checkout PR head commit instead of merge commit
           # See: https://github.com/atlassian/changesets/issues/517#issuecomment-813282523
-          git checkout ${{ github.event.pull_request.head.sha }}
-          npx changeset status --since=origin/main
+          git checkout  ${{ github.event.pull_request.head.sha }}
+          yarn changeset status --since=origin/main

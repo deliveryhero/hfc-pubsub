@@ -1,4 +1,3 @@
-import util from 'util';
 import {
   PubSub as GooglePubSub,
   Message as GoogleCloudMessage,
@@ -11,7 +10,7 @@ import { CredentialBody } from 'google-auth-library';
 import chalk from 'chalk';
 import Bluebird from 'bluebird';
 
-import { Topic, Payload } from '../index';
+import { TopicProperties } from '../topic';
 import { PublishOptions } from '../interface/publishOptions';
 import {
   AllSubscriptions,
@@ -32,6 +31,7 @@ export interface Project {
   topics: Map<GoogleCloudTopic['name'], GoogleCloudTopic>;
   subscriptions: Map<GoogleCloudSubscription['name'], GoogleCloudSubscription>;
   projectId: string;
+  projectNumber?: string;
   credentials?: CredentialBody;
 }
 export interface Projects {
@@ -40,85 +40,61 @@ export interface Projects {
 
 export interface CreateClientOptions {
   credentials?: CredentialBody;
-  grpc?: boolean;
 }
 
-const DEFAULT_PROJECT = 'default';
+const DEFAULT_PROJECT = '__default__';
+
+/**
+ *
+ * @returns This is dynamic because we set env vars dynamically from cli args
+ */
+const getDefaultProjectFromEnvVar = () => process.env.GOOGLE_CLOUD_PROJECT;
 
 export default class GooglePubSubAdapter implements PubSubClientV2 {
   protected static instance: GooglePubSubAdapter;
-  private static _nativeGRPC?: { grpc: any };
-  protected projects: Projects = {};
+  public projects: Projects = {};
 
   public constructor(client: GooglePubSub) {
     this.projects[DEFAULT_PROJECT] = {
       client,
+      projectId: getDefaultProjectFromEnvVar() || client.projectId,
       topics: new Map(),
       subscriptions: new Map(),
-      projectId: process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID || '',
     };
     this.createOrGetSubscription = this.createOrGetSubscription.bind(this);
   }
 
-  public getProjects(): Projects {
-    return this.projects;
-  }
-
-  public static getInstance(): GooglePubSubAdapter {
+  static getInstance(): GooglePubSubAdapter {
     if (!GooglePubSubAdapter.instance) {
       GooglePubSubAdapter.instance = new GooglePubSubAdapter(
-        GooglePubSubAdapter.createClient(
-          process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID || '',
-          { grpc: process.env.PUBSUB_USE_GRPC === 'true' },
-        ),
+        GooglePubSubAdapter.createClient(getDefaultProjectFromEnvVar()),
       );
     }
     return GooglePubSubAdapter.instance;
   }
 
-  private static getNativeGRPC() {
-    if (this._nativeGRPC) return this._nativeGRPC;
-    const getNativeGRPC = util.deprecate(() => {
-      Logger.Instance.warn(
-        'PUBSUB_USE_GRPC env var option is deprecated and will be removed in v2.x.x',
-      );
-      return {
-        grpc: require('grpc'),
-      };
-    }, 'PUBSUB_USE_GRPC env var option is deprecated');
-
-    this._nativeGRPC = getNativeGRPC();
-    return this._nativeGRPC;
-  }
-
-  public static createClient(
-    projectId: string,
+  static createClient(
+    projectId?: string,
     options?: CreateClientOptions,
   ): GooglePubSub {
-    const useCppGrpc =
-      options?.grpc || process.env.PUBSUB_USE_GRPC === 'true'
-        ? this.getNativeGRPC()
-        : null;
-
     return new GooglePubSub({
-      ...useCppGrpc,
       projectId: projectId,
       credentials: options?.credentials,
     });
   }
 
-  public async publish<T extends Topic, P extends Payload>(
+  public async publish<T extends TopicProperties>(
     topic: T,
-    message: P,
-    options: PublishOptions,
+    message: Record<string, unknown>,
+    options?: PublishOptions,
   ): Promise<string> {
-    const pubSubTopic = await this.createOrGetTopic(topic.getName(), {
+    const pubSubTopic = await this.createOrGetTopic(topic.topicName, {
       project: topic.project,
     });
     // FIXME: PUB-49 retryConfig not being considered, see https://github.com/googleapis/nodejs-pubsub/blob/master/samples/publishWithRetrySettings.js for how to use it
-    const messageId = await pubSubTopic.publish(
-      Buffer.from(JSON.stringify(message)),
-      options.attributes,
+    const messageId = await pubSubTopic.publishJSON(
+      message,
+      options?.attributes,
     );
     return messageId;
   }
@@ -156,8 +132,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     subscriber: SubscriberTuple,
     subscription: GoogleCloudSubscription,
   ): Promise<void> {
-    const [subscriberClass] = subscriber;
-    const subscriberInstance = new subscriberClass();
+    const [subscriberInstance] = subscriber;
     await subscriberInstance.init();
     subscription.on('message', (message: GoogleCloudMessage): void => {
       subscriberInstance
@@ -215,6 +190,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     }
     return this.getSubscription(subscriber);
   }
+
   private async createDeadLetterDefaultSubscriber(
     subscriber: SubscriberTuple,
   ): Promise<void> {
@@ -251,10 +227,11 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       );
     }
   }
-  private async getMergedSubscriptionOptions(subscriber: SubscriberTuple) {
+  private async getMergedSubscriptionOptions(
+    subscriber: SubscriberTuple,
+  ): Promise<GoogleSubscriptionMetadata> {
     const subscriberOptions = this.getSubscriberOptions(subscriber);
-    const ackDeadlineSeconds =
-      subscriberOptions?.ackDeadlineSeconds || subscriberOptions?.ackDeadline;
+    const ackDeadlineSeconds = subscriberOptions?.ackDeadline;
     return {
       ...subscriberOptions,
       ackDeadlineSeconds,
@@ -283,27 +260,24 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         { metadata, err },
         `   ❌      There was an error creating "${metadata.subscriptionName}" subscription.`,
       );
-      // FIXME: PUB-70 Should throw error here
+      throw err;
     }
   }
 
   private async mergeDeadLetterPolicy(
     options: SubscriberOptions | undefined,
   ): Promise<SubscriberOptions | undefined> {
-    if (!options) return;
-    if (options.deadLetterPolicy) {
-      return {
-        ...options,
-        deadLetterPolicy: {
-          ...options.deadLetterPolicy,
-          deadLetterTopic: await this.createDeadLetterTopic(
-            options.deadLetterPolicy,
-            options,
-          ),
-        },
-      };
-    }
-    return;
+    if (!options?.deadLetterPolicy) return;
+    return {
+      ...options,
+      deadLetterPolicy: {
+        ...options.deadLetterPolicy,
+        deadLetterTopic: await this.createDeadLetterTopic(
+          options.deadLetterPolicy,
+          options,
+        ),
+      },
+    };
   }
 
   private async createDeadLetterTopic(
@@ -319,10 +293,14 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const client = this.getProject(metadata.options).client;
     const options = this.getSubscriberOptions(subscriber);
     const deadLetterTopic = options?.deadLetterPolicy?.deadLetterTopic;
-    if (!deadLetterTopic) return;
+    if (!deadLetterTopic) {
+      return;
+    }
+
     const [subscriptions] = await client
       .topic(deadLetterTopic)
       .getSubscriptions();
+
     if (subscriptions.length === 0) {
       Logger.Instance.warn(
         { metadata },
@@ -336,38 +314,38 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   ) {
     const [, metadata] = subscriber;
     const options = this.getSubscriberOptions(subscriber);
-    if (options?.deadLetterPolicy) {
-      await this.bindPolicyToSubscriber(metadata);
-      await this.bindPolicyToDeadLetterTopic(
-        options.deadLetterPolicy.deadLetterTopic,
-        options,
-        metadata,
-      );
-      if (options?.deadLetterPolicy?.createDefaultSubscription) {
-        await this.createDeadLetterDefaultSubscriber(subscriber);
-      } else {
-        await this.checkDeadLetterConfiguration(subscriber);
-      }
+    if (!options?.deadLetterPolicy) {
+      return;
+    }
+    await this.bindPolicyToSubscriber(metadata);
+    await this.bindPolicyToDeadLetterTopic(
+      options.deadLetterPolicy.deadLetterTopic,
+      options,
+      metadata,
+    );
+    if (options?.deadLetterPolicy?.createDefaultSubscription) {
+      await this.createDeadLetterDefaultSubscriber(subscriber);
+    } else {
+      await this.checkDeadLetterConfiguration(subscriber);
     }
   }
 
-  private async getProjectNumber() {
+  private async getProjectNumber(options?: { project?: GooglePubSubProject }) {
+    const project = this.getProject(options);
+    if (project.projectNumber) {
+      return project.projectNumber;
+    }
+
     try {
-      if (process.env.PROJECT_NUMBER) {
-        return process.env.PROJECT_NUMBER;
-      }
-      const projectId = process.env.GOOGLE_CLOUD_PUB_SUB_PROJECT_ID;
-      if (!projectId) {
-        return '';
-      }
       const resource = new Resource();
-      const project = resource.project(projectId);
-      const projectInfo = await project.get();
+      const projectResource = resource.project(project.projectId);
+      const projectInfo = await projectResource.get();
       // project.info return [_, projectInfoIncludingProjectNumber]
-      return (projectInfo as any)[1]?.projectNumber;
+      project.projectNumber = (projectInfo as any)[1]?.projectNumber;
+      return project.projectNumber;
     } catch (err) {
       Logger.Instance.error({ err }, 'Error while getting project number');
-      return '';
+      return null;
     }
   }
 
@@ -379,32 +357,36 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       subscriptionName,
       options,
     } = metadata;
-    const projectNumber = await this.getProjectNumber();
+    const projectNumber = await this.getProjectNumber(options);
 
-    if (projectNumber) {
-      try {
-        const pubSubTopic = this.getProject(options).client.topic(
-          subscriptionTopicName,
-        );
-        const myPolicy = {
-          bindings: [
-            {
-              role: 'roles/pubsub.subscriber',
-              members: [
-                `serviceAccount:service-${projectNumber}@gcp-sa-pubsub.iam.gserviceaccount.com`,
-              ],
-            },
-          ],
-        };
-        await pubSubTopic
-          .subscription(subscriptionName)
-          .iam.setPolicy(myPolicy);
-      } catch (err) {
-        Logger.Instance.error(
-          { metadata, err },
-          `   ❌      Error while binding policy for "${metadata.subscriptionName}" subscription.`,
-        );
-      }
+    if (!projectNumber) {
+      Logger.Instance.warn(
+        { metadata },
+        `   ❌      Could not bind policy for "${subscriptionName}" subscriber due to no project number`,
+      );
+      return;
+    }
+
+    try {
+      const pubSubTopic = this.getProject(options).client.topic(
+        subscriptionTopicName,
+      );
+      const myPolicy = {
+        bindings: [
+          {
+            role: 'roles/pubsub.subscriber',
+            members: [
+              `serviceAccount:service-${projectNumber}@gcp-sa-pubsub.iam.gserviceaccount.com`,
+            ],
+          },
+        ],
+      };
+      await pubSubTopic.subscription(subscriptionName).iam.setPolicy(myPolicy);
+    } catch (err) {
+      Logger.Instance.error(
+        { metadata, err },
+        `   ❌      Error while binding policy for "${subscriptionName}" subscription.`,
+      );
     }
   }
 
@@ -413,29 +395,34 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     options: { project?: GooglePubSubProject },
     metadata: SubscriberMetadata,
   ): Promise<void> {
-    const projectNumber = await this.getProjectNumber();
+    const projectNumber = await this.getProjectNumber(options);
+    if (!projectNumber) {
+      Logger.Instance.warn(
+        { metadata },
+        `   ❌      Could not bind policy for "${deadLetterTopicName}" DLQ topic due to no project number`,
+      );
+      return;
+    }
 
-    if (projectNumber) {
-      try {
-        const pubSubTopic =
-          this.getProject(options).client.topic(deadLetterTopicName);
-        const myPolicy = {
-          bindings: [
-            {
-              role: 'roles/pubsub.publisher',
-              members: [
-                `serviceAccount:service-${projectNumber}@gcp-sa-pubsub.iam.gserviceaccount.com`,
-              ],
-            },
-          ],
-        };
-        await pubSubTopic.iam.setPolicy(myPolicy);
-      } catch (err) {
-        Logger.Instance.error(
-          { metadata, err },
-          `   ❌      Error while binding policy for "${deadLetterTopicName}" DLQ topic.`,
-        );
-      }
+    try {
+      const pubSubTopic =
+        this.getProject(options).client.topic(deadLetterTopicName);
+      const myPolicy = {
+        bindings: [
+          {
+            role: 'roles/pubsub.publisher',
+            members: [
+              `serviceAccount:service-${projectNumber}@gcp-sa-pubsub.iam.gserviceaccount.com`,
+            ],
+          },
+        ],
+      };
+      await pubSubTopic.iam.setPolicy(myPolicy);
+    } catch (err) {
+      Logger.Instance.error(
+        { metadata, err },
+        `   ❌      Error while binding policy for "${deadLetterTopicName}" DLQ topic.`,
+      );
     }
   }
 
@@ -468,7 +455,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   }
 
   public getProject(options?: { project?: GooglePubSubProject }): Project {
-    if (!options || !options.project?.id) {
+    if (!options?.project?.id) {
       return this.projects[DEFAULT_PROJECT];
     }
     if (this.projects[options.project?.id]) {
@@ -479,7 +466,6 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       options.project?.id,
       {
         credentials: options?.project?.credentials,
-        grpc: process.env.PUBSUB_USE_GRPC === 'true',
       },
     );
     return this.projects[options.project?.id];
