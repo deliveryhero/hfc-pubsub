@@ -57,10 +57,6 @@ typings/
 # dotenv environment variables file
 .env
 
-# Output
-dist/
-coverage/
-
 # Mac
 .DS_Store
 .vscode
@@ -69,14 +65,14 @@ coverage/
 .yarn/*
 
 # Docs
-examples/
-docs/
-versioned_docs/
-versioned_sidebars/
-versions.json
-static/
-.docusaurus/
-build/
+/examples/
+/docs/
+/versioned_docs/
+/versioned_sidebars/
+/versions.json
+/static/
+/.docusaurus/
+/build/
 demo.gif
 
 # Development
@@ -84,10 +80,10 @@ demo.gif
 .github
 .changeset
 .git
-scripts/
+/scripts/
 /lib/
 /indexers/
-__tests__/
+/__tests__/
 tsconfig.json
 tsconfig.build.json
 .eslintrc.js
