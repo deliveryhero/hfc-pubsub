@@ -4,6 +4,7 @@ import {
   SubscriberObject,
   SubscriberTuple,
   SubscriberOptions,
+  SubscriberMetadata,
 } from '../subscriber';
 import { Logger } from './logger';
 import SubscriberLoader from './subscriberLoader';
@@ -47,9 +48,12 @@ export default class SubscriptionService {
    * Applications should override this with custom error handling: log error, cleanup resources and exit the process.
    * Default logs the error and **rethrows**
    */
-  public static handleError(error: Error): void {
+  public static handleError(error: Error, metadata: SubscriberMetadata): void {
     // default error handling logic
-    Logger.Instance.error({ error }, 'Received Unexpected Error');
+    Logger.Instance.error(
+      { error, metadata },
+      'Received unexpected error in subscription',
+    );
     // To keep backwards compatibility with no error handler
     throw error;
   }

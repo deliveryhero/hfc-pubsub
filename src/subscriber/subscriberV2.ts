@@ -34,7 +34,10 @@ export default class SubscriberV2 {
     if (this.subscriberObject?.handleError) {
       this.subscriberObject?.handleError(error);
     } else {
-      SubscriptionService.loadSubscriptionService().handleError(error);
+      SubscriptionService.loadSubscriptionService().handleError(
+        error,
+        this.metadata,
+      );
     }
   }
 
