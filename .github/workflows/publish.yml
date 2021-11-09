@@ -41,7 +41,7 @@ jobs:
           sed -i 's,@honestfoodcompany/pubsub,@deliveryhero/pubsub,' package.json
 
       - name: 📦 Install dependencies
-        run: yarn install
+        run: yarn install --no-immutable
 
       - name: 🚀 Publish
         run: yarn npm publish
