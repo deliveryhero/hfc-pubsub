@@ -1,10 +1,15 @@
-import { Subscriber, Message } from '@honestfoodcompany/pubsub';
+import { Message } from '@honestfoodcompany/pubsub';
+import { SubscriberV2 as Subscriber } from '../src/subscriber';
 
-Message.from('test message');
-const mockMessage = jest.fn(() => new Message());
+const mockMessage = Message.from('test message');
+mockMessage.ack = jest.fn(() => new Message());
 
-describe('message', () => {
-  const subscriber = new Subscriber();
+describe('Subscriber', () => {
+  const subscriber = new Subscriber({
+    handleMessage: (msg) => msg.ack(),
+    topicName: 'test.topic',
+    subscriptionName: 'test.topic.subscription',
+  });
   it('should be a class', () => {
     expect(subscriber).toBeInstanceOf(Subscriber);
   });
@@ -14,7 +19,7 @@ describe('message', () => {
   });
 
   it('should use handleMessage properly', async () => {
-    await subscriber.handleMessage(mockMessage());
-    expect(mockMessage).toHaveBeenCalled();
+    await subscriber.handleMessage(mockMessage);
+    expect(mockMessage.ack).toHaveBeenCalled();
   });
 });

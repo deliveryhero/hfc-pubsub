@@ -1,4 +1,5 @@
-import { PubSubService, Subscriber } from '@honestfoodcompany/pubsub';
+import { PubSubService } from '@honestfoodcompany/pubsub';
+import { SubscriberV2 as Subscriber } from '../src/subscriber';
 import TestTopic from './pubsub/topics/test-topic';
 import ExampleSubscriber from './pubsub/subscriptions/test-topic.example.subscription';
 
