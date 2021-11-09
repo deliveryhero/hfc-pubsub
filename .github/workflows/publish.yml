@@ -7,6 +7,7 @@ on:
   push:
     tags:
       - v[0-9]+.[0-9]+.[0-9]+
+  workflow_dispatch:
 
 jobs:
   publish-npm:
@@ -35,12 +36,12 @@ jobs:
         with:
           node-version: 12
 
-      - name: 📦 Install dependencies
-        run: yarn install --immutable
-
       - name: Change package name
         run: |
           sed -i 's,@honestfoodcompany/pubsub,@deliveryhero/pubsub,' package.json
+
+      - name: 📦 Install dependencies
+        run: yarn install
 
       - name: 🚀 Publish
         run: yarn npm publish
