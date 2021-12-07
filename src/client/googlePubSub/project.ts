@@ -47,6 +47,9 @@ export function createProject(
   };
 }
 
+/**
+ * FIXME: PUB-80 @google-cloud/resource has been deprecated. Migrate to https://www.npmjs.com/package/@google-cloud/resource-manager
+ */
 export async function getProjectNumber(
   project: Project,
 ): Promise<string | null> {
