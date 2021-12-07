@@ -1,12 +1,9 @@
 import {
-  PubSub as GooglePubSub,
   Message as GoogleCloudMessage,
   Subscription as GoogleCloudSubscription,
   Topic as GoogleCloudTopic,
   SubscriptionMetadata as GoogleSubscriptionMetadata,
 } from '@google-cloud/pubsub';
-import { Resource } from '@google-cloud/resource';
-import { CredentialBody } from 'google-auth-library';
 import chalk from 'chalk';
 import Bluebird from 'bluebird';
 
@@ -25,62 +22,47 @@ import { SubscriberTuple } from '../../subscriber';
 import Message from '../../message';
 import { GooglePubSubProject } from '../../interface/GooglePubSubProject';
 import { Logger } from '../../service/logger';
-
-export interface Project {
-  client: GooglePubSub;
-  topics: Map<GoogleCloudTopic['name'], GoogleCloudTopic>;
-  subscriptions: Map<GoogleCloudSubscription['name'], GoogleCloudSubscription>;
-  projectId: string;
-  projectNumber?: string;
-  credentials?: CredentialBody;
-}
-export interface Projects {
-  [key: string]: Project;
-}
-
-export interface CreateClientOptions {
-  credentials?: CredentialBody;
-}
+import { Project, Projects, createProject, getProjectNumber } from './project';
 
 const DEFAULT_PROJECT = '__default__';
 
 /**
- *
  * @returns This is dynamic because we set env vars dynamically from cli args
  */
 const getDefaultProjectFromEnvVar = () => process.env.GOOGLE_CLOUD_PROJECT;
 
+/**
+ * @private This is not a public API but internal class which is not exported
+ */
 export default class GooglePubSubAdapter implements PubSubClientV2 {
   protected static instance: GooglePubSubAdapter;
   public projects: Projects = {};
 
-  public constructor(client: GooglePubSub) {
-    this.projects[DEFAULT_PROJECT] = {
-      client,
-      projectId: getDefaultProjectFromEnvVar() || client.projectId,
-      topics: new Map(),
-      subscriptions: new Map(),
-    };
+  public constructor() {
+    this.projects[DEFAULT_PROJECT] = createProject(
+      getDefaultProjectFromEnvVar(),
+    );
     this.createOrGetSubscription = this.createOrGetSubscription.bind(this);
   }
 
   static getInstance(): GooglePubSubAdapter {
     if (!GooglePubSubAdapter.instance) {
-      GooglePubSubAdapter.instance = new GooglePubSubAdapter(
-        GooglePubSubAdapter.createClient(getDefaultProjectFromEnvVar()),
-      );
+      GooglePubSubAdapter.instance = new GooglePubSubAdapter();
     }
     return GooglePubSubAdapter.instance;
   }
 
-  static createClient(
-    projectId?: string,
-    options?: CreateClientOptions,
-  ): GooglePubSub {
-    return new GooglePubSub({
-      projectId: projectId,
-      credentials: options?.credentials,
+  private getProject(options?: { project?: GooglePubSubProject }): Project {
+    if (!options?.project?.id) {
+      return this.projects[DEFAULT_PROJECT];
+    }
+    if (this.projects[options.project.id]) {
+      return this.projects[options.project.id];
+    }
+    this.projects[options.project.id] = createProject(options.project.id, {
+      credentials: options.project.credentials,
     });
+    return this.projects[options.project.id];
   }
 
   public async publish<T extends TopicProperties>(
@@ -330,25 +312,6 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     }
   }
 
-  private async getProjectNumber(options?: { project?: GooglePubSubProject }) {
-    const project = this.getProject(options);
-    if (project.projectNumber) {
-      return project.projectNumber;
-    }
-
-    try {
-      const resource = new Resource();
-      const projectResource = resource.project(project.projectId);
-      const projectInfo = await projectResource.get();
-      // project.info return [_, projectInfoIncludingProjectNumber]
-      project.projectNumber = (projectInfo as any)[1]?.projectNumber;
-      return project.projectNumber;
-    } catch (err) {
-      Logger.Instance.error({ err }, 'Error while getting project number');
-      return null;
-    }
-  }
-
   private async bindPolicyToSubscriber(
     metadata: SubscriberMetadata,
   ): Promise<void> {
@@ -357,7 +320,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       subscriptionName,
       options,
     } = metadata;
-    const projectNumber = await this.getProjectNumber(options);
+    const project = this.getProject(options);
+    const projectNumber = await getProjectNumber(project);
 
     if (!projectNumber) {
       Logger.Instance.warn(
@@ -368,9 +332,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     }
 
     try {
-      const pubSubTopic = this.getProject(options).client.topic(
-        subscriptionTopicName,
-      );
+      const pubSubTopic = project.client.topic(subscriptionTopicName);
       const myPolicy = {
         bindings: [
           {
@@ -395,7 +357,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     options: { project?: GooglePubSubProject },
     metadata: SubscriberMetadata,
   ): Promise<void> {
-    const projectNumber = await this.getProjectNumber(options);
+    const project = this.getProject(options);
+    const projectNumber = await getProjectNumber(project);
     if (!projectNumber) {
       Logger.Instance.warn(
         { metadata },
@@ -405,8 +368,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     }
 
     try {
-      const pubSubTopic =
-        this.getProject(options).client.topic(deadLetterTopicName);
+      const pubSubTopic = project.client.topic(deadLetterTopicName);
       const myPolicy = {
         bindings: [
           {
@@ -452,35 +414,6 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       subscriber,
     ).exists();
     return subscriptionExists;
-  }
-
-  public getProject(options?: { project?: GooglePubSubProject }): Project {
-    if (!options?.project?.id) {
-      return this.projects[DEFAULT_PROJECT];
-    }
-    if (this.projects[options.project?.id]) {
-      return this.projects[options.project?.id];
-    }
-    // init project with client
-    this.projects[options.project?.id] = GooglePubSubAdapter.initProject(
-      options.project?.id,
-      {
-        credentials: options?.project?.credentials,
-      },
-    );
-    return this.projects[options.project?.id];
-  }
-
-  protected static initProject(
-    projectId: GooglePubSubProject['id'],
-    options?: CreateClientOptions,
-  ): Project {
-    return {
-      client: GooglePubSubAdapter.createClient(projectId, options),
-      topics: new Map(),
-      subscriptions: new Map(),
-      projectId,
-    };
   }
 
   protected async createOrGetTopic(
