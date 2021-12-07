@@ -10,21 +10,21 @@ import { CredentialBody } from 'google-auth-library';
 import chalk from 'chalk';
 import Bluebird from 'bluebird';
 
-import { TopicProperties } from '../topic';
-import { PublishOptions } from '../interface/publishOptions';
+import { TopicProperties } from '../../topic';
+import { PublishOptions } from '../../interface/publishOptions';
 import {
   AllSubscriptions,
   IsOpenTuple,
   PubSubClientV2,
-} from '../interface/pubSubClient';
+} from '../../interface/pubSubClient';
 import {
   SubscriberMetadata,
   SubscriberOptions,
-} from '../subscriber/subscriberV2';
-import { SubscriberTuple } from '../subscriber';
-import Message from '../message';
-import { GooglePubSubProject } from '../interface/GooglePubSubProject';
-import { Logger } from '../service/logger';
+} from '../../subscriber/subscriberV2';
+import { SubscriberTuple } from '../../subscriber';
+import Message from '../../message';
+import { GooglePubSubProject } from '../../interface/GooglePubSubProject';
+import { Logger } from '../../service/logger';
 
 export interface Project {
   client: GooglePubSub;
