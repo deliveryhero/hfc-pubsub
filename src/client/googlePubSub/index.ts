@@ -131,13 +131,6 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     Logger.Instance.info({ metadata }, chalk.green.bold(message));
   }
 
-  private getSubscriberOptions(
-    subscriber: SubscriberTuple,
-  ): SubscriberOptions | undefined {
-    const [, metadata] = subscriber;
-    return metadata.options;
-  }
-
   private async updateMetaData(subscriber: SubscriberTuple) {
     const { ackDeadlineSeconds, retryPolicy, deadLetterPolicy } =
       await this.getMergedSubscriptionOptions(subscriber);
@@ -212,14 +205,12 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   private async getMergedSubscriptionOptions(
     subscriber: SubscriberTuple,
   ): Promise<GoogleSubscriptionMetadata> {
-    const subscriberOptions = this.getSubscriberOptions(subscriber);
+    const subscriberOptions = subscriber[1].options;
     const ackDeadlineSeconds = subscriberOptions?.ackDeadline;
     return {
       ...subscriberOptions,
       ackDeadlineSeconds,
-      ...(await this.mergeDeadLetterPolicy(
-        this.getSubscriberOptions(subscriber),
-      )),
+      ...(await this.mergeDeadLetterPolicy(subscriber[1].options)),
     };
   }
 
@@ -272,8 +263,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
   private async checkDeadLetterConfiguration(subscriber: SubscriberTuple) {
     const [, metadata] = subscriber;
-    const client = this.getProject(metadata.options).client;
-    const options = this.getSubscriberOptions(subscriber);
+    const { options } = metadata;
+    const client = this.getProject(options).client;
     const deadLetterTopic = options?.deadLetterPolicy?.deadLetterTopic;
     if (!deadLetterTopic) {
       return;
@@ -295,7 +286,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     subscriber: SubscriberTuple,
   ) {
     const [, metadata] = subscriber;
-    const options = this.getSubscriberOptions(subscriber);
+    const { options } = metadata;
     if (!options?.deadLetterPolicy) {
       return;
     }
@@ -392,7 +383,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     subscriber: SubscriberTuple,
   ): GoogleCloudSubscription {
     const [, metadata] = subscriber;
-    const { client, subscriptions } = this.getProject(metadata.options);
+    const { options } = metadata;
+    const { client, subscriptions } = this.getProject(options);
     if (subscriptions.has(metadata.subscriptionName)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return subscriptions.get(metadata.subscriptionName)!;
@@ -400,7 +392,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
     const subscription = client.subscription(
       metadata.subscriptionName,
-      this.getSubscriberOptions(subscriber),
+      options,
     );
 
     subscriptions.set(metadata.subscriptionName, subscription);
