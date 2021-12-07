@@ -1,8 +1,19 @@
 import { PubSubService, SubscriptionService } from '@honestfoodcompany/pubsub';
+import { mocked } from 'ts-jest/utils';
 import { SubscriberTuple } from '../src/subscriber';
 import GooglePubSubAdapter from '../src/client/googlePubSub';
+import { createProject } from '../src/client/googlePubSub/project';
 
 process.env.PUBSUB_DRIVER = 'google';
+jest.mock('../src/client/googlePubSub/project', () => {
+  const actual = jest.requireActual('../src/client/googlePubSub/project');
+  return {
+    ...actual,
+    createProject: jest.fn((...args) => {
+      return actual.createProject(...args);
+    }),
+  };
+});
 
 const mockPublish = jest.fn();
 const mockSubscribe = jest.fn();
@@ -76,13 +87,13 @@ describe('With Project Credentials', (): void => {
   it('should call subscribe to the right project and cache subscription', async (): Promise<void> => {
     expect(subscription).toBeDefined();
     const subscribe = jest.spyOn(GooglePubSubAdapter.prototype, 'subscribe');
+    // @ts-expect-error getProject is a private method
     const getProject = jest.spyOn(GooglePubSubAdapter.prototype, 'getProject');
-    const createClient = jest.spyOn(GooglePubSubAdapter, 'createClient');
     await PubSubService.getInstance().subscribe(subscription);
 
     expect(subscribe).toBeCalled();
     expect(getProject).toBeCalledWith(subscription[1].options);
-    expect(createClient.mock.calls[1]).toEqual([
+    expect(mocked(createProject).mock.calls[1]).toEqual([
       'google-pubsub-project-id',
       {
         credentials: {
