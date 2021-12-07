@@ -7,10 +7,22 @@ import { Resource } from '@google-cloud/resource';
 import { CredentialBody } from 'google-auth-library';
 import { Logger } from '../../service/logger';
 
+/**
+ * A project has a clients array and caches for subscriptions and topics.
+ * The first client is the default client and is used for all topic/DLQ related operations.
+ * The other clients are used to distribute subscriptions so that each client doesn't go over the max of 20 subs
+ */
 export interface Project {
   client: GooglePubSub;
+  /**
+   * @private
+   */
+  _clients: GooglePubSub[];
   topics: Map<GoogleCloudTopic['name'], GoogleCloudTopic>;
-  subscriptions: Map<GoogleCloudSubscription['name'], GoogleCloudSubscription>;
+  /**
+   * @private
+   */
+  _subscriptions: Map<GoogleCloudSubscription['name'], GoogleCloudSubscription>;
   projectId: string;
   projectNumber?: string;
   credentials?: CredentialBody;
@@ -43,7 +55,8 @@ export function createProject(
     client,
     projectId: client.projectId,
     topics: new Map(),
-    subscriptions: new Map(),
+    _clients: [client],
+    _subscriptions: new Map(),
   };
 }
 

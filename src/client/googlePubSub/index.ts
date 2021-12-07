@@ -4,8 +4,8 @@ import {
   Topic as GoogleCloudTopic,
   SubscriptionMetadata as GoogleSubscriptionMetadata,
 } from '@google-cloud/pubsub';
-import chalk from 'chalk';
 import Bluebird from 'bluebird';
+import chalk from 'chalk';
 
 import { TopicProperties } from '../../topic';
 import { PublishOptions } from '../../interface/publishOptions';
@@ -23,6 +23,11 @@ import Message from '../../message';
 import { GooglePubSubProject } from '../../interface/GooglePubSubProject';
 import { Logger } from '../../service/logger';
 import { Project, Projects, createProject, getProjectNumber } from './project';
+import {
+  closeSubscription,
+  getAllSubscriptions,
+  getSubscription,
+} from './subscriptions';
 
 const DEFAULT_PROJECT = '__default__';
 
@@ -94,20 +99,19 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
   public async close(subscriber: SubscriberTuple): Promise<void> {
     const [, metadata] = subscriber;
-    const { subscriptions } = this.getProject(metadata.options);
-    if (!subscriptions.has(metadata.subscriptionName)) {
+    const project = this.getProject(metadata.options);
+
+    if (await closeSubscription(project, subscriber)) {
+      this.log(
+        `   📪     ${metadata.subscriptionName} is closed now`,
+        metadata,
+      );
+    } else {
       this.log(
         `   📪     ${metadata.subscriptionName} wasn't started at all`,
         metadata,
       );
-      return;
     }
-
-    const subscription = await this.getSubscription(subscriber);
-    await subscription.close();
-    subscription.removeAllListeners();
-    subscriptions.delete(metadata.subscriptionName);
-    this.log(`   📪     ${metadata.subscriptionName} is closed now`, metadata);
   }
 
   private async addHandler(
@@ -264,7 +268,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   private async checkDeadLetterConfiguration(subscriber: SubscriberTuple) {
     const [, metadata] = subscriber;
     const { options } = metadata;
-    const client = this.getProject(options).client;
+    const { client } = this.getProject(options);
     const deadLetterTopic = options?.deadLetterPolicy?.deadLetterTopic;
     if (!deadLetterTopic) {
       return;
@@ -383,20 +387,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     subscriber: SubscriberTuple,
   ): GoogleCloudSubscription {
     const [, metadata] = subscriber;
-    const { options } = metadata;
-    const { client, subscriptions } = this.getProject(options);
-    if (subscriptions.has(metadata.subscriptionName)) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return subscriptions.get(metadata.subscriptionName)!;
-    }
-
-    const subscription = client.subscription(
-      metadata.subscriptionName,
-      options,
-    );
-
-    subscriptions.set(metadata.subscriptionName, subscription);
-    return subscription;
+    return getSubscription(this.getProject(metadata.options), subscriber);
   }
 
   private async subscriptionExists(
@@ -427,12 +418,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
   public async getAllSubscriptions(): Promise<AllSubscriptions[]> {
     const subscriptions = await Bluebird.map(
-      Object.keys(this.projects),
+      Object.values(this.projects),
       async (project) => {
-        const [subscriptions] = await this.projects[
-          project
-        ].client.getSubscriptions();
-        return subscriptions.map(({ metadata }) => {
+        const projectSubs = getAllSubscriptions(project);
+        return projectSubs.map(({ metadata }) => {
           return {
             topicName: metadata?.topic,
             subscriptionName: metadata?.name || '',
@@ -445,8 +434,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
   public getAllSubscriptionsState(): IsOpenTuple[] {
     const subscriptions = Object.values(this.projects).map((project) => {
-      const subscriptions = project.subscriptions.values();
-      return Array.from(subscriptions).map(
+      const projectSubs = getAllSubscriptions(project);
+      return projectSubs.map(
         ({ isOpen, metadata }) =>
           [metadata?.name?.split('/')?.slice(-1)[0], isOpen] as IsOpenTuple,
       );
