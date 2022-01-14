@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.1
+
+### Patch Changes
+
+- [PUB-72](https://honesttech.atlassian.net/browse/PUB-72) - Divide subscriptions among multiple clients ([#86](https://github.com/deliveryhero/hfc-pubsub/pull/86) by [@rohit-gohri](https://github.com/rohit-gohri))
+
 ## 2.0.0
 
 [Migration Guide](https://deliveryhero.github.io/hfc-pubsub/guides/migrating-to-v2)
@@ -13,17 +19,19 @@
 - [PUB-48](https://honesttech.atlassian.net/browse/PUB-48) - Topic class now uses static properties and generics ([#81](https://github.com/deliveryhero/hfc-pubsub/pull/81) by [@rohit-gohri](https://github.com/rohit-gohri))
 
 - [PUB-77](https://honesttech.atlassian.net/browse/PUB-77) - Misc Changes ([#84](https://github.com/deliveryhero/hfc-pubsub/pull/84) by [@rohit-gohri](https://github.com/rohit-gohri))
+
   - Change project-id env var to `GOOGLE_CLOUD_PROJECT`
   - Removed export of private methods
   - Refactor internals
   - Change `ackDeadlineSeconds` to `ackDeadline`
-  - Add `metadata` to default error handler  
+  - Add `metadata` to default error handler
 
 - [PUB-65](https://honesttech.atlassian.net/browse/PUB-65) - Remove deprecated code ([#66](https://github.com/deliveryhero/hfc-pubsub/pull/66) by [@rohit-gohri](https://github.com/rohit-gohri))
 
 ### Minor Changes
 
 - [PUB-73](https://honesttech.atlassian.net/browse/PUB-73) - Add/improve helpers and TS usage([#79](https://github.com/deliveryhero/hfc-pubsub/pull/79) by [@ishan123456789](https://github.com/ishan123456789))
+
   1. Allows to make `_timestamp` optional
   2. Removes double validation of topic names.
   3. Use `publishJSON` instead of buffering the payload.
