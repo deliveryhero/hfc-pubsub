@@ -1,5 +1,6 @@
 import {
   SubscriberObject,
+  SubscriberOptions,
   SubscriptionService as BaseSubscriptionService,
 } from '@honestfoodcompany/pubsub';
 import SimpleTopicWithOptions from './subscriptions/simple.topic.console-log.subscription-with-options';
@@ -11,6 +12,13 @@ export default class SubscriptionService extends BaseSubscriptionService {
    * export in  this array
    */
   public static subscribers: SubscriberObject<any>[] = [SimpleTopicWithOptions];
+
+  public static defaultSubscriberOptions: SubscriberOptions = {
+    labels: {
+      service: 'pubsub',
+      env: 'local',
+    },
+  };
 
   public static async init(): Promise<void> {
     // create your database connection here
