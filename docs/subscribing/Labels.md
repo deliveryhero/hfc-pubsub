@@ -11,7 +11,12 @@ Subscription Service can have global labels in `defaultSubscriberOptions`, these
 
 ### Env Var
 
-We also support `PUBSUB_LABELS` env var which can be a stringified JSON. These work as the default labels added to each subscription.
+We also support `PUBSUB_LABELS` env var which can be a stringified JSON. These work as the default labels added to each subscription. Example:
+
+```
+# .env file
+PUBSUB_LABELS='{"service": "hfc-pubsub", "env": "prod"}'
+```
 
 ## Subscriber Specific Labels
 
