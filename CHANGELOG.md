@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.0
+
+### Minor Changes
+
+- [PUB-84](https://honesttech.atlassian.net/browse/PUB-84) - Add support for labels to subscirptions ([#88](https://github.com/deliveryhero/hfc-pubsub/pull/88) by [@rohit-gohri](https://github.com/rohit-gohri))
+
 ## 2.0.1
 
 ### Patch Changes
