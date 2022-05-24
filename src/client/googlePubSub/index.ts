@@ -136,9 +136,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   }
 
   private async updateMetaData(subscriber: SubscriberTuple) {
-    const { ackDeadlineSeconds, retryPolicy, deadLetterPolicy } =
+    const { ackDeadlineSeconds, retryPolicy, deadLetterPolicy, labels } =
       await this.getMergedSubscriptionOptions(subscriber);
     const toUpdateOptions: GoogleSubscriptionMetadata = {
+      labels,
       ackDeadlineSeconds,
       retryPolicy,
       deadLetterPolicy,
@@ -211,8 +212,22 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   ): Promise<GoogleSubscriptionMetadata> {
     const subscriberOptions = subscriber[1].options;
     const ackDeadlineSeconds = subscriberOptions?.ackDeadline;
+    const labels = subscriberOptions?.labels || {};
+    try {
+      if (process.env.PUBSUB_LABELS) {
+        const parsedLabels = JSON.parse(process.env.PUBSUB_LABELS);
+        Object.entries(parsedLabels).forEach(([key, val]) => {
+          if (labels[key] == null) {
+            labels[key] = val as string;
+          }
+        });
+      }
+    } catch (err) {
+      this.log('Invalid PUBSUB_LABELS');
+    }
     return {
       ...subscriberOptions,
+      labels,
       ackDeadlineSeconds,
       ...(await this.mergeDeadLetterPolicy(subscriber[1].options)),
     };

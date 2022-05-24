@@ -7,6 +7,9 @@ const {
   default: ExampleSubscriptionOverride,
 } = require('./subscriptions/test-topic.example.override-options.subscription');
 const {
+  default: ExampleSubscriptionWithLabels,
+} = require('./subscriptions/test-topic.example-with-labels.subscription');
+const {
   default: ExampleSubscriptionOverrideDLQ,
 } = require('./subscriptions/test-topic.example.override-options-with-deadletter.subscription');
 const {
@@ -17,6 +20,7 @@ class SubscriptionService extends pubsub.SubscriptionService {
   static subscribers = [
     ExampleSubscription,
     ExampleSubscriptionOverride,
+    ExampleSubscriptionWithLabels,
     ExampleSubscriptionOverrideDLQ,
     ExampleSubscriptionWithCustomCredentials,
   ];

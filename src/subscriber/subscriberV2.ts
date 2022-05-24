@@ -1,8 +1,12 @@
-import { SubscriberOptions as GoogleCloudSubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber';
+import {
+  SubscriberOptions as GoogleCloudSubscriberOptions,
+  SubscriptionMetadata as GoogleSubscriptionMetadata,
+} from '@google-cloud/pubsub';
 import { GooglePubSubProject } from '../interface/GooglePubSubProject';
 import SubscriptionService from '../service/subscription';
 import Message from '../message';
 
+// TODO: Re-evaluate these or remove them
 const defaultSubscriberOptions = {
   ackDeadline: 30,
   flowControl: {
@@ -49,10 +53,15 @@ export default class SubscriberV2 {
     subscriptionServiceDefaultOptions: SubscriberOptions,
   ): SubscriberV2 {
     const subscriberObject: SubscriberObject = { ...subscriber };
+    // TODO: Use deepmerge instead
     subscriberObject.options = {
       ...defaultSubscriberOptions,
       ...subscriptionServiceDefaultOptions,
       ...subscriberObject.options,
+      labels: {
+        ...subscriptionServiceDefaultOptions?.labels,
+        ...subscriberObject.options?.labels,
+      },
     };
     return new SubscriberV2(subscriberObject);
   }
@@ -60,6 +69,7 @@ export default class SubscriberV2 {
 
 export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
   project?: GooglePubSubProject;
+  labels?: GoogleSubscriptionMetadata['labels'];
   deadLetterPolicy?: {
     deadLetterTopic: string;
     maxDeliveryAttempts: number;
