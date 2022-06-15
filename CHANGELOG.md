@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.1
+
+### Patch Changes
+
+- Prefer GOOGLE_CLOUD_LABELS over PUBSUB_LABELS env var ([#90](https://github.com/deliveryhero/hfc-pubsub/pull/90) by [@rohit-gohri](https://github.com/rohit-gohri))
+
 ## 2.1.0
 
 ### Minor Changes
