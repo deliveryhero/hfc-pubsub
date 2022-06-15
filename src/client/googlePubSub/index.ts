@@ -214,8 +214,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const ackDeadlineSeconds = subscriberOptions?.ackDeadline;
     const labels = subscriberOptions?.labels || {};
     try {
-      if (process.env.PUBSUB_LABELS) {
-        const parsedLabels = JSON.parse(process.env.PUBSUB_LABELS);
+      if (process.env.GOOGLE_CLOUD_LABELS || process.env.PUBSUB_LABELS) {
+        const parsedLabels = JSON.parse(
+          process.env.GOOGLE_CLOUD_LABELS! || process.env.PUBSUB_LABELS!,
+        );
         Object.entries(parsedLabels).forEach(([key, val]) => {
           if (labels[key] == null) {
             labels[key] = val as string;
@@ -223,7 +225,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         });
       }
     } catch (err) {
-      this.log('Invalid PUBSUB_LABELS');
+      this.log('Invalid GOOGLE_CLOUD_LABELS');
     }
     return {
       ...subscriberOptions,
