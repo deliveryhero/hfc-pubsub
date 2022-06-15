@@ -214,10 +214,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const ackDeadlineSeconds = subscriberOptions?.ackDeadline;
     const labels = subscriberOptions?.labels || {};
     try {
-      if (process.env.GOOGLE_CLOUD_LABELS || process.env.PUBSUB_LABELS) {
-        const parsedLabels = JSON.parse(
-          process.env.GOOGLE_CLOUD_LABELS! || process.env.PUBSUB_LABELS!,
-        );
+      const labelsStringified =
+        process.env.GOOGLE_CLOUD_LABELS || process.env.PUBSUB_LABELS;
+      if (labelsStringified) {
+        const parsedLabels = JSON.parse(labelsStringified);
         Object.entries(parsedLabels).forEach(([key, val]) => {
           if (labels[key] == null) {
             labels[key] = val as string;
