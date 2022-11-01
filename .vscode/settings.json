@@ -36,5 +36,9 @@
   },
   "editor.tabCompletion": "on",
   "editor.tabSize": 2,
-  "editor.rulers": [80, 120]
+  "editor.rulers": [
+    80,
+    120
+  ],
+  "jest.jestCommandLine": "yarn test"
 }

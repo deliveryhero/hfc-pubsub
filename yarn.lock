@@ -2392,7 +2392,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@google-cloud/pubsub@npm:^2.18.1":
+"@google-cloud/pubsub@npm:2.18.1":
   version: 2.18.1
   resolution: "@google-cloud/pubsub@npm:2.18.1"
   dependencies:
@@ -2415,7 +2415,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@google-cloud/resource@npm:^1.2.1":
+"@google-cloud/resource@npm:1.2.1":
   version: 1.2.1
   resolution: "@google-cloud/resource@npm:1.2.1"
   dependencies:
@@ -2475,8 +2475,8 @@ __metadata:
     "@changesets/get-github-info": ^0.5.0
     "@docusaurus/core": ^2.0.0-beta.ff31de0ff
     "@docusaurus/preset-classic": ^2.0.0-beta.ff31de0ff
-    "@google-cloud/pubsub": ^2.18.1
-    "@google-cloud/resource": ^1.2.1
+    "@google-cloud/pubsub": 2.18.1
+    "@google-cloud/resource": 1.2.1
     "@types/bluebird": ^3.5.36
     "@types/cli-table": ^0.3.0
     "@types/jest": ^27.0.2
@@ -2486,18 +2486,18 @@ __metadata:
     "@types/yargs": ^17.0.5
     "@typescript-eslint/eslint-plugin": ^4.33.0
     "@typescript-eslint/parser": ^4.33.0
-    bluebird: ^3.7.2
-    chalk: ^4.1.2
-    cli-table: ^0.3.6
+    bluebird: 3.7.2
+    chalk: 4.1.2
+    cli-table: 0.3.6
     clsx: ^1.1.1
     docusaurus-plugin-typedoc: ^0.16.3
-    dotenv: ^10.0.0
+    dotenv: 10.0.0
     eslint: ^7.32.0
     eslint-config-prettier: ^8.3.0
     eslint-plugin-import: ^2.24.2
     eslint-plugin-jest: ^24.5.2
     eslint-plugin-prettier: ^4.0.0
-    find-config: ^1.0.0
+    find-config: 1.0.0
     husky: ^7.0.2
     jest: ^27.2.4
     lint-staged: ^11.2.0
@@ -2512,8 +2512,8 @@ __metadata:
     typedoc: ^0.22.7
     typedoc-plugin-markdown: ^3.11.3
     typescript: ^4.4.3
-    wrap-ansi: ^7.0.0
-    yargs: ^17.2.1
+    wrap-ansi: 7.0.0
+    yargs: 17.2.1
   bin:
     subscriptions: ./dist/cli/subscriptions.js
   languageName: unknown
@@ -4678,7 +4678,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bluebird@npm:^3.7.1, bluebird@npm:^3.7.2":
+"bluebird@npm:3.7.2, bluebird@npm:^3.7.1":
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
   checksum: 869417503c722e7dc54ca46715f70e15f4d9c602a423a02c825570862d12935be59ed9c7ba34a9b31f186c017c23cac6b54e35446f8353059c101da73eac22ef
@@ -5051,6 +5051,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chalk@npm:4.1.2, chalk@npm:^4.0.0, chalk@npm:^4.1.0, chalk@npm:^4.1.1":
+  version: 4.1.2
+  resolution: "chalk@npm:4.1.2"
+  dependencies:
+    ansi-styles: ^4.1.0
+    supports-color: ^7.1.0
+  checksum: fe75c9d5c76a7a98d45495b91b2172fa3b7a09e0cc9370e5c8feb1c567b85c4288e2b3fded7cfdd7359ac28d6b3844feb8b82b8686842e93d23c827c417e83fc
+  languageName: node
+  linkType: hard
+
 "chalk@npm:^3.0.0":
   version: 3.0.0
   resolution: "chalk@npm:3.0.0"
@@ -5058,16 +5068,6 @@ __metadata:
     ansi-styles: ^4.1.0
     supports-color: ^7.1.0
   checksum: 8e3ddf3981c4da405ddbd7d9c8d91944ddf6e33d6837756979f7840a29272a69a5189ecae0ff84006750d6d1e92368d413335eab4db5476db6e6703a1d1e0505
-  languageName: node
-  linkType: hard
-
-"chalk@npm:^4.0.0, chalk@npm:^4.1.0, chalk@npm:^4.1.1, chalk@npm:^4.1.2":
-  version: 4.1.2
-  resolution: "chalk@npm:4.1.2"
-  dependencies:
-    ansi-styles: ^4.1.0
-    supports-color: ^7.1.0
-  checksum: fe75c9d5c76a7a98d45495b91b2172fa3b7a09e0cc9370e5c8feb1c567b85c4288e2b3fded7cfdd7359ac28d6b3844feb8b82b8686842e93d23c827c417e83fc
   languageName: node
   linkType: hard
 
@@ -5267,7 +5267,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cli-table@npm:^0.3.6":
+"cli-table@npm:0.3.6":
   version: 0.3.6
   resolution: "cli-table@npm:0.3.6"
   dependencies:
@@ -6599,7 +6599,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^10.0.0":
+"dotenv@npm:10.0.0":
   version: 10.0.0
   resolution: "dotenv@npm:10.0.0"
   checksum: f412c5fe8c24fbe313d302d2500e247ba8a1946492db405a4de4d30dd0eb186a88a43f13c958c5a7de303938949c4231c56994f97d05c4bc1f22478d631b4005
@@ -7591,7 +7591,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"find-config@npm:^1.0.0":
+"find-config@npm:1.0.0":
   version: 1.0.0
   resolution: "find-config@npm:1.0.0"
   dependencies:
@@ -16817,6 +16817,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"wrap-ansi@npm:7.0.0, wrap-ansi@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "wrap-ansi@npm:7.0.0"
+  dependencies:
+    ansi-styles: ^4.0.0
+    string-width: ^4.1.0
+    strip-ansi: ^6.0.0
+  checksum: a790b846fd4505de962ba728a21aaeda189b8ee1c7568ca5e817d85930e06ef8d1689d49dbf0e881e8ef84436af3a88bc49115c2e2788d841ff1b8b5b51a608b
+  languageName: node
+  linkType: hard
+
 "wrap-ansi@npm:^5.1.0":
   version: 5.1.0
   resolution: "wrap-ansi@npm:5.1.0"
@@ -16836,17 +16847,6 @@ __metadata:
     string-width: ^4.1.0
     strip-ansi: ^6.0.0
   checksum: 6cd96a410161ff617b63581a08376f0cb9162375adeb7956e10c8cd397821f7eb2a6de24eb22a0b28401300bf228c86e50617cd568209b5f6775b93c97d2fe3a
-  languageName: node
-  linkType: hard
-
-"wrap-ansi@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "wrap-ansi@npm:7.0.0"
-  dependencies:
-    ansi-styles: ^4.0.0
-    string-width: ^4.1.0
-    strip-ansi: ^6.0.0
-  checksum: a790b846fd4505de962ba728a21aaeda189b8ee1c7568ca5e817d85930e06ef8d1689d49dbf0e881e8ef84436af3a88bc49115c2e2788d841ff1b8b5b51a608b
   languageName: node
   linkType: hard
 
@@ -17001,6 +17001,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"yargs@npm:17.2.1":
+  version: 17.2.1
+  resolution: "yargs@npm:17.2.1"
+  dependencies:
+    cliui: ^7.0.2
+    escalade: ^3.1.1
+    get-caller-file: ^2.0.5
+    require-directory: ^2.1.1
+    string-width: ^4.2.0
+    y18n: ^5.0.5
+    yargs-parser: ^20.2.2
+  checksum: 451aac46f82da776f436018feed0244bc0e7b4355f7e397bcb53d34c691b177c0d71db3dda9653760e1bc240254d8b763a252ff918ef9e235a8d202e2909c4eb
+  languageName: node
+  linkType: hard
+
 "yargs@npm:^13.3.2":
   version: 13.3.2
   resolution: "yargs@npm:13.3.2"
@@ -17050,21 +17065,6 @@ __metadata:
     y18n: ^5.0.5
     yargs-parser: ^20.2.2
   checksum: b14afbb51e3251a204d81937c86a7e9d4bdbf9a2bcee38226c900d00f522969ab675703bee2a6f99f8e20103f608382936034e64d921b74df82b63c07c5e8f59
-  languageName: node
-  linkType: hard
-
-"yargs@npm:^17.2.1":
-  version: 17.2.1
-  resolution: "yargs@npm:17.2.1"
-  dependencies:
-    cliui: ^7.0.2
-    escalade: ^3.1.1
-    get-caller-file: ^2.0.5
-    require-directory: ^2.1.1
-    string-width: ^4.2.0
-    y18n: ^5.0.5
-    yargs-parser: ^20.2.2
-  checksum: 451aac46f82da776f436018feed0244bc0e7b4355f7e397bcb53d34c691b177c0d71db3dda9653760e1bc240254d8b763a252ff918ef9e235a8d202e2909c4eb
   languageName: node
   linkType: hard
 
