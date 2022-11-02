@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.2
+
+### Patch Changes
+
+- [PUB-88](https://honesttech.atlassian.net/browse/PUB-88) - Pin dependencies to specific versions ([#92](https://github.com/deliveryhero/hfc-pubsub/pull/92) by [@rohit-gohri](https://github.com/rohit-gohri))
+
 ## 2.1.1
 
 ### Patch Changes
