@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.3
+
+### Patch Changes
+
+- [PUB-85](https://honesttech.atlassian.net/browse/PUB-85) - Load subscriptions in parallel ([#105](https://github.com/deliveryhero/hfc-pubsub/pull/105) by [@rndD](https://github.com/rndD))
+
 ## 2.1.2
 
 ### Patch Changes
