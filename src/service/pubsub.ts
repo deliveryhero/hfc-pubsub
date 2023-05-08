@@ -1,4 +1,5 @@
 import http from 'http';
+import Bluebird from 'bluebird';
 import { TopicProperties } from '../topic';
 import { SubscriberTuple, Subscribers } from '../subscriber';
 import EventBus from '../client/eventBus';
@@ -157,33 +158,41 @@ export default class PubSubService {
 
     const subscribers = subscriptionServiceClass.getSubscribers();
 
-    for (const subscription of subscribers) {
-      // @ts-expect-error weird const error
-      if (PubSubService.status === 'closed') {
-        Logger.Instance.warn(
-          `   ❌      closeAll called and subscriptions closed, not continuing with startup process`,
-        );
+    await Bluebird.map(
+      subscribers,
+      async (subscription) => {
+        if (PubSubService.status === 'closed') {
+          Logger.Instance.warn(
+            `   ❌      closeAll called and subscriptions closed, not continuing with startup process`,
+          );
 
-        return;
-      }
+          return;
+        }
 
-      try {
-        await this.subscribe(subscription);
-      } catch (err) {
-        const [, metadata] = subscription;
-        Logger.Instance.error(
-          { metadata, err },
-          `   ❌      Error while initializing "${metadata.subscriptionName}" subscription.`,
-        );
-        const error: Error & {
-          originalError?: Error;
-          metadata?: typeof metadata;
-        } = new Error('Error while initializing subscription.');
-        error.originalError = err as Error;
-        error.metadata = metadata;
-        throw error;
-      }
-    }
+        try {
+          await this.subscribe(subscription);
+        } catch (err) {
+          const [, metadata] = subscription;
+          Logger.Instance.error(
+            { metadata, err },
+            `   ❌      Error while initializing "${metadata.subscriptionName}" subscription.`,
+          );
+          const error: Error & {
+            originalError?: Error;
+            metadata?: typeof metadata;
+          } = new Error('Error while initializing subscription.');
+          error.originalError = err as Error;
+          error.metadata = metadata;
+          throw error;
+        }
+      },
+      {
+        concurrency: process.env.PUBSUB_SUBSCRIPTION_CONCURRENCY
+          ? Number(process.env.PUBSUB_SUBSCRIPTION_CONCURRENCY)
+          : 5,
+      },
+    );
+
     PubSubService.status = 'ready';
     if (subscribers.length === 0) {
       Logger.Instance.warn(
