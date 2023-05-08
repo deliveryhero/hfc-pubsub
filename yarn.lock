@@ -2481,6 +2481,7 @@ __metadata:
     "@types/cli-table": ^0.3.0
     "@types/jest": ^27.0.2
     "@types/node": ^16
+    "@types/pako": ^2
     "@types/react": ^17.0.34
     "@types/wrap-ansi": ^8.0.1
     "@types/yargs": ^17.0.5
@@ -2502,6 +2503,7 @@ __metadata:
     jest: ^27.2.4
     lint-staged: ^11.2.0
     nodemon: ^2.0.13
+    pako: 2.1.0
     prettier: ^2.4.1
     react: ^17.0.2
     react-dom: ^17.0.2
@@ -3451,6 +3453,13 @@ __metadata:
   version: 2.4.1
   resolution: "@types/normalize-package-data@npm:2.4.1"
   checksum: e87bccbf11f95035c89a132b52b79ce69a1e3652fe55962363063c9c0dae0fe2477ebc585e03a9652adc6f381d24ba5589cc5e51849df4ced3d3e004a7d40ed5
+  languageName: node
+  linkType: hard
+
+"@types/pako@npm:^2":
+  version: 2.0.0
+  resolution: "@types/pako@npm:2.0.0"
+  checksum: 50240a036b5e6acabbf36ac4dca93ec9e619241f0404da8d401cdb427bec3029833324b8a04c4b1ae2ecbc33422fdec31dbf9f43653d9d07cafb82ace78dfccd
   languageName: node
   linkType: hard
 
@@ -12150,6 +12159,13 @@ __metadata:
     registry-url: ^5.0.0
     semver: ^6.2.0
   checksum: cc9f890d3667d7610e6184decf543278b87f657d1ace0deb4a9c9155feca738ef88f660c82200763d3348010f4e42e9c7adc91e96ab0f86a770955995b5351e2
+  languageName: node
+  linkType: hard
+
+"pako@npm:2.1.0":
+  version: 2.1.0
+  resolution: "pako@npm:2.1.0"
+  checksum: 71666548644c9a4d056bcaba849ca6fd7242c6cf1af0646d3346f3079a1c7f4a66ffec6f7369ee0dc88f61926c10d6ab05da3e1fca44b83551839e89edd75a3e
   languageName: node
   linkType: hard
 

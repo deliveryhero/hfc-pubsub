@@ -50,6 +50,11 @@ export interface RetryConfig {
 export interface TopicPublishOptions {
   attributes?: Attributes;
   retryConfig?: RecursivePartial<RetryConfig>;
+
+  /**
+   * If true msg will be gzip compressed before being published
+   */
+  enableGZipCompression?: boolean;
 }
 
 /**
@@ -58,6 +63,12 @@ export interface TopicPublishOptions {
 export interface PublishOptions {
   retryConfig?: RetryConfig;
   attributes?: Attributes;
+
+  // TODO why I have to copy that?
+  /**
+   * If true msg will be gzip compressed before being published
+   */
+  enableGZipCompression?: boolean;
 }
 
 export interface BackoffSettings {
