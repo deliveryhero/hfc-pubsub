@@ -81,9 +81,9 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     });
 
     if (options?.enableGZipCompression) {
-      const compressedMsg = this.compressMessage(message);
+      const compressedMsg = Buffer.from(this.compressMessage(message));
       const [messageId] = await pubSubTopic.publishMessage({
-        json: compressedMsg,
+        data: compressedMsg,
         attributes: options?.attributes,
       });
       return messageId;
@@ -471,7 +471,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     return subscriptions.flat();
   }
 
-  private compressMessage(message: Record<string, unknown>): Uint8Array {
+  public compressMessage(message: Record<string, unknown>): Uint8Array {
     return Pako.gzip(JSON.stringify(message));
   }
 }

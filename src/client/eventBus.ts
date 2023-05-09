@@ -1,4 +1,6 @@
 import EventEmitter from 'events';
+import Pako from 'pako';
+import { PublishOptions } from '../interface/publishOptions';
 import {
   AllSubscriptions,
   IsOpenTuple,
@@ -27,8 +29,14 @@ export default class EventBus extends EventEmitter implements PubSubClientV2 {
   public async publish<T extends TopicProperties>(
     topic: T,
     message: Record<string, unknown>,
+    options?: PublishOptions,
   ): Promise<string> {
-    EventBus.getInstance().emit(topic.topicName, message);
+    let msg: Record<string, unknown> | Uint8Array = message;
+    if (options?.enableGZipCompression) {
+      msg = this.compressMessage(message);
+    }
+
+    EventBus.getInstance().emit(topic.topicName, msg);
     return 'done';
   }
 
@@ -52,5 +60,9 @@ export default class EventBus extends EventEmitter implements PubSubClientV2 {
     throw new Error(
       'This feature is not available with the synchronous driver',
     );
+  }
+
+  public compressMessage(message: Record<string, unknown>): Uint8Array {
+    return Pako.gzip(JSON.stringify(message));
   }
 }

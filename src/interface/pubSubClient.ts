@@ -19,5 +19,7 @@ export interface PubSubClientV2 {
   close(subscriber: SubscriberTuple): void;
   getAllSubscriptions(): Promise<AllSubscriptions[]>;
   getAllSubscriptionsState(): IsOpenTuple[];
+
+  compressMessage(message: Record<string, unknown>): Uint8Array;
   //@todo: getAllTopics(): Promise<string[]>;
 }
