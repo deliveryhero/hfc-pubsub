@@ -64,7 +64,6 @@ export interface PublishOptions {
   retryConfig?: RetryConfig;
   attributes?: Attributes;
 
-  // TODO why I have to copy that?
   /**
    * If true msg will be gzip compressed before being published
    */
