@@ -1,6 +1,6 @@
 import { SubscriptionService } from '@honestfoodcompany/pubsub';
 import { SubscriberTuple } from '../src/subscriber';
-import generateMockMessage from './helpers/generateMockMessage';
+import { generateMockMessage } from './helpers/generateMockMessage';
 
 const mockPubSub = jest.fn();
 

@@ -2,7 +2,6 @@ import {
   SubscriberOptions as GoogleCloudSubscriberOptions,
   SubscriptionMetadata as GoogleSubscriptionMetadata,
 } from '@google-cloud/pubsub';
-import Pako from 'pako';
 import { GooglePubSubProject } from '../interface/GooglePubSubProject';
 import SubscriptionService from '../service/subscription';
 import Message from '../message';
@@ -30,16 +29,12 @@ export default class SubscriberV2 {
     this.subscriberObject?.init && this.subscriberObject?.init();
   }
 
-  public async handleMessage<T>(message: string | Message<T>): Promise<void> {
+  public async handleMessage<T>(message: Message<T>): Promise<void> {
     if (!this.subscriberObject?.handleMessage) {
       return;
     }
-    let msg = message;
-    if (this.subscriberObject?.options?.enableGZipDecompression) {
-      msg = this.decompressMessage<T>(message as string);
-    }
 
-    this.subscriberObject?.handleMessage(msg as Message<T>);
+    this.subscriberObject?.handleMessage(message);
   }
 
   public handleError(error: Error): void {
@@ -52,13 +47,6 @@ export default class SubscriberV2 {
       );
     }
   }
-
-  private decompressMessage<T>(message: string): Message<T> {
-    const gzip = JSON.parse(Buffer.from(message, 'base64').toString());
-    const decompressed = Pako.ungzip(gzip, { to: 'string' });
-    return JSON.parse(decompressed);
-  }
-
   /**
    * Returns a SubscriberV2 instance with merged options
    */
@@ -116,11 +104,6 @@ export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
    *   any order.
    */
   enableMessageOrdering?: boolean;
-
-  /**
-   * If true msg will be decompressed before being passed to the handler
-   */
-  enableGZipDecompression?: boolean;
 }
 
 export interface SubscriberMetadata {

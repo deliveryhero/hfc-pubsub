@@ -10,6 +10,8 @@ import PubSubService from './service/pubsub';
 import { setLogger } from './service/logger';
 import Message from './message';
 
+import { isGzipCompressed } from './message/gzip';
+
 export {
   SubscriberObject,
   SubscriberMetadata,
@@ -21,4 +23,5 @@ export {
   PubSubService,
   SubscriptionService,
   setLogger,
+  isGzipCompressed,
 };

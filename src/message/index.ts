@@ -1,12 +1,11 @@
 import { Message as GCloudMessage } from '@google-cloud/pubsub';
+import Pako from 'pako';
+import { isGzipCompressed } from './gzip';
 
 export default class Message<T = unknown> {
   public data: Buffer = Buffer.from('');
   public gCloudMessage?: GCloudMessage;
 
-  public toJSON(): T {
-    return JSON.parse(this.data.toString());
-  }
   /**
    * Builds a new message object in the synchronous driver.
    * Used by the eventBus.
@@ -29,6 +28,14 @@ export default class Message<T = unknown> {
     return instance;
   }
 
+  public toJSON(): T {
+    let data = this.data;
+    if (isGzipCompressed(data)) {
+      data = this.decompress();
+    }
+    return JSON.parse(data.toString());
+  }
+
   public ack(): void {
     if (this.gCloudMessage) {
       this.gCloudMessage.ack();
@@ -45,5 +52,10 @@ export default class Message<T = unknown> {
     if (this.gCloudMessage) {
       this.gCloudMessage.nack();
     }
+  }
+
+  public decompress(): Buffer {
+    const decompressed = Pako.ungzip(this.data, { to: 'string' });
+    return Buffer.from(decompressed);
   }
 }
