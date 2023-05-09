@@ -30,11 +30,8 @@ export default class SubscriberV2 {
   }
 
   public async handleMessage<T>(message: Message<T>): Promise<void> {
-    if (!this.subscriberObject?.handleMessage) {
-      return;
-    }
-
-    this.subscriberObject?.handleMessage(message);
+    this.subscriberObject?.handleMessage &&
+      this.subscriberObject?.handleMessage(message);
   }
 
   public handleError(error: Error): void {
@@ -47,6 +44,7 @@ export default class SubscriberV2 {
       );
     }
   }
+
   /**
    * Returns a SubscriberV2 instance with merged options
    */
