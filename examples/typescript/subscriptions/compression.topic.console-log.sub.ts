@@ -1,4 +1,4 @@
-import { SubscriberObject, isGzipCompressed } from '@honestfoodcompany/pubsub'; // this import is optional, it's provides the interfaces to use below
+import { SubscriberObject, isGzipCompressed } from '@honestfoodcompany/pubsub';
 interface Payload {
   testPayload: string;
 }

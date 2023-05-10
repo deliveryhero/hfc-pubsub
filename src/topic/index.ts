@@ -33,7 +33,6 @@ export interface TopicOptions {
 export interface TopicProperties {
   topicName: string;
   project?: GooglePubSubProject;
-  enableGZipCompression?: boolean;
 }
 
 export default class Topic<P extends Payload = Payload> {

@@ -17,7 +17,7 @@ Files ending in `.sub.js` or `.sub.ts` in `PUBSUB_ROOT_DIR/subscriptions` will b
 ### Typescript subscription example
 
 ```ts title="/pubsub/subscriptions/simple.topic.name.console-log.sub.ts"
-import { SubscriberObject } from "@honestfoodcompany/pubsub"; 
+import { SubscriberObject } from "@honestfoodcompany/pubsub";
 import { Payload } from '../topics/test-topic';
 
 export default: SubscriberObject<Payload> = {
