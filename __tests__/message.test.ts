@@ -1,8 +1,12 @@
 import { Message } from '@honestfoodcompany/pubsub';
-import generateMockMessage from './helpers/generateMockMessage';
+import {
+  generateMockMessage,
+  generateMockCompressedMessage,
+} from './helpers/generateMockMessage';
 
 describe('@Message', () => {
   const message = new Message();
+
   it('should be a class', () => {
     expect(message).toBeInstanceOf(Message);
   });
@@ -19,5 +23,18 @@ describe('@Message', () => {
     );
     expect(newGCloudMessage).toHaveProperty('data');
     expect(newGCloudMessage).toHaveProperty('gCloudMessage');
+  });
+
+  it('should decompress data if it is compressed with gzip', async () => {
+    const msg = 'compressed test data';
+    const newGCloudMessage = await Message.fromGCloud(
+      generateMockCompressedMessage(msg),
+    );
+
+    const decompressSpy = jest.spyOn(newGCloudMessage, 'decompress');
+    const json = newGCloudMessage.toJSON();
+    expect(decompressSpy).toHaveBeenCalledTimes(1);
+
+    expect(json).toEqual(msg);
   });
 });

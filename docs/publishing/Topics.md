@@ -17,7 +17,6 @@ export interface Payload extends BasePayload {
 export default class SimpleTopic extends Topic<Payload> {
   static readonly topicName = 'simple.topic.name';
 }
-
 ```
 
 :::tip
@@ -35,3 +34,11 @@ import SimpleTopic from 'PUBSUB_ROOT_DIR/topics/simple.topic.name';
 
 new SimpleTopic().publish({ id: 1, data: 'My first message' });
 ```
+
+### Compression
+
+Framework supports gzip compression on publish. It can be enabled in Topic options.
+
+With option enabled, message data will compressed before publish to PubSub.
+
+See [Compression Topic example](https://github.com/deliveryhero/hfc-pubsub/tree/main/examples/typescript/topics/compression.topic.ts), [Messages decompression](../subscribing/Messages_compression#decompression).

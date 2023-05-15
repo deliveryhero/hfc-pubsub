@@ -7,6 +7,7 @@ import {
 import Bluebird from 'bluebird';
 import chalk from 'chalk';
 
+import Pako from 'pako';
 import { TopicProperties } from '../../topic';
 import { PublishOptions } from '../../interface/publishOptions';
 import {
@@ -78,6 +79,15 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const pubSubTopic = await this.createOrGetTopic(topic.topicName, {
       project: topic.project,
     });
+
+    if (options?.enableGZipCompression) {
+      const compressedMsg = Buffer.from(this.compressMessage(message));
+      const [messageId] = await pubSubTopic.publishMessage({
+        data: compressedMsg,
+        attributes: options?.attributes,
+      });
+      return messageId;
+    }
     // FIXME: PUB-49 retryConfig not being considered, see https://github.com/googleapis/nodejs-pubsub/blob/master/samples/publishWithRetrySettings.js for how to use it
     const messageId = await pubSubTopic.publishJSON(
       message,
@@ -459,5 +469,9 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     });
 
     return subscriptions.flat();
+  }
+
+  public compressMessage(message: Record<string, unknown>): Uint8Array {
+    return Pako.gzip(JSON.stringify(message));
   }
 }

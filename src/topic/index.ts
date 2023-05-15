@@ -27,6 +27,7 @@ type PayloadInput<P extends Payload> = Omit<P, keyof Payload>;
 export interface TopicOptions {
   addTimeStamp?: boolean;
   retryConfig?: RetryConfig;
+  enableGZipCompression?: boolean;
 }
 
 export interface TopicProperties {
@@ -86,6 +87,25 @@ export default class Topic<P extends Payload = Payload> {
     options?: TopicPublishOptions,
   ): Promise<string> {
     this.validateMessage(message);
+
+    let publishOptions = { ...options };
+    if (this.options.enableGZipCompression) {
+      publishOptions.enableGZipCompression = true;
+    }
+    if (this.options.retryConfig) {
+      publishOptions = {
+        ...publishOptions,
+        retryConfig: {
+          ...this.options?.retryConfig,
+          ...publishOptions?.retryConfig,
+          backoffSettings: {
+            ...this.options?.retryConfig?.backoffSettings,
+            ...publishOptions?.retryConfig?.backoffSettings,
+          },
+        },
+      };
+    }
+
     return this.mq.publish(
       this.constructor as typeof Topic,
       this.options?.addTimeStamp !== false
@@ -94,19 +114,7 @@ export default class Topic<P extends Payload = Payload> {
             _timestamp: new Date().toISOString(),
           }
         : message,
-      (this.options?.retryConfig
-        ? {
-            ...options,
-            retryConfig: {
-              ...this.options?.retryConfig,
-              ...options?.retryConfig,
-              backoffSettings: {
-                ...this.options?.retryConfig?.backoffSettings,
-                ...options?.retryConfig?.backoffSettings,
-              },
-            },
-          }
-        : options) as PublishOptions,
+      publishOptions as PublishOptions,
     );
   }
 }

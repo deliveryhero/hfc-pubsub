@@ -79,7 +79,7 @@ describe('topics', (): void => {
       expect.not.objectContaining({
         _timestamp: expect.stringContaining(':'),
       }),
-      undefined,
+      {},
     );
   });
 
