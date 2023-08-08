@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2.1
+
+### Patch Changes
+
+- [PUB-92](https://jira.deliveryhero.com/browse/PUB-92) - Improve error handling and add custom fail function ([#113](https://github.com/deliveryhero/hfc-pubsub/pull/113) by [@rohit-gohri](https://github.com/rohit-gohri))
+
+* Update lock file ([#114](https://github.com/deliveryhero/hfc-pubsub/pull/114) by [@rohit-gohri](https://github.com/rohit-gohri))
+
 ## 2.2.0
 
 ### Minor Changes
