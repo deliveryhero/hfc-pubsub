@@ -25,10 +25,15 @@ const subscriber: SubscriberObject<Payload> = {
   },
 
   handleMessage: (message) => {
+    console.log('got message', message.data.toString());
     console.log(message.toJSON(), typeof message.toJSON());
     const x = message.toJSON();
     console.log(x?.x);
     message.ack();
+  },
+
+  handleError: (error) => {
+    console.error(error, 'error in sub');
   },
 };
 

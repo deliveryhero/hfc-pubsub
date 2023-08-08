@@ -10,10 +10,7 @@ export class Logger {
     Logger.logger = logger;
   }
   public static get Instance(): LoggerOptions {
-    if (!Logger.logger) {
-      Logger.logger = console;
-    }
-    return Logger.logger;
+    return Logger.logger ?? console;
   }
 }
 export const setLogger = (logger: LoggerOptions): void => {
