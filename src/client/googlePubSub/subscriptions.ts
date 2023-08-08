@@ -17,7 +17,7 @@ export function getSubscription(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return subscriptions.get(metadata.subscriptionName)!;
   }
-  // NOTE: Each client can handle a max of 20 subs, but limiting to 15 https://jira.deliveryhero.com/browse/atlassian.net/browse/PUB-72
+  // NOTE: Each client can handle a max of 20 subs, but limiting to 15 https://jira.deliveryhero.com/browse/PUB-72
   const isNewClientNeeded =
     Math.floor(subscriptions.size / 15) > _clients.length - 1;
 
