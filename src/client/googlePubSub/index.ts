@@ -133,7 +133,11 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     subscription.on('message', (message: GoogleCloudMessage): void => {
       subscriberInstance
         .handleMessage(Message.fromGCloud(message))
-        .catch(() => {
+        .catch((error) => {
+          Logger.Instance.error(
+            { error },
+            'Unexpected error while processing message',
+          );
           message.nack();
         });
     });
