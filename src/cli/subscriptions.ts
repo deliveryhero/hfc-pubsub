@@ -1,5 +1,8 @@
 #! /usr/local/bin/node
 require('dotenv').config({ path: require('find-config')('.env') });
+import { isatty } from 'tty';
+import { Logger } from 'service/logger';
+import type { Argv } from 'yargs';
 import commands from './commands';
 
 require('yargs')
@@ -30,4 +33,11 @@ require('yargs')
       describe: 'If true runs server telling health state of subscriptions',
       type: 'string',
     },
+  })
+  .fail(async function (msg: string, err: Error, yargs: Argv) {
+    Logger.Instance.error({ err }, `Command failed. ${msg}`);
+    if (isatty(process.stdout.fd)) {
+      console.info(await yargs.getHelp());
+    }
+    process.exit(1);
   }).argv;
