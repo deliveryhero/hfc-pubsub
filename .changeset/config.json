@@ -4,7 +4,7 @@
     "../scripts/changesets/changelog.js",
     {
       "repo": "deliveryhero/hfc-pubsub",
-      "jiraUrl": "https://honesttech.atlassian.net"
+      "jiraUrl": "https://jira.deliveryhero.com/browse/atlassian.net"
     }
   ],
   "commit": true,

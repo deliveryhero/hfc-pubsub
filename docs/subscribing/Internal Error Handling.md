@@ -5,7 +5,7 @@ sidebar_label: Error Handling
 sidebar_position: 2
 ---
 
-To handle any internal error that might occur on pubsub side, a the method `handleError` can be declared either in Subscriber Object or in SubscriptionService level.
+To handle any **internal** error that might occur on pubsub side, the method `handleError` can be declared either in Subscriber Object or in SubscriptionService.
 
 - If the error handler is provided at `Subscriber` object level then it would override the error handler provided at `SubscriptionService` level.
 

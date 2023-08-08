@@ -75,7 +75,7 @@ The framework expects the following environment variables. They can be added to 
 | `root-dir`                       | `PUBSUB_ROOT_DIR`                 | must be the path to your project's pubsub directory.                                                                               |
 | `google-application-credentials` | `GOOGLE_APPLICATION_CREDENTIALS`  | see <https://cloud.google.com/docs/authentication/getting-started#creating_a_service_account> to generate this                     |
 | `project-id`                     | `GOOGLE_CLOUD_PROJECT`            | the project-id in Google Cloud Platform                                                                                            |
-| `labels`                         | `GOOGLE_CLOUD_LABELS`                   | Labels in stringified JSON format                                                                                                  |
+| `labels`                         | `GOOGLE_CLOUD_LABELS`             | Labels in stringified JSON format                                                                                                  |
 | `server-port`                    | `PUBSUB_SERVER_PORT`              | PORT at which the pubsub should run the server at                                                                                  |
 | `health-server`                  | `PUBSUB_HEALTH_SERVER`            | If value assigned is true this would run a server showing health state and return 500 if not healthy                               |
 
