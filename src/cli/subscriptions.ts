@@ -1,11 +1,12 @@
 #! /usr/local/bin/node
 require('dotenv').config({ path: require('find-config')('.env') });
 import { isatty } from 'tty';
-import { Logger } from 'service/logger';
-import type { Argv } from 'yargs';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+import { Logger } from '../service/logger';
 import commands from './commands';
 
-require('yargs')
+const parser = yargs(hideBin(process.argv))
   .command(commands.start)
   .command(commands.list)
   .options({
@@ -34,10 +35,24 @@ require('yargs')
       type: 'string',
     },
   })
-  .fail(async function (msg: string, err: Error, yargs: Argv) {
-    Logger.Instance.error({ err }, `Command failed. ${msg}`);
-    if (isatty(process.stdout.fd)) {
-      console.info(await yargs.getHelp());
-    }
-    process.exit(1);
-  }).argv;
+  .showHelpOnFail(false)
+  .fail(false);
+
+async function main() {
+  await parser.parse();
+}
+
+if (require.main === module) {
+  main()
+    .then(() => {
+      Logger.Instance.info('Finished');
+      process.exit(0);
+    })
+    .catch(async (err) => {
+      Logger.Instance.error({ err }, `Command failed`);
+      if (isatty(process.stdout.fd)) {
+        console.info(await yargs.getHelp());
+      }
+      process.exit(1);
+    });
+}
