@@ -45,8 +45,7 @@ async function main() {
 if (require.main === module) {
   main()
     .then(() => {
-      Logger.Instance.info('Finished');
-      process.exit(0);
+      Logger.Instance.info('Started');
     })
     .catch(async (err) => {
       Logger.Instance.error({ err }, `Command failed`);
