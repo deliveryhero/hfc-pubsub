@@ -43,15 +43,11 @@ async function main() {
 }
 
 if (require.main === module) {
-  main()
-    .then(() => {
-      Logger.Instance.info('Started');
-    })
-    .catch(async (err) => {
-      Logger.Instance.error({ err }, `Command failed`);
-      if (isatty(process.stdout.fd)) {
-        console.info(await yargs.getHelp());
-      }
-      process.exit(1);
-    });
+  main().catch(async (err) => {
+    Logger.Instance.error({ err }, `Command failed`);
+    if (isatty(process.stdout.fd)) {
+      console.info(await yargs.getHelp());
+    }
+    process.exit(1);
+  });
 }
