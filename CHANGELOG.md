@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.2
+
+### Patch Changes
+
+- Fix exit on success ([#116](https://github.com/deliveryhero/hfc-pubsub/pull/116) by [@rohit-gohri](https://github.com/rohit-gohri))
+
 ## 2.2.1
 
 ### Patch Changes
