@@ -1,0 +1,48 @@
+apiVersion: alpha1
+kind: library
+slug: gfs-pubsub
+spec:
+  name: PubSub NodeJS Framework
+  description: A framework to integrate GCP Pub/Sub subscriptions/topics in your NodeJS projects
+  owner: group:global-food-services
+  lifecycle:
+    status: launched
+    launchDate: '2020-08-14T19:13:00.000Z'
+  visibility: public
+  license: MIT
+  sources:
+    - github/repo:github
+  platform:
+    language: typescript
+    runtime: node
+  links:
+    - icon: source
+      name: ci
+      target: https://github.com/deliveryhero/hfc-pubsub/actions
+      title: Github Actions
+      type: web
+    - icon: github
+      name: github
+      target: deliveryhero/hfc-pubsub
+      title: Repository
+      type: github/repo
+    - name: package
+      target: https://github.com/deliveryhero/hfc-pubsub/pkgs/npm/pubsub
+      title: Package
+      type: web
+    - name: npm
+      target: https://www.npmjs.com/package/@honestfoodcompany/pubsub
+      title: NPM
+      type: web
+    - name: confluence
+      target: https://confluence.deliveryhero.com/x/Q5daG
+      title: Confluence
+      type: web
+      icon: docs
+  tags:
+    - gfs
+    - gcp
+    - npm
+    - oss
+    - pubsub
+  dependsOn: []
