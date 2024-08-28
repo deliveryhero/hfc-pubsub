@@ -18,7 +18,7 @@ export default {
       Logger.Instance.warn(chalk.white.bold('\n No subscriptions found'));
     } else {
       const table = new Table({
-        head: ['Topic Name', 'Subscription Name', 'Description'],
+        head: ['Topic Name', 'Subscription Name', 'DLQ', 'Description'],
       });
       table.push(
         ...PubSubService.getInstance()
@@ -26,6 +26,7 @@ export default {
           .map((row: SubscriberTuple) => [
             row[1].topicName,
             row[1].subscriptionName,
+            row[1].options?.deadLetterPolicy?.deadLetterTopic ?? 'N/A',
             wrapAnsi(row[1].description || '', 100),
           ]),
       );

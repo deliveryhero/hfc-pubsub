@@ -26,7 +26,7 @@ export default class PubSubService {
     if (process.env.PUBSUB_HEALTH_SERVER !== 'true') return;
     if (this.server) return;
 
-    const port = process.env.PUBSUB_SERVER_PORT || 8080;
+    const port = process.env.PUBSUB_SERVER_PORT || process.env.PORT || 8080;
     //create a server object:
     this.server = http
       .createServer(function (_req, res) {
@@ -133,7 +133,8 @@ export default class PubSubService {
           if (err) {
             reject(err);
           } else {
-            resolve(this.server);
+            this.server = undefined;
+            resolve(null);
           }
         });
       });
