@@ -34,8 +34,7 @@ export default class SubscriberV2 {
   }
 
   public async handleMessage<T>(message: Message<T>): Promise<void> {
-    this.subscriberObject?.handleMessage &&
-      this.subscriberObject?.handleMessage(message);
+    return this.subscriberObject?.handleMessage?.(message);
   }
 
   public handleError(error: Error): void {

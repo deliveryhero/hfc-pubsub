@@ -59,17 +59,17 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     return GooglePubSubAdapter.instance;
   }
 
-  private getProject(options?: { project?: GooglePubSubProject }): Project {
-    if (!options?.project?.id) {
+  private getProject({ project }: { project?: GooglePubSubProject }): Project {
+    if (!project?.id) {
       return this.projects[DEFAULT_PROJECT];
     }
-    if (this.projects[options.project.id]) {
-      return this.projects[options.project.id];
+    if (this.projects[project.id]) {
+      return this.projects[project.id];
     }
-    this.projects[options.project.id] = createProject(options.project.id, {
-      credentials: options.project.credentials,
+    this.projects[project.id] = createProject(project.id, {
+      credentials: project.credentials,
     });
-    return this.projects[options.project.id];
+    return this.projects[project.id];
   }
 
   public async publish<T extends TopicProperties>(
@@ -104,9 +104,9 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const subscription = await this.createOrGetSubscription(subscriber);
     await this.handleDeadLetterPolicyConfigurations(subscriber);
     await this.addHandler(subscriber, subscription);
-    this.log(
-      `   📭     ${metadata.subscriptionName} is ready to receive messages at a controlled volume of ${metadata.options?.flowControl?.maxMessages} messages.`,
-      metadata,
+    Logger.Instance.info(
+      Logger.getInfo(metadata),
+      `   📭     Subscription ready to receive messages at a controlled volume of ${metadata.options.flowControl?.maxMessages} messages`,
     );
   }
 
@@ -115,14 +115,14 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const project = this.getProject(metadata.options);
 
     if (await closeSubscription(project, subscriber)) {
-      this.log(
-        `   📪     ${metadata.subscriptionName} is closed now`,
-        metadata,
+      Logger.Instance.info(
+        Logger.getInfo(metadata),
+        `   📪     Subscription closed now`,
       );
     } else {
-      this.log(
-        `   📪     ${metadata.subscriptionName} wasn't started at all`,
-        metadata,
+      Logger.Instance.info(
+        Logger.getInfo(metadata),
+        `   📪     Subscription wasn't started at all`,
       );
     }
   }
@@ -131,25 +131,20 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     subscriber: SubscriberTuple,
     subscription: GoogleCloudSubscription,
   ): Promise<void> {
-    const [subscriberInstance] = subscriber;
+    const [subscriberInstance, metadata] = subscriber;
     await subscriberInstance.init();
-    subscription.on('message', (message: GoogleCloudMessage): void => {
-      subscriberInstance
-        .handleMessage(Message.fromGCloud(message))
-        .catch((error) => {
-          Logger.Instance.error(
-            { error },
-            'Unexpected error while processing message',
-          );
-          message.nack();
-        });
+    subscription.on('message', (gCloudMessage: GoogleCloudMessage): void => {
+      const message = Message.fromGCloud(gCloudMessage);
+      subscriberInstance.handleMessage(message).catch((err) => {
+        Logger.Instance.error(
+          { err, ...Logger.getInfo(metadata, message) },
+          'Unexpected error while processing message',
+        );
+        message.nack();
+      });
     });
 
     subscription.on('error', (error) => subscriberInstance.handleError(error));
-  }
-
-  private log(message: string, metadata?: SubscriberTuple[1]): void {
-    Logger.Instance.info({ metadata }, chalk.green.bold(message));
   }
 
   private async updateMetaData(subscriber: SubscriberTuple) {
@@ -163,6 +158,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       deadLetterPolicy,
     };
     await this.getSubscription(subscriber).setMetadata(toUpdateOptions);
+    Logger.Instance.info(
+      Logger.getInfo(metadata),
+      '   🔄      Updated subscription metadata',
+    );
   }
 
   /**
@@ -175,8 +174,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
     if (await this.subscriptionExists(subscriber)) {
       Logger.Instance.info(
-        { metadata },
-        chalk.gray(`   ✔️      ${metadata.subscriptionName} already exists.`),
+        Logger.getInfo(metadata),
+        chalk.gray(`   ✔️      Subscription already exists`),
       );
       await this.updateMetaData(subscriber);
     } else {
@@ -200,13 +199,13 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
         metadata.options,
       );
       Logger.Instance.info(
-        { metadata },
-        chalk.gray(`   ✔️      ${metadata.subscriptionName} created.`),
+        Logger.getInfo(metadata),
+        chalk.gray(`   ✔️      Subscription created`),
       );
     } catch (err) {
       Logger.Instance.error(
-        { metadata, err },
-        `   ❌      There was an error creating "${metadata.subscriptionName}" subscription.`,
+        { err, ...Logger.getInfo(metadata) },
+        `   ❌      Error creating subscription`,
       );
       throw err;
     }
@@ -255,10 +254,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
   protected async createOrGetTopic(
     topicName: string,
-    options?: {
+    options: {
       project?: GooglePubSubProject;
-      labels?: TopicMetadata['labels'];
-    },
+      labels?: GoogleSubscriptionMetadata['labels'];
+    } = {},
   ): Promise<GoogleCloudTopic> {
     const project = this.getProject(options);
     const cachedTopic = project.topics.get(topicName);
@@ -269,9 +268,9 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
     const pubSubTopic = project.client.topic(topicName);
     const [topic] = await pubSubTopic.get({ autoCreate: true });
-    if (options?.labels) {
+    if (options.labels) {
       await topic.setMetadata({
-        labels: options?.labels,
+        labels: options.labels,
       });
     }
     project.topics.set(topicName, topic);

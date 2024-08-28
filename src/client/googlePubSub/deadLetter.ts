@@ -12,8 +12,8 @@ export async function bindPolicyToSubscriber(
 
   if (!projectNumber) {
     Logger.Instance.warn(
-      { metadata },
-      `   ❌      Could not bind policy for "${subscriptionName}" subscriber due to no project number`,
+      Logger.getInfo(metadata),
+      `   ❌      Could not bind policy for subscriber due to no project number`,
     );
     return;
   }
@@ -33,8 +33,8 @@ export async function bindPolicyToSubscriber(
     await pubSubTopic.subscription(subscriptionName).iam.setPolicy(myPolicy);
   } catch (err) {
     Logger.Instance.error(
-      { metadata, err },
-      `   ❌      Error while binding policy for "${subscriptionName}" subscription.`,
+      { ...Logger.getInfo(metadata), err },
+      `   ❌      Error while binding policy for subscription`,
     );
   }
 }
@@ -47,8 +47,8 @@ export async function bindPolicyToDeadLetterTopic(
   const projectNumber = await getProjectNumber(project);
   if (!projectNumber) {
     Logger.Instance.warn(
-      { metadata },
-      `   ❌      Could not bind policy for "${dlqTopic.name}" DLQ topic due to no project number`,
+      Logger.getInfo(metadata),
+      `   ❌      Could not bind policy for DLQ topic due to no project number, "${dlqTopicName}"`,
     );
     return;
   }
@@ -67,8 +67,8 @@ export async function bindPolicyToDeadLetterTopic(
     await dlqTopic.iam.setPolicy(myPolicy);
   } catch (err) {
     Logger.Instance.error(
-      { metadata, err },
-      `   ❌      Error while binding policy for "${dlqTopic.name}" DLQ topic.`,
+      { ...Logger.getInfo(metadata), err },
+      `   ❌      Error while binding policy for DLQ topic, "${dlqTopicName}"`,
     );
   }
 }
@@ -81,8 +81,12 @@ export async function checkDeadLetterConfiguration(
 
   if (subscriptions.length === 0) {
     Logger.Instance.warn(
-      { metadata },
-      `Please set createDefaultSubscription: true in deadLetterPolicy to create default subscriber for dead letter topic (${dlqTopic.name}) of ${metadata.subscriptionName}. Ignore if already added subscription for it.`,
+      Logger.getInfo(metadata),
+      `Please set 'createDefaultSubscription: true' in deadLetterPolicy to create default subscriber for dead letter topic (${getNameFromResourceName(
+        dlqTopic.name,
+      )}) of ${
+        metadata.subscriptionName
+      }. Ignore if already added subscription for it.`,
     );
   }
 }
@@ -113,8 +117,8 @@ export async function createDeadLetterDefaultSubscriber(
     });
   } catch (err) {
     Logger.Instance.error(
-      { metadata, err },
-      `Error while creating default deadLetter subscription for ${metadata.subscriptionName}`,
+      { ...Logger.getInfo(metadata), err },
+      `   ❌      Error while creating default deadLetter subscription`,
     );
   }
 }

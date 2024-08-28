@@ -48,14 +48,14 @@ export default class SubscriptionService {
    * Applications should override this with custom error handling: log error, cleanup resources and exit the process.
    * Default logs the error and **rethrows**
    */
-  public static handleError(error: Error, metadata: SubscriberMetadata): void {
+  public static handleError(err: Error, metadata: SubscriberMetadata): void {
     // default error handling logic
     Logger.Instance.error(
-      { error, metadata },
+      { err, ...Logger.getInfo(metadata) },
       'Received unexpected error in subscription',
     );
     // To keep backwards compatibility with no error handler
-    throw error;
+    throw err;
   }
 
   /**
