@@ -23,10 +23,7 @@ export default class SubscriberV2 {
     this.metadata = {
       topicName,
       subscriptionName,
-      options: {
-        ...options,
-        ackDeadlineSeconds: options?.ackDeadline,
-      },
+      options: options ?? {},
     };
   }
   public async init(): Promise<void> {
@@ -112,10 +109,7 @@ export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
 export interface SubscriberMetadata {
   topicName: string;
   subscriptionName: string;
-  options: SubscriberOptions & {
-    // This is added because GCP's api has different properties when creating/updating subscriptions
-    ackDeadlineSeconds?: number | null;
-  };
+  options: SubscriberOptions;
   description?: string;
 }
 

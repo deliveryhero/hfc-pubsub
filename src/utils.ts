@@ -34,3 +34,7 @@ export function getMergedLabels(options?: {
   }
   return labels;
 }
+
+export function getNameFromResourceName(resourceName: string): string {
+  return resourceName.split('/')?.slice(-1)[0];
+}

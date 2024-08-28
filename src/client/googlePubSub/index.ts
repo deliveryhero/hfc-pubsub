@@ -3,7 +3,6 @@ import {
   Subscription as GoogleCloudSubscription,
   Topic as GoogleCloudTopic,
   SubscriptionMetadata as GoogleSubscriptionMetadata,
-  TopicMetadata,
 } from '@google-cloud/pubsub';
 import Bluebird from 'bluebird';
 import chalk from 'chalk';
@@ -19,6 +18,7 @@ import {
 import { SubscriberTuple } from '../../subscriber';
 import Message from '../../message';
 import { Logger } from '../../service/logger';
+import { getNameFromResourceName } from '../../utils';
 import { createProject, Project, Projects } from './project';
 import {
   closeSubscription,
@@ -102,7 +102,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   public async subscribe(subscriber: SubscriberTuple): Promise<void> {
     const [, metadata] = subscriber;
     const subscription = await this.createOrGetSubscription(subscriber);
-    await this.handleDeadLetterPolicyConfigurations(subscriber);
+    const dlqTopic = await this.handleDeadLetterPolicyConfigurations(
+      subscriber,
+    );
+    await this.updateMetaData(subscriber, dlqTopic);
     await this.addHandler(subscriber, subscription);
     Logger.Instance.info(
       Logger.getInfo(metadata),
@@ -147,15 +150,26 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     subscription.on('error', (error) => subscriberInstance.handleError(error));
   }
 
-  private async updateMetaData(subscriber: SubscriberTuple) {
+  private async updateMetaData(
+    subscriber: SubscriberTuple,
+    dlqTopic: GoogleCloudTopic | undefined,
+  ) {
     const [, metadata] = subscriber;
-    const { ackDeadlineSeconds, retryPolicy, deadLetterPolicy, labels } =
+    const { ackDeadline, retryPolicy, deadLetterPolicy, labels } =
       metadata.options;
     const toUpdateOptions: GoogleSubscriptionMetadata = {
       labels,
-      ackDeadlineSeconds,
       retryPolicy,
-      deadLetterPolicy,
+      // This is different because GCP's api has different properties when creating/updating subscriptions
+      ackDeadlineSeconds: ackDeadline,
+      ...(deadLetterPolicy && dlqTopic
+        ? {
+            deadLetterPolicy: {
+              ...deadLetterPolicy,
+              deadLetterTopic: dlqTopic.name,
+            },
+          }
+        : undefined),
     };
     await this.getSubscription(subscriber).setMetadata(toUpdateOptions);
     Logger.Instance.info(
@@ -171,32 +185,30 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     subscriber: SubscriberTuple,
   ): Promise<GoogleCloudSubscription> {
     const [, metadata] = subscriber;
+    const subscription = this.getSubscription(subscriber);
 
-    if (await this.subscriptionExists(subscriber)) {
+    const [subscriptionExists] = await subscription.exists();
+    if (subscriptionExists) {
       Logger.Instance.info(
         Logger.getInfo(metadata),
         chalk.gray(`   ✔️      Subscription already exists`),
       );
-      await this.updateMetaData(subscriber);
-    } else {
-      const topic = await this.createOrGetTopic(metadata.topicName, {
-        // Subscriptions shouldn't apply any labels to topics
-        project: metadata.options?.project,
-      });
-      await this.createSubscription(topic, subscriber);
+      return subscription;
     }
-    return this.getSubscription(subscriber);
-  }
 
-  private async createSubscription(
-    topic: GoogleCloudTopic,
-    subscriber: SubscriberTuple,
-  ): Promise<void> {
-    const [, metadata] = subscriber;
+    const topic = await this.createOrGetTopic(metadata.topicName, {
+      ...metadata.options,
+      // Subscriptions shouldn't apply any labels to topics
+      labels: undefined,
+    });
+
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { deadLetterPolicy, ...optionsWithoutDlq } = metadata.options;
       await topic.createSubscription(
         metadata.subscriptionName,
-        metadata.options,
+        // Don't assign dlq until we create DLQ topic and assign roles later
+        optionsWithoutDlq,
       );
       Logger.Instance.info(
         Logger.getInfo(metadata),
@@ -209,6 +221,7 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       );
       throw err;
     }
+    return subscription;
   }
 
   private async handleDeadLetterPolicyConfigurations(
@@ -216,24 +229,25 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   ) {
     const [, metadata] = subscriber;
     const { options } = metadata;
-    if (!options?.deadLetterPolicy) {
+    if (!options.deadLetterPolicy) {
       return;
     }
     const project = this.getProject(options);
     const dlqTopicName = options.deadLetterPolicy.deadLetterTopic;
     const dlqTopic = await this.createOrGetTopic(dlqTopicName, {
-      project: options?.project,
+      project: options.project,
       // DLQ topic's labels are same as subscription
       labels: options.labels,
     });
 
     await bindPolicyToSubscriber(metadata, project);
     await bindPolicyToDeadLetterTopic(dlqTopic, metadata, project);
-    if (options?.deadLetterPolicy?.createDefaultSubscription) {
+    if (options.deadLetterPolicy?.createDefaultSubscription) {
       await createDeadLetterDefaultSubscriber(dlqTopic, metadata, project);
     } else {
       await checkDeadLetterConfiguration(dlqTopic, metadata);
     }
+    return dlqTopic;
   }
 
   private getSubscription(
@@ -241,15 +255,6 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
   ): GoogleCloudSubscription {
     const [, metadata] = subscriber;
     return getSubscription(this.getProject(metadata.options), subscriber);
-  }
-
-  private async subscriptionExists(
-    subscriber: SubscriberTuple,
-  ): Promise<boolean> {
-    const [subscriptionExists] = await this.getSubscription(
-      subscriber,
-    ).exists();
-    return subscriptionExists;
   }
 
   protected async createOrGetTopic(
@@ -282,10 +287,10 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
       Object.values(this.projects),
       async (project) => {
         const projectSubs = getAllSubscriptions(project);
-        return projectSubs.map(({ metadata }) => {
+        return projectSubs.map(({ name, metadata }) => {
           return {
-            topicName: metadata?.topic,
-            subscriptionName: metadata?.name || '',
+            topicName: getNameFromResourceName(metadata?.topic ?? ''),
+            subscriptionName: getNameFromResourceName(name),
           };
         });
       },
@@ -297,8 +302,8 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
     const subscriptions = Object.values(this.projects).map((project) => {
       const projectSubs = getAllSubscriptions(project);
       return projectSubs.map(
-        ({ isOpen, metadata }) =>
-          [metadata?.name?.split('/')?.slice(-1)[0], isOpen] as IsOpenTuple,
+        ({ isOpen, name }) =>
+          [getNameFromResourceName(name), isOpen] as IsOpenTuple,
       );
     });
 

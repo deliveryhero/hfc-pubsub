@@ -1,6 +1,7 @@
 import { Topic } from '@google-cloud/pubsub';
 import { Logger } from '../../service/logger';
 import { SubscriberMetadata } from '../../subscriber';
+import { getNameFromResourceName } from '../../utils';
 import { getProjectNumber, Project } from './project';
 
 export async function bindPolicyToSubscriber(
@@ -44,6 +45,7 @@ export async function bindPolicyToDeadLetterTopic(
   metadata: SubscriberMetadata,
   project: Project,
 ): Promise<void> {
+  const dlqTopicName = getNameFromResourceName(dlqTopic.name);
   const projectNumber = await getProjectNumber(project);
   if (!projectNumber) {
     Logger.Instance.warn(
@@ -98,7 +100,8 @@ export async function createDeadLetterDefaultSubscriber(
 ): Promise<void> {
   try {
     const { client } = project;
-    const defaultSubscriberName = dlqTopic.name + '.default';
+    const defaultSubscriberName =
+      getNameFromResourceName(dlqTopic.name) + '.default';
     const [defaultSubscriberExists] = await client
       .subscription(defaultSubscriberName)
       .exists();
