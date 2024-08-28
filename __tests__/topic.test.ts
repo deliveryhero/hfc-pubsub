@@ -1,4 +1,5 @@
 import PubSubService from '../src/service/pubsub';
+import { defaultOptions } from '../src/topic';
 import TestTopic from './pubsub/topics/test-topic';
 import TestTopicNoTimeStamp from './pubsub/topics/test-topic.no.timestamp';
 
@@ -18,18 +19,7 @@ jest.mock('../src/service/pubsub', () => ({
 
 describe('topics', (): void => {
   const defaultRetrySettings = {
-    retryConfig: {
-      backoffSettings: {
-        initialRetryDelayMillis: 100,
-        initialRpcTimeoutMillis: 5000,
-        maxRetryDelayMillis: 60000,
-        maxRpcTimeoutMillis: 600000,
-        retryDelayMultiplier: 1.3,
-        rpcTimeoutMultiplier: 1,
-        totalTimeoutMillis: 600000,
-      },
-      retryCodes: [10, 1, 4, 13, 8, 14, 2],
-    },
+    retryConfig: defaultOptions.retryConfig,
   };
 
   beforeEach(() => {
@@ -79,7 +69,10 @@ describe('topics', (): void => {
       expect.not.objectContaining({
         _timestamp: expect.stringContaining(':'),
       }),
-      {},
+      expect.objectContaining({
+        ...defaultOptions,
+        addTimeStamp: false,
+      }),
     );
   });
 

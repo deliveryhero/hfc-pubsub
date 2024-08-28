@@ -1,4 +1,4 @@
-import type { Attributes } from '@google-cloud/pubsub';
+import type { Attributes, TopicMetadata } from '@google-cloud/pubsub';
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
 };
@@ -61,9 +61,9 @@ export interface TopicPublishOptions {
  * This is the the actual type for use in the driver
  */
 export interface PublishOptions {
-  retryConfig?: RetryConfig;
   attributes?: Attributes;
-
+  retryConfig?: RetryConfig;
+  labels?: TopicMetadata['labels'];
   /**
    * If true msg will be gzip compressed before being published
    */

@@ -2,6 +2,7 @@ import {
   SubscriberOptions as GoogleCloudSubscriberOptions,
   SubscriptionMetadata as GoogleSubscriptionMetadata,
 } from '@google-cloud/pubsub';
+import { getMergedLabels } from '../utils';
 import { GooglePubSubProject } from '../interface/GooglePubSubProject';
 import SubscriptionService from '../service/subscription';
 import Message from '../message';
@@ -22,7 +23,10 @@ export default class SubscriberV2 {
     this.metadata = {
       topicName,
       subscriptionName,
-      options,
+      options: {
+        ...options,
+        ackDeadlineSeconds: options?.ackDeadline,
+      },
     };
   }
   public async init(): Promise<void> {
@@ -53,15 +57,17 @@ export default class SubscriberV2 {
     subscriptionServiceDefaultOptions: SubscriberOptions,
   ): SubscriberV2 {
     const subscriberObject: SubscriberObject = { ...subscriber };
+    const labels = getMergedLabels({
+      ...subscriptionServiceDefaultOptions?.labels,
+      ...subscriberObject.options?.labels,
+    });
+
     // TODO: Use deepmerge instead
     subscriberObject.options = {
       ...defaultSubscriberOptions,
       ...subscriptionServiceDefaultOptions,
       ...subscriberObject.options,
-      labels: {
-        ...subscriptionServiceDefaultOptions?.labels,
-        ...subscriberObject.options?.labels,
-      },
+      labels,
     };
     return new SubscriberV2(subscriberObject);
   }
@@ -107,11 +113,14 @@ export interface SubscriberOptions extends GoogleCloudSubscriberOptions {
 export interface SubscriberMetadata {
   topicName: string;
   subscriptionName: string;
+  options: SubscriberOptions & {
+    // This is added because GCP's api has different properties when creating/updating subscriptions
+    ackDeadlineSeconds?: number | null;
+  };
   description?: string;
-  options?: SubscriberOptions;
 }
 
-export interface MessageHandler<T = unknown> {
+interface MessageHandler<T = unknown> {
   /**
    * will run every time a message is received
    */
@@ -128,12 +137,14 @@ export interface MessageHandler<T = unknown> {
   handleError?: (error: Error) => void;
 }
 
-export interface FlexibleObject {
+interface FlexibleObject {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
 export interface SubscriberObject<T = unknown>
-  extends SubscriberMetadata,
+  extends Omit<SubscriberMetadata, 'options'>,
     MessageHandler<T>,
-    FlexibleObject {}
+    FlexibleObject {
+  options?: SubscriberOptions;
+}
