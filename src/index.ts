@@ -1,3 +1,4 @@
+// TODO: Remove this in next major version
 require('dotenv').config({ path: require('find-config')('.env') });
 import Topic, { Payload, TopicOptions } from './topic';
 import {

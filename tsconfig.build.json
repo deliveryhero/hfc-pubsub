@@ -1,12 +1,21 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist/",
+    "rootDir": "./src",
     "declaration": true,
     "sourceMap": true,
     "declarationMap": true,
-    "removeComments": true,
-    "noEmit": false
+    "noEmit": false,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedParameters": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "target": "es2019",
+    "lib": ["es2019"]
   },
   "exclude": [
     "node_modules",
