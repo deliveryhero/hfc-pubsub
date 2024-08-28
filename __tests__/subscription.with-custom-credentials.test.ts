@@ -1,5 +1,4 @@
 import { PubSubService, SubscriptionService } from '@honestfoodcompany/pubsub';
-import { mocked } from 'ts-jest/utils';
 import { SubscriberTuple } from '../src/subscriber';
 import GooglePubSubAdapter from '../src/client/googlePubSub';
 import { createProject } from '../src/client/googlePubSub/project';
@@ -15,18 +14,7 @@ jest.mock('../src/client/googlePubSub/project', () => {
   };
 });
 
-const mockPublish = jest.fn();
 const mockSubscribe = jest.fn();
-const mockGet = jest.fn(() => {
-  return new Promise((resolve) => {
-    resolve([
-      {
-        publish: mockPublish,
-      },
-    ]);
-  });
-});
-
 const mockConstructor = jest.fn();
 const mockClose = jest.fn();
 const mockRemoveListeners = jest.fn();
@@ -47,9 +35,18 @@ jest.mock('@google-cloud/pubsub', () => {
       return {
         subscription: mockSubscription,
         subscribe: mockSubscribe(config),
-        topic: jest.fn(() => ({
-          get: mockGet,
-          getSubscriptions: jest.fn(() => ['dummySub']),
+        topic: jest.fn((topicName) => ({
+          get: jest.fn(() => {
+            return new Promise((resolve) => {
+              resolve([
+                {
+                  name: topicName,
+                  publish: jest.fn(),
+                  getSubscriptions: jest.fn(() => ['dummySub']),
+                },
+              ]);
+            });
+          }),
         })),
       };
     }),
@@ -91,9 +88,9 @@ describe('With Project Credentials', (): void => {
     const getProject = jest.spyOn(GooglePubSubAdapter.prototype, 'getProject');
     await PubSubService.getInstance().subscribe(subscription);
 
-    expect(subscribe).toBeCalled();
-    expect(getProject).toBeCalledWith(subscription[1].options);
-    expect(mocked(createProject).mock.calls[1]).toEqual([
+    expect(subscribe).toHaveBeenCalled();
+    expect(getProject).toHaveBeenCalledWith(subscription[1].options);
+    expect(jest.mocked(createProject).mock.calls[1]).toEqual([
       'google-pubsub-project-id',
       {
         credentials: {
@@ -111,13 +108,13 @@ describe('With Project Credentials', (): void => {
         projectId: 'google-pubsub-project-id',
       },
     ]);
-    expect(mockSubscription).toBeCalledTimes(1);
+    expect(mockSubscription).toHaveBeenCalledTimes(1);
   });
 
   it('should close existing subscription and skip not subscribed topics', async (): Promise<void> => {
     await PubSubService.getInstance().closeAll();
-    expect(mockSubscription).toBeCalledTimes(1);
-    expect(mockClose).toBeCalledTimes(1);
-    expect(mockRemoveListeners).toBeCalledTimes(1);
+    expect(mockSubscription).toHaveBeenCalledTimes(1);
+    expect(mockClose).toHaveBeenCalledTimes(1);
+    expect(mockRemoveListeners).toHaveBeenCalledTimes(1);
   });
 });

@@ -5,16 +5,6 @@ import TestTopicWithProjectCredentials from './pubsub/topics/test-topic.with-cus
 process.env.PUBSUB_DRIVER = 'google';
 
 const mockPublish = jest.fn();
-const mockGet = jest.fn(() => {
-  return new Promise((resolve) => {
-    resolve([
-      {
-        publish: mockPublish,
-        publishJSON: mockPublish,
-      },
-    ]);
-  });
-});
 
 const mockConstructor = jest.fn();
 jest.mock('@google-cloud/pubsub', () => {
@@ -28,8 +18,18 @@ jest.mock('@google-cloud/pubsub', () => {
           exists: jest.fn(() => true),
         })),
         subscribe: jest.fn(),
-        topic: jest.fn(() => ({
-          get: mockGet,
+        topic: jest.fn((topicName) => ({
+          get: jest.fn(() => {
+            return new Promise((resolve) => {
+              resolve([
+                {
+                  name: topicName,
+                  publish: mockPublish,
+                  publishJSON: mockPublish,
+                },
+              ]);
+            });
+          }),
         })),
       };
     }),
@@ -41,20 +41,20 @@ describe('With Custom Credentials', (): void => {
     const spy = jest.spyOn(PubSubService.prototype, 'publish');
     const topic = new TestTopicWithProjectCredentials();
     await topic.publish({ data: 'test' });
-    expect(spy).toBeCalled();
+    expect(spy).toHaveBeenCalled();
   });
 
   it('should call Google Driver publish method', async (): Promise<void> => {
     const spy = jest.spyOn(GooglePubSubAdapter.prototype, 'publish');
     const topic = new TestTopicWithProjectCredentials();
     await topic.publish({ data: 'test' });
-    expect(spy).toBeCalled();
+    expect(spy).toHaveBeenCalled();
   });
 
   it('should call GooglePubSub publish method', async (): Promise<void> => {
     const topic = new TestTopicWithProjectCredentials();
     await topic.publish({ data: 'test' });
-    expect(mockPublish).toBeCalled();
+    expect(mockPublish).toHaveBeenCalled();
   });
 
   it('should have the project defined in projects', async () => {

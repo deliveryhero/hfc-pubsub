@@ -26,7 +26,7 @@ describe('@PubSub Service Init', () => {
   });
 
   it('should call init', () => {
-    expect(SubService.init).toBeCalled();
+    expect(SubService.init).toHaveBeenCalled();
   });
 
   it('should override closeAll method', () => {

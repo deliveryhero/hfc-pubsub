@@ -33,9 +33,9 @@ export class Logger {
     if (message?.gCloudMessage) {
       pubsub = {
         ...pubsub,
-        messageId: message?.gCloudMessage?.id,
-        publishTime: message?.gCloudMessage?.publishTime,
-        deliveryAttempt: message?.gCloudMessage?.deliveryAttempt,
+        messageId: message.gCloudMessage.id,
+        publishTime: message.gCloudMessage.publishTime,
+        deliveryAttempt: message.gCloudMessage.deliveryAttempt,
       };
     }
 
