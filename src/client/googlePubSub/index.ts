@@ -273,10 +273,21 @@ export default class GooglePubSubAdapter implements PubSubClientV2 {
 
     const pubSubTopic = project.client.topic(topicName);
     const [topic] = await pubSubTopic.get({ autoCreate: true });
-    if (options.labels) {
-      await topic.setMetadata({
-        labels: options.labels,
+
+    const labelsToSet = options.labels ?? {};
+    if (Object.keys(labelsToSet).length > 0) {
+      const existingLabels = (await topic.getMetadata())[0].labels ?? {};
+      const diff = Object.entries(labelsToSet).filter(([k, v]) => {
+        if (!existingLabels[k] || existingLabels[k] !== v) {
+          return true;
+        }
+        return false;
       });
+      if (diff.length > 0) {
+        await topic.setMetadata({
+          labels: options.labels,
+        });
+      }
     }
     project.topics.set(topicName, topic);
     return topic;

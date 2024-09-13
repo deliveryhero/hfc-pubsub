@@ -102,18 +102,34 @@ export async function createDeadLetterDefaultSubscriber(
     const { client } = project;
     const defaultSubscriberName =
       getNameFromResourceName(dlqTopic.name) + '.default';
-    const [defaultSubscriberExists] = await client
-      .subscription(defaultSubscriberName)
-      .exists();
+    const defaultSubscription = client.subscription(defaultSubscriberName);
+    const [defaultSubscriberExists] = await defaultSubscription.exists();
+    // DLQ subs's labels are same as subscription
+    const labelsToSet = metadata.options.labels ?? {};
 
     if (defaultSubscriberExists) {
-      // TODO: update metadata
+      if (Object.keys(labelsToSet).length === 0) {
+        return;
+      }
+      const existingLabels =
+        (await defaultSubscription.getMetadata())[0].labels ?? {};
+      const diff = Object.entries(labelsToSet).filter(([k, v]) => {
+        if (!existingLabels[k] || existingLabels[k] !== v) {
+          return true;
+        }
+        return false;
+      });
+      if (diff.length === 0) {
+        return;
+      }
+      await defaultSubscription.setMetadata({
+        labels: labelsToSet,
+      });
       return;
     }
 
     await dlqTopic.createSubscription(defaultSubscriberName, {
-      // DLQ subs's labels are same as subscription
-      labels: metadata.options.labels,
+      labels: labelsToSet,
       expirationPolicy: {
         ttl: null,
       },
