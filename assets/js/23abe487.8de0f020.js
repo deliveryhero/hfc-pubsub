@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_honestfoodcompany_pubsub=self.webpackChunk_honestfoodcompany_pubsub||[]).push([[911],{1581:(e,n,t)=>{t.r(n),t.d(n,{default:()=>l});var c=t(6540),o=t(5100),s=t(4346),u=t(4586);const l=function(){var e=(0,u.A)().siteConfig;return c.createElement(o.A,null,c.createElement("h2",null,"Site config"),c.createElement(s.A,{src:e,collapseDepth:"3"}))}}}]);
