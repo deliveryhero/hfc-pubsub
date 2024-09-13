@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.3.0
+
+### Minor Changes
+
+- [PUB-93](https://jira.deliveryhero.com/browse/PUB-93) - Set labels for subscriptions, dlq on update too and support for labels to topics ([#130](https://github.com/deliveryhero/hfc-pubsub/pull/130) by [@rohit-gohri](https://github.com/rohit-gohri))
+
+### Patch Changes
+
+- Fix topic options default retry config not being applied if custom options provided ([#130](https://github.com/deliveryhero/hfc-pubsub/pull/130) by [@rohit-gohri](https://github.com/rohit-gohri))
+
+* [PUB-87](https://jira.deliveryhero.com/browse/PUB-87) - Update logging to be more structured ([#130](https://github.com/deliveryhero/hfc-pubsub/pull/130) by [@rohit-gohri](https://github.com/rohit-gohri))
+
 ## 2.2.2
 
 ### Patch Changes
