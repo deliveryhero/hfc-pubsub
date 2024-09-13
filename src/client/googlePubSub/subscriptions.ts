@@ -17,7 +17,17 @@ export function getSubscription(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return subscriptions.get(metadata.subscriptionName)!;
   }
-  // NOTE: Each client can handle a max of 20 subs, but limiting to 15 https://jira.deliveryhero.com/browse/PUB-72
+  /**
+   * NOTE: Each client can handle a max of 20 subs, but limiting to 15
+   * @see https://jira.deliveryhero.com/browse/PUB-72
+   *
+   * > By default each PubSub instance can handle 100 open streams,
+   * > with default options this translates to less than 20 Subscriptions per PubSub instance.
+   * If you wish to create more Subscriptions than that,
+   * you can either create multiple PubSub instances or
+   * lower the options.streamingOptions.maxStreams value on each Subscription object
+   * @see https://googleapis.dev/nodejs/pubsub/latest/Subscription.html
+   */
   const isNewClientNeeded =
     Math.floor(subscriptions.size / 15) > _clients.length - 1;
 

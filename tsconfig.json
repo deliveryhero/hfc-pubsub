@@ -1,29 +1,21 @@
 {
+  "extends": "./tsconfig.build.json",
   "compilerOptions": {
     "allowJs": true,
     "checkJs": true,
-    "esModuleInterop": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noUnusedParameters": true,
-    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "outDir": "./dist/",
-    "removeComments": true,
-    "strict": true,
-    "target": "es2019",
-    "baseUrl": "./src",
+    "baseUrl": "./",
+    "rootDir": "./",
     "paths": {
-      "@honestfoodcompany/pubsub": ["./index.ts"],
-      "@deliveryhero/pubsub": ["./index.ts"]
+      "@honestfoodcompany/pubsub": ["./src/index.ts"],
+      "@deliveryhero/pubsub": ["./src/index.ts"]
     }
   },
   "exclude": ["node_modules", "dist/**/*"],
   "include": [
     "src/**/*",
     "scripts/**/*",
+    "src/__tests__/**/*",
     "__tests__/**/*",
     "examples/**/*",
     "jest.config.js",

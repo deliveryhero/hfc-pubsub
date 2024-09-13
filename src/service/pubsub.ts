@@ -20,14 +20,13 @@ export default class PubSubService {
     this.initDriver();
     this.initClient();
     this.startServer();
-    this.bind(this);
   }
 
   private startServer(): void {
     if (process.env.PUBSUB_HEALTH_SERVER !== 'true') return;
     if (this.server) return;
 
-    const port = process.env.PUBSUB_SERVER_PORT || 8080;
+    const port = process.env.PUBSUB_SERVER_PORT || process.env.PORT || 8080;
     //create a server object:
     this.server = http
       .createServer(function (_req, res) {
@@ -68,11 +67,6 @@ export default class PubSubService {
       );
     }
     return !(notOpenSubs.length || subsState.length !== allSubs.length);
-  }
-
-  private bind(instance: PubSubService): void {
-    this.subscribe = this.subscribe.bind(instance);
-    this.publish = this.publish.bind(instance);
   }
 
   private initDriver(): void {
@@ -131,6 +125,7 @@ export default class PubSubService {
     for (const subscription of subscribers) {
       await PubSubService.client.close(subscription);
     }
+    Logger.Instance.info(`   ❎      All subscriptions closed successfully.`);
     PubSubService.status = 'closed';
     if (this.server) {
       await new Promise((resolve, reject) => {
@@ -138,7 +133,8 @@ export default class PubSubService {
           if (err) {
             reject(err);
           } else {
-            resolve(this.server);
+            this.server = undefined;
+            resolve(null);
           }
         });
       });
@@ -174,15 +170,14 @@ export default class PubSubService {
         } catch (err) {
           const [, metadata] = subscription;
           Logger.Instance.error(
-            { metadata, err },
-            `   ❌      Error while initializing "${metadata.subscriptionName}" subscription.`,
+            { ...Logger.getInfo(metadata), err },
+            `   ❌      Error while initializing subscription, "${metadata.subscriptionName}"`,
           );
-          const error: Error & {
-            originalError?: Error;
-            metadata?: typeof metadata;
-          } = new Error('Error while initializing subscription.');
-          error.originalError = err as Error;
-          error.metadata = metadata;
+          const error = Object.assign(
+            new Error('Error while initializing subscription'),
+            Logger.getInfo(metadata),
+            { cause: err },
+          );
           throw error;
         }
       },
